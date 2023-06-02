@@ -13,6 +13,8 @@ dependencyResolutionManagement {
     }
 }
 rootProject.name = "Maverkick"
-include ':app'
-include ':user'
 include ':common'
+include ':data'
+include ':student'
+include ':app'
+include ':auth'

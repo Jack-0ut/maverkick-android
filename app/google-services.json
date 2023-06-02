@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "39234217636",
+    "project_id": "maverkick-app",
+    "storage_bucket": "maverkick-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:39234217636:android:16b3ac7c38bdcd4c67e831",
+        "android_client_info": {
+          "package_name": "com.example.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBGSRM0YRtkTW7kPuQdv8VlqY7gkTw9BL4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
