@@ -25,36 +25,36 @@
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.124087594" />
 
-    <!-- First Row -->
     <ImageView
-        android:id="@+id/firstRowIcon"
+        android:id="@+id/nameIcon"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:adjustViewBounds="true"
         android:src="@drawable/ic_name"
         app:layout_constraintEnd_toStartOf="@+id/guideline"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/course_name"
         app:layout_constraintTop_toBottomOf="@+id/topText"
         android:layout_marginTop="24dp"/>
 
     <TextView
-        android:id="@+id/firstRowLabel"
+        android:id="@+id/nameLabel"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
         android:text="Course Name"
         android:textSize="18sp"
+        android:textColor="@color/white"
         app:layout_constraintStart_toStartOf="@id/guideline"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/firstRowIcon"
-        app:layout_constraintBottom_toBottomOf="@id/firstRowIcon" />
+        app:layout_constraintTop_toTopOf="@id/nameIcon"
+        app:layout_constraintBottom_toBottomOf="@id/nameIcon" />
 
     <EditText
         android:id="@+id/course_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
+        android:layout_margin="16dp"
         android:background="@drawable/rounded_corner_background"
         android:hint="For example, “Marketing for the kids”"
         android:inputType="text"
@@ -62,90 +62,105 @@
         android:padding="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/firstRowIcon" />
+        app:layout_constraintTop_toBottomOf="@id/nameIcon" />
 
-    <!-- Second Row -->
+
     <ImageView
-        android:id="@+id/secondRowIcon"
+        android:id="@+id/languageIcon"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
         android:adjustViewBounds="true"
         android:src="@drawable/ic_language"
         app:layout_constraintEnd_toStartOf="@+id/guideline"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/course_language"
         app:layout_constraintTop_toBottomOf="@id/course_name" />
 
     <TextView
-        android:id="@+id/secondRowLabel"
+        android:id="@+id/languageLabel"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
         android:text="Course Language"
         android:textSize="18sp"
+        android:textColor="@color/white"
         app:layout_constraintStart_toStartOf="@id/guideline"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/secondRowIcon"
-        app:layout_constraintBottom_toBottomOf="@id/secondRowIcon" />
-
-    <Spinner
-        android:id="@+id/course_language"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:background="@drawable/rounded_corner_background"
-        android:minHeight="48dp"
-        android:padding="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/secondRowIcon" />
-
-    <!-- Tags -->
-    <com.google.android.material.chip.ChipGroup
-        android:id="@+id/chipGroup"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:padding="8dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        app:layout_constraintTop_toBottomOf="@id/course_language"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:singleSelection="false"
-        app:chipSpacing="8dp">
-
-    </com.google.android.material.chip.ChipGroup>
+        app:layout_constraintTop_toTopOf="@id/languageIcon"
+        app:layout_constraintBottom_toBottomOf="@id/languageIcon" />
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/tag_input_layout"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:id="@+id/course_language"
+        style="@style/MyExposedDropdownMenu"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/chipGroup"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_margin="16dp"
         app:layout_constraintEnd_toEndOf="parent"
-        android:padding="8dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/languageIcon">
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/tag_input_edit_text"
+        <AutoCompleteTextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Add a tag"
-            android:minHeight="48dp" />
+            android:inputType="none"
+            android:background="@null"/>
 
     </com.google.android.material.textfield.TextInputLayout>
 
 
-    <ImageButton
+
+    <ImageView
+        android:id="@+id/tagsIcon"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:adjustViewBounds="true"
+        android:src="@drawable/ic_tags"
+        app:layout_constraintEnd_toStartOf="@+id/guideline"
+        app:layout_constraintStart_toStartOf="@+id/tag_input_field"
+        app:layout_constraintTop_toBottomOf="@+id/course_language" />
+
+    <TextView
+        android:id="@+id/tagsLabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:text="Tags"
+        android:textSize="18sp"
+        android:textColor="@color/white"
+        app:layout_constraintStart_toStartOf="@id/guideline"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tagsIcon"
+        app:layout_constraintBottom_toBottomOf="@id/tagsIcon" />
+
+    <com.example.teacher.TagInputField
+        android:id="@+id/tag_input_field"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:padding="8dp"
+        android:background="@drawable/rounded_corner_background"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tagsIcon"/>
+
+    <Button
         android:id="@+id/submitButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_done"
-        android:background="?android:attr/selectableItemBackgroundBorderless"
+        android:text="Done"
+        android:textSize="18sp"
+        android:textColor="#FFFFFF"
+        android:textAllCaps="false"
+        android:textStyle="bold"
+        android:background="@drawable/custom_button_background"
+        android:drawableEnd="@drawable/resized_ic_done"
+        android:drawablePadding="8dp"
+        android:paddingStart="32dp"
+        android:paddingEnd="32dp"
+        android:elevation="2dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

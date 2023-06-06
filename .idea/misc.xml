@@ -62,7 +62,11 @@
         <entry key="..\:/Projects/Android/Maverkick/student/src/main/res/layout/item_lesson.xml" value="0.4" />
         <entry key="..\:/Projects/Android/Maverkick/student/src/main/res/layout/message_item.xml" value="0.25416666666666665" />
         <entry key="..\:/Projects/Android/Maverkick/student/src/main/res/menu/bottom_navigation_menu.xml" value="0.25416666666666665" />
+        <entry key="..\:/Projects/Android/Maverkick/teacher/src/main/res/drawable/custom_button_background.xml" value="0.146" />
+        <entry key="..\:/Projects/Android/Maverkick/teacher/src/main/res/drawable/resized_ic_done.xml" value="0.146" />
         <entry key="..\:/Projects/Android/Maverkick/teacher/src/main/res/drawable/rounded_corner_background.xml" value="0.146" />
+        <entry key="..\:/Projects/Android/Maverkick/teacher/src/main/res/drawable/spinner_bg.xml" value="0.146" />
+        <entry key="..\:/Projects/Android/Maverkick/teacher/src/main/res/drawable/tag_input_rounded_corners.xml" value="0.146" />
         <entry key="..\:/Projects/Android/Maverkick/teacher/src/main/res/layout/activity_teacher_main.xml" value="0.25416666666666665" />
         <entry key="..\:/Projects/Android/Maverkick/teacher/src/main/res/layout/fragment_add_course.xml" value="0.264" />
         <entry key="..\:/Projects/Android/Maverkick/teacher/src/main/res/layout/fragment_course_edit.xml" value="0.25416666666666665" />
@@ -74,6 +78,7 @@
         <entry key="..\:/Projects/Android/Maverkick/teacher/src/main/res/layout/home_fragment.xml" value="0.25416666666666665" />
         <entry key="..\:/Projects/Android/Maverkick/teacher/src/main/res/layout/item_course.xml" value="0.2076923076923077" />
         <entry key="..\:/Projects/Android/Maverkick/teacher/src/main/res/layout/item_course_statistics.xml" value="0.25416666666666665" />
+        <entry key="..\:/Projects/Android/Maverkick/teacher/src/main/res/layout/language_list_item.xml" value="0.8800000000000001" />
         <entry key="..\:/Projects/Android/Maverkick/teacher/src/main/res/menu/bottom_navigation_menu.xml" value="0.25416666666666665" />
         <entry key="..\:/Projects/Android/Maverkick/user/src/main/res/drawable/input_field_background.xml" value="0.133" />
         <entry key="..\:/Projects/Android/Maverkick/user/src/main/res/layout/activity_login.xml" value="0.21784420289855072" />
