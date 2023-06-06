@@ -20,8 +20,8 @@ class StudentMainActivity : AppCompatActivity() {
         binding = ActivityMainStudentBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val navHostFragment = supportFragmentManager.findFragmentById(R.id.navHostFragment) as NavHostFragment
+        val navHostFragment = supportFragmentManager.findFragmentById(binding.studentNavHostFragment.id) as NavHostFragment
         val navController = navHostFragment.navController
-        NavigationUI.setupWithNavController(binding.bottomNavigationView, navController)
+        NavigationUI.setupWithNavController(binding.studentBottomNavigationView, navController)
     }
 }

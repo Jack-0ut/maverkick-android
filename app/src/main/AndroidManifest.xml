@@ -12,18 +12,6 @@
         android:theme="@style/Theme.Maverkick">
 
         <activity
-            android:name=".RoleSelectionActivity"
-            android:exported="false" />
-        <activity
-            android:name=".RegistrationActivity"
-            android:exported="false" />
-        <activity
-            android:name=".LoginActivity"
-            android:exported="false" />
-        <activity
-            android:name=".onboarding.student.StudentOnboarding"
-            android:exported="false" />
-        <activity
             android:name=".LaunchActivity"
             android:exported="true">
             <intent-filter>

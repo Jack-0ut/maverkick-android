@@ -40,6 +40,9 @@ dependencies {
     implementation project(':common')
     implementation project(':data')
     implementation project(':student')
+    implementation project(':teacher')
+    implementation project(':auth')
+
 
     implementation 'androidx.core:core-ktx:1.10.1'
     implementation 'androidx.appcompat:appcompat:1.6.1'
@@ -55,7 +58,8 @@ dependencies {
 
     implementation 'com.google.firebase:firebase-auth-ktx:22.0.0' // for firebase authentication
 
-    implementation 'androidx.navigation:navigation-fragment-ktx:2.5.3'
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.5.3' // for view model
+    implementation 'androidx.security:security-crypto:1.1.0-alpha06' //  for shared preferences encryption
 }
 kapt {
     correctErrorTypes true

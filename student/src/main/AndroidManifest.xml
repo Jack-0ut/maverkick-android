@@ -9,9 +9,20 @@
             android:name=".videolesson.VideoLessonActivity"
             android:configChanges="orientation|screenSize"
             android:exported="false" />
-        <activity
-            android:name=".StudentMainActivity"
-            android:exported="false" />
+
+        <activity android:name=".StudentMainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="app"
+                    android:host="student"
+                    android:path="/main" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

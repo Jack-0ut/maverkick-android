@@ -6,7 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.data.models.Lesson
 import com.example.data.repositories.LessonRepository
-import com.example.data.repositories.StudentRepository
+import com.example.data.sharedpref.SharedPrefManager
+import com.google.android.exoplayer2.util.Log
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -21,7 +22,7 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val lessonRepository: LessonRepository,
-    private val studentRepository: StudentRepository
+    private val sharedPrefManager: SharedPrefManager
 ): ViewModel() {
 
     // LiveData object that the Fragment can observe to get the list of lessons
@@ -36,22 +37,25 @@ class HomeViewModel @Inject constructor(
     /** A coroutine method that fetch the list of lessons from the repository and assign it to the adapter*/
     private fun fetchLessons() {
         viewModelScope.launch {
-            studentRepository.getCurrentStudent(
-                onSuccess = { student ->
-                    lessonRepository.getTodayLessons(student.studentId,
-                        onSuccess = { lessonsList ->
-                            _lessons.value = lessonsList
-                        },
-                        onFailure = { exception ->
-                            // handle the exception, e.g., log it or display a message to the user
-                        }
-                    )
-                },
-                onFailure = { exception ->
-                    // handle the exception, e.g., log it or display a message to the user
-                }
-            )
+            val studentId = sharedPrefManager.getStudent()?.studentId
+            if (studentId != null) {
+                lessonRepository.getTodayLessons(
+                    studentId,
+                    onSuccess = { lessons ->
+                        _lessons.value = lessons
+                    },
+                    onFailure = { exception ->
+                        // Handle the error case
+                        Log.e("HomeViewModel", "Error fetching lessons: $exception")
+                    }
+                )
+            } else {
+                // Handle the case where there is no studentId in shared preferences
+                Log.e("HomeViewModel", "No studentId in shared preferences")
+            }
         }
     }
+
+
 }
 

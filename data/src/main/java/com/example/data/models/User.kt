@@ -12,5 +12,8 @@ data class User(
     val userId: String,
     val username: String,
     val email: String,
-    val profilePicture:String
-)
+    var profilePicture: String? = null
+){
+    // No-arg constructor for Firestore
+    constructor() : this("", "", "", null)
+}

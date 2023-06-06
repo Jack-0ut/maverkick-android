@@ -6,6 +6,8 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 /**
  * Class responsible for the Student objects interaction with
@@ -14,48 +16,62 @@ import javax.inject.Inject
  **/
 class StudentRepository @Inject constructor(private val databaseService: IDatabaseService) {
 
-    /** Add new Student to the database and if everything is OK, return the studentId**/
-    suspend fun addStudent(userId: String, age: Int, dailyStudyTimeMinutes: Int, interests: List<String>): Result<String> {
+    /** Add new Student to the database and if everything is OK, return the student **/
+    suspend fun addStudent(userId: String, age: Int, dailyStudyTimeMinutes: Int, interests: List<String>): Result<Student> {
         // Create the Student object
         val student = Student("", userId, age, dailyStudyTimeMinutes, interests)
-
         // Add the Student to the database
         return try {
             val documentReference = databaseService.db.collection("students").add(student).await()
             val studentId = documentReference.id
             // Update the student document to include the studentId
             databaseService.db.collection("students").document(studentId).update("studentId", studentId).await()
-            Result.success(studentId)
+            // Set the studentId in the student object
+            student.studentId = studentId
+            Result.success(student)
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
 
+
     /** Getting the current Student from database **/
-    fun getCurrentStudent(onSuccess: (Student) -> Unit, onFailure: (Exception) -> Unit) {
+    suspend fun getCurrentStudent(): Result<Student> {
         val firebaseUser = Firebase.auth.currentUser
-        if (firebaseUser != null) {
-            val userId = firebaseUser.uid
-            getStudentById(userId, onSuccess, onFailure)
+        return if (firebaseUser != null) {
+            getStudentByUserId(firebaseUser.uid)
         } else {
-            onFailure(Exception("No current user"))
+            Result.failure(Exception("No current Student"))
         }
     }
 
     /** Get a Student by their user ID **/
-    fun getStudentById(userId: String, onSuccess: (Student) -> Unit, onFailure: (Exception) -> Unit) {
-        databaseService.db.collection("students").document(userId)
-            .get()
-            .addOnSuccessListener { documentSnapshot ->
-                val student = documentSnapshot.toObject(Student::class.java)
-                if (student != null) {
-                    onSuccess(student)
-                } else {
-                    onFailure(Exception("No such document"))
+    suspend fun getStudentByUserId(userId: String): Result<Student> {
+        return suspendCoroutine { continuation ->
+            databaseService.db.collection("students")
+                .whereEqualTo("userId", userId)
+                .get()
+                .addOnSuccessListener { querySnapshot ->
+                    if (!querySnapshot.isEmpty) {
+                        val document = querySnapshot.documents[0]
+                        val student = Student(
+                            studentId = document.getString("studentId") ?: "",
+                            userId = document.getString("userId") ?: "",
+                            age = document.getLong("age")?.toInt() ?: 0,
+                            dailyStudyTimeMinutes = document.getLong("dailyStudyTimeMinutes")?.toInt() ?: 0,
+                            interests = document.get("interests") as List<String>? ?: listOf()
+                        )
+                        continuation.resume(Result.success(student))
+                    } else {
+                        continuation.resume(Result.failure(Exception("No such student")))
+                    }
                 }
-            }
-            .addOnFailureListener { exception ->
-                onFailure(exception)
-            }
+                .addOnFailureListener { exception ->
+                    continuation.resume(Result.failure(exception))
+                }
+        }
     }
+
+
+
 }

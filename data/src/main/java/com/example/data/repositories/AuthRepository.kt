@@ -2,6 +2,7 @@ package com.example.data.repositories
 
 import android.util.Log
 import com.example.data.IDatabaseService
+import com.example.data.models.User
 import com.google.firebase.auth.FirebaseAuth
 import javax.inject.Inject
 
@@ -11,20 +12,21 @@ import javax.inject.Inject
  **/
 class AuthRepository @Inject constructor(private val firebaseAuth: FirebaseAuth, private val databaseService: IDatabaseService) {
 
-    /** Register the User **/
-    fun register(email: String, username: String, password: String, onSuccess: (String) -> Unit, onFailure: (Exception) -> Unit) {
+    /** Register the User with email, username and password **/
+    fun register(email: String, username: String, password: String, onSuccess: (User) -> Unit, onFailure: (Exception) -> Unit) {
         firebaseAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 val userId = firebaseAuth.currentUser?.uid!!
-                val user = hashMapOf(
+                val userMap = hashMapOf(
                     "email" to email,
                     "username" to username
                 )
 
-                databaseService.db.collection("users").document(userId).set(user)
+                databaseService.db.collection("users").document(userId).set(userMap)
                     .addOnSuccessListener {
                         Log.d("Firestore", "Document written successfully")
-                        onSuccess(userId)
+                        val user = User(userId, username, email, null)
+                        onSuccess(user)
                     }
                     .addOnFailureListener { e ->
                         Log.e("Firestore", "Error writing document", e)
@@ -36,6 +38,7 @@ class AuthRepository @Inject constructor(private val firebaseAuth: FirebaseAuth,
             }
         }
     }
+
 
     /** Log in the account **/
     fun login(email: String, password: String, onSuccess: (String) -> Unit, onFailure: (Exception) -> Unit) {

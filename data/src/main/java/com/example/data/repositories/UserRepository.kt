@@ -1,5 +1,6 @@
 package com.example.data.repositories
 
+import android.util.Log
 import com.example.data.IDatabaseService
 import com.example.data.models.User
 import com.google.firebase.auth.ktx.auth
@@ -12,7 +13,6 @@ import javax.inject.Inject
  * @param databaseService - database to which we're connecting
  **/
 class UserRepository @Inject constructor(private val databaseService: IDatabaseService) {
-
 
     /** Getting the object of current User **/
     fun getCurrentUser(onSuccess: (User) -> Unit, onFailure: (Exception) -> Unit) {
@@ -36,4 +36,17 @@ class UserRepository @Inject constructor(private val databaseService: IDatabaseS
             onFailure(Exception("No current user"))
         }
     }
+
+    /** Updating the profile picture for the given user**/
+    fun updateProfilePicture(userId: String, imageUrl: String) {
+        val userDocument = databaseService.db.collection("users").document(userId)
+        userDocument.update("profilePicture", imageUrl)
+            .addOnSuccessListener {
+                Log.d("Firestore", "DocumentSnapshot successfully updated!")
+            }
+            .addOnFailureListener { e ->
+                Log.w("Firestore", "Error updating document", e)
+            }
+    }
+
 }

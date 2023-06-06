@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/homeFragment"
+        android:id="@+id/studentHomeFragment"
         android:icon="@drawable/ic_home"
         android:title="Home" />
     <item
@@ -9,7 +9,7 @@
         android:icon="@drawable/ic_gallery"
         android:title="Gallery" />
     <item
-        android:id="@+id/profileFragment"
+        android:id="@+id/studentProfileFragment"
         android:icon="@drawable/ic_profile"
         android:title="Profile" />
 </menu>

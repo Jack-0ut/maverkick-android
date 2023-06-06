@@ -10,7 +10,7 @@ package com.example.data.models
  **/
 
 data class Course(
-    val courseId:Int,
+    val courseId:String,
     val courseName: String,
     val language: String,
     val poster: String,

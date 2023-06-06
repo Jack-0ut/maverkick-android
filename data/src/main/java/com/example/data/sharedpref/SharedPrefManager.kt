@@ -1,6 +1,10 @@
 package com.example.data.sharedpref
 
 import android.content.SharedPreferences
+import com.example.data.models.Student
+import com.example.data.models.Teacher
+import com.example.data.models.User
+import com.google.gson.Gson
 import javax.inject.Inject
 
 /**
@@ -8,6 +12,7 @@ import javax.inject.Inject
  * userID, studentID,teacherID,role
  **/
 class SharedPrefManager @Inject constructor(private val sharedPreferences: SharedPreferences) {
+    private val gson = Gson()
 
     fun saveUserId(userId: String) {
         sharedPreferences.edit().putString("userId", userId).apply()
@@ -41,20 +46,34 @@ class SharedPrefManager @Inject constructor(private val sharedPreferences: Share
         return sharedPreferences.getString("teacherId", null)
     }
 
-    fun saveUsername(username:String){
-        sharedPreferences.edit().putString("username",username).apply()
+    fun saveUser(user: User) {
+        val userJson = gson.toJson(user)
+        sharedPreferences.edit().putString("user", userJson).apply()
     }
 
-    fun getUsername(): String?{
-        return sharedPreferences.getString("username",null)
+    fun getUser(): User? {
+        val userJson = sharedPreferences.getString("user", null)
+        return userJson?.let { gson.fromJson(it, User::class.java) }
     }
 
-    fun saveProfilePicPath(path: String) {
-        sharedPreferences.edit().putString("profilePicPath", path).apply()
+    fun saveStudent(student: Student) {
+        val studentJson = gson.toJson(student)
+        sharedPreferences.edit().putString("student", studentJson).apply()
     }
 
-    fun getProfilePicPath(): String? {
-        return sharedPreferences.getString("profilePicPath", null)
+    fun getStudent(): Student? {
+        val studentJson = sharedPreferences.getString("student", null)
+        return studentJson?.let { gson.fromJson(it, Student::class.java) }
+    }
+
+    fun saveTeacher(teacher: Teacher) {
+        val teacherJson = gson.toJson(teacher)
+        sharedPreferences.edit().putString("teacher", teacherJson).apply()
+    }
+
+    fun getTeacher(): Teacher? {
+        val teacherJson = sharedPreferences.getString("teacher", null)
+        return teacherJson?.let { gson.fromJson(it, Teacher::class.java) }
     }
 
     /** Clear the entire preferences */

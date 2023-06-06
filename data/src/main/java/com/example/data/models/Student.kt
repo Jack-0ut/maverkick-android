@@ -2,15 +2,15 @@ package com.example.data.models
 
 /**
  * Class storage for the Student objects
- * @param studentId - Int
- * @param userId - Int
- * @param age - Int
- * @param dailyStudyTimeMinutes - Int
- * @param interests - List<String>
+ * @param studentId  the id of the student in the database
+ * @param userId  the id of the user, which student is
+ * @param age age to make better recommendations and greater personalization
+ * @param dailyStudyTimeMinutes  the number of minutes student would like study daily
+ * @param interests  the list of Tags(disciplines) in which student interested
  **/
 
 data class Student(
-    val studentId: String,
+    var studentId: String,
     val userId: String,
     val age: Int,
     val dailyStudyTimeMinutes: Int,

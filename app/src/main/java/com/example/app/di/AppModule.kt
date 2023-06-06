@@ -1,10 +1,10 @@
 package com.example.app.di
 
-/**
- * Object that configure the Dependency Injection using Hilt
- **/
+
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKey
 import com.example.data.FirebaseService
 import com.example.data.IDatabaseService
 import com.example.data.sharedpref.SharedPrefManager
@@ -15,6 +15,10 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
+
+/**
+ * Object that configure the Dependency Injection using Hilt
+ **/
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -30,8 +34,22 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideSharedPreferences(@ApplicationContext context: Context): SharedPreferences {
-        return context.getSharedPreferences("AppPreferences", Context.MODE_PRIVATE)
+    fun provideMasterKey(@ApplicationContext context: Context): MasterKey {
+        return MasterKey.Builder(context)
+            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+            .build()
+    }
+
+    @Singleton
+    @Provides
+    fun provideEncryptedSharedPreferences(@ApplicationContext context: Context, masterKey: MasterKey): SharedPreferences {
+        return EncryptedSharedPreferences.create(
+            context,
+            "encrypted_prefs",
+            masterKey,
+            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+        )
     }
 
     @Singleton
@@ -39,5 +57,7 @@ object AppModule {
     fun provideSharedPrefManager(sharedPreferences: SharedPreferences): SharedPrefManager {
         return SharedPrefManager(sharedPreferences)
     }
+
+
 
 }

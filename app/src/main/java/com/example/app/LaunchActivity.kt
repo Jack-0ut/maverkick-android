@@ -1,11 +1,12 @@
 package com.example.app
 
-
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.example.auth.RegistrationActivity
 import com.example.data.sharedpref.SharedPrefManager
 import com.example.student.StudentMainActivity
+import com.example.teacher.TeacherMainActivity
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -46,7 +47,7 @@ class LaunchActivity : AppCompatActivity() {
     private fun navigateToMainActivity(role: String?) {
         val intent = when(role) {
             "student" -> Intent(this, StudentMainActivity::class.java)
-            //"teacher" -> Intent(this, TeacherMainActivity::class.java)
+            "teacher" -> Intent(this, TeacherMainActivity::class.java)
             else -> throw IllegalArgumentException("Unknown role: $role")
         }
         startActivity(intent)
