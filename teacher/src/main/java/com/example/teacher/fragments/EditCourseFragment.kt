@@ -12,11 +12,11 @@ import com.example.teacher.databinding.FragmentCourseEditBinding
  * Fragment, where Teacher will be interacting with the course,
  * updating some things, uploading new videos and so on
  **/
-class CourseEditFragment : Fragment() {
+class EditCourseFragment : Fragment() {
     private var _binding: FragmentCourseEditBinding? = null
     private val binding get() = _binding!!
 
-    private val args: CourseEditFragmentArgs by navArgs()
+    private val args: EditCourseFragmentArgs by navArgs()
     private lateinit var courseId: String
 
     override fun onCreateView(
@@ -27,7 +27,7 @@ class CourseEditFragment : Fragment() {
         _binding = FragmentCourseEditBinding.inflate(inflater, container, false)
 
         courseId = args.courseId
-        binding.courseId.text = courseId
+        //binding.courseId.text = courseId
 
         return binding.root
     }

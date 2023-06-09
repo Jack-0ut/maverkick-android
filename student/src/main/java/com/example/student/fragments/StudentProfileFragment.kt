@@ -1,5 +1,8 @@
 package com.example.student.fragments
 
+import android.content.Intent
+import android.net.Uri
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.profile.BaseProfileFragment
 import com.example.student.fragments.profile_fragments.StudentProfileCoursesFragment
@@ -20,5 +23,11 @@ class StudentProfileFragment : BaseProfileFragment() {
 
     override fun getTabTitle(position: Int): String {
         return if (position == 0) "Courses" else "Settings"
+    }
+
+    override fun onChangeAccountClicked() {
+        Toast.makeText(context, "Redirecting to the student", Toast.LENGTH_SHORT).show()
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("app://auth/onboarding_teacher"))
+        startActivity(intent)
     }
 }

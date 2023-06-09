@@ -46,9 +46,12 @@ abstract class BaseProfileFragment : Fragment() {
         setupViewPager()
 
         binding.changeAccount.setOnClickListener {
-            handleLogout()
+            onChangeAccountClicked()
         }
 
+        binding.logOut.setOnClickListener{
+            handleLogout()
+        }
         TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
             tab.text = getTabTitle(position)
         }.attach()
@@ -74,6 +77,8 @@ abstract class BaseProfileFragment : Fragment() {
     protected abstract fun getFragments(): List<Fragment>
 
     protected abstract fun getTabTitle(position: Int): String
+
+    protected abstract fun onChangeAccountClicked()
 
     private fun setupViewPager() {
         val profilePageAdapter = ProfilePageAdapter(this, getFragments())

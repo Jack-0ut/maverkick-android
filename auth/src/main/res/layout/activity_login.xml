@@ -61,22 +61,32 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/email_input" />
 
-    <EditText
-        android:id="@+id/password_input"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/password_layout"
         android:layout_width="0dp"
-        android:layout_height="50dp"
-        android:layout_marginTop="8dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginEnd="32dp"
-        android:background="@drawable/input_field_background"
-        android:inputType="textPassword"
-        android:padding="12dp"
-        android:textColor="@color/black"
+        android:layout_marginTop="8dp"
+        app:boxBackgroundMode="none"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/password_label"
-        android:autofillHints="password"
-        android:importantForAutofill="yes" />
+        app:endIconMode="password_toggle">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/password_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/input_field_background"
+            android:inputType="textPassword"
+            android:padding="12dp"
+            android:textColor="@color/black"
+            android:autofillHints="password"
+            android:importantForAutofill="yes" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+
 
     <Button
         android:id="@+id/login_button"
@@ -85,13 +95,13 @@
         android:layout_marginTop="200dp"
         android:layout_marginStart="64dp"
         android:layout_marginEnd="64dp"
-        android:text="Sign It"
+        android:text="Login"
         android:textColor="@color/main_color"
         android:textSize="20sp"
         app:backgroundTint="@color/main_accent_color"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/password_input"
+        app:layout_constraintTop_toBottomOf="@+id/password_layout"
         app:cornerRadius="15dp" />
 
     <TextView

@@ -28,11 +28,37 @@
         <activity
             android:name=".RegistrationActivity"
             android:exported="false" />
+
         <activity
             android:name=".onboarding.student.StudentOnboarding"
-            android:exported="false" />
+            android:exported="true"
+            tools:replace="android:exported">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:scheme="app"
+                    android:host="auth"
+                    android:pathPrefix="/onboarding_student" />
+            </intent-filter>
+        </activity>
+
         <activity
             android:name=".onboarding.teacher.TeacherOnboarding"
-            android:exported="false" />
+            android:exported="true"
+            tools:replace="android:exported">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:scheme="app"
+                    android:host="auth"
+                    android:pathPrefix="/onboarding_teacher" />
+            </intent-filter>
+        </activity>
     </application>
 </manifest>

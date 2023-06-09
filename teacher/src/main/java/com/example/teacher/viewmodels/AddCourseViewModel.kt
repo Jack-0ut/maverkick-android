@@ -1,10 +1,14 @@
 package com.example.teacher.viewmodels
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.data.models.Course
 import com.example.data.repositories.CourseRepository
+import com.example.data.sharedpref.SharedPrefManager
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import java.util.*
 import javax.inject.Inject
 
 /**
@@ -14,40 +18,78 @@ import javax.inject.Inject
  **/
 @HiltViewModel
 class AddCourseViewModel @Inject constructor(
-    private val repository: CourseRepository
+    private val courseRepository: CourseRepository,
+    private val sharedPrefManager: SharedPrefManager
 ) : ViewModel() {
 
-    private val _courseName = MutableLiveData<String>()
-    val courseName: LiveData<String> get() = _courseName
+    private val _courseName = MutableStateFlow("")
+    val courseName: StateFlow<String> = _courseName.asStateFlow()
 
-    private val _tags = MutableLiveData<List<String>>()
-    val tags: LiveData<List<String>> get() = _tags
+    private val _selectedLanguage = MutableStateFlow("")
+    val selectedLanguage: StateFlow<String> = _selectedLanguage.asStateFlow()
 
-    private val _selectedLanguage = MutableLiveData<String>()
-    val selectedLanguage: LiveData<String> get() = _selectedLanguage
+    private val _tags = MutableStateFlow<List<String>>(emptyList())
+    val tags: StateFlow<List<String>> = _tags.asStateFlow()
 
-    fun submitCourse() {
-        // Validate the data before submission
-        if (_courseName.value.isNullOrBlank() ||  _tags.value.isNullOrEmpty() || _selectedLanguage.value.isNullOrBlank()) {
-            //repository.addCourse()
-        }
 
-        // TODO: Implement your logic here to add a new course
-    }
     fun updateCourseName(name: String) {
         _courseName.value = name
-    }
-
-    fun updateTags(tags: List<String>) {
-        _tags.value = tags
     }
 
     fun updateLanguage(language: String) {
         _selectedLanguage.value = language
     }
 
-    /** Method that takes the video and send it to the api to do the necessary transformation**/
-    fun uploadLesson(){
-
+    fun addTag(tag: String): Boolean {
+        val currentTags = _tags.value.toMutableList()
+        return if (currentTags.size < 5) {
+            currentTags.add(tag)
+            _tags.value = currentTags
+            true
+        } else {
+            false
+        }
     }
+
+    fun removeTag(tag: String) {
+        val currentTags = _tags.value.toMutableList()
+        currentTags.remove(tag)
+        _tags.value = currentTags
+    }
+
+    fun submitCourse(onResult: (Boolean, String) -> Unit) {
+        val courseName = _courseName.value
+        val language = _selectedLanguage.value
+        val tags = _tags.value
+
+        if (courseName.isNotBlank() && language.isNotBlank()) {
+            val student = sharedPrefManager.getStudent()
+            student?.let {
+                val newCourse = Course(
+                    courseId = "", // It will be replaced in the Firestore
+                    courseName = courseName,
+                    authorId = it.studentId, // You should implement this function
+                    language = language,
+                    poster = "", // It will be updated later
+                    tags = tags,
+                    creationDate = Date() // Current date
+                )
+                courseRepository.addCourse(newCourse, { courseId ->
+                    // Handle success: You have a new course with courseId
+                    onResult(true, courseId) // Call the callback with success status and courseId
+                }, { exception ->
+                    // Handle error: Show error message to the user
+                    onResult(false, "Sorry, but we can't create the course, try it again!")
+                })
+            } ?: run {
+                // Handle case where student is null
+                onResult(false, "Hey, we can't find your student id, what's the matter?")
+            }
+        } else {
+            // Handle case where course name or language is not filled in
+            onResult(false, "Please, fill in the course name,language and tags")
+        }
+    }
+
+
 }

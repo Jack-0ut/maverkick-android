@@ -19,8 +19,19 @@
         android:id="@+id/change_account"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_change_account"
-        android:layout_marginEnd="50dp"
+        android:layout_marginEnd="16dp"
+        android:src="@drawable/ic_change_role"
+        app:layout_constraintBottom_toBottomOf="@+id/profile_picture"
+        app:layout_constraintEnd_toStartOf="@+id/log_out"
+        app:layout_constraintTop_toTopOf="@+id/profile_picture"
+        app:layout_constraintVertical_bias="0.533" />
+
+    <ImageView
+        android:id="@+id/log_out"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_log_out"
+        android:layout_marginEnd="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/profile_picture"
         app:layout_constraintBottom_toBottomOf="@+id/profile_picture" />
@@ -49,7 +60,6 @@
         app:tabMode="fixed"
         app:tabGravity="fill">
     </com.google.android.material.tabs.TabLayout>
-
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/viewPager"

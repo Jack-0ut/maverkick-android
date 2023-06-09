@@ -9,14 +9,14 @@
         android:label="Home" >
 
         <action
-            android:id="@+id/action_homeFragment_to_courseEditFragment"
+            android:id="@+id/action_homeFragment_to_editCourseFragment"
             app:destination="@id/courseEditFragment" />
 
     </fragment>
 
     <fragment
         android:id="@+id/courseEditFragment"
-        android:name="com.example.teacher.fragments.CourseEditFragment" >
+        android:name="com.example.teacher.fragments.EditCourseFragment" >
         <argument
             android:name="courseId"
             app:argType="string" />
@@ -25,7 +25,11 @@
     <fragment
         android:id="@+id/addCourseFragment"
         android:name="com.example.teacher.fragments.AddCourseFragment"
-        android:label="Add" />
+        android:label="Add" >
+        <action
+            android:id="@+id/action_addCourseFragment_to_editCourseFragment"
+            app:destination="@id/courseEditFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/teacherProfileFragment"

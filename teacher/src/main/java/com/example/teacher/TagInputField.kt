@@ -16,28 +16,22 @@ import com.google.android.material.chip.ChipGroup
  **/
 class TagInputField(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
 
-    private var maxChips: Int = 5  // Default value
-    private var currentChipsCount: Int = 0
-
     val tagInputEditText: AutoCompleteTextView
     val chipGroup: ChipGroup
 
-    // On max chip number achieved listener
-    var onMaxChipsReached: (() -> Unit)? = null
+    var onTagAdded: ((String) -> Unit)? = null
+    var onTagRemoved: ((String) -> Unit)? = null
 
     init {
         orientation = VERTICAL
 
-        // Create a ChipGroup
         chipGroup = ChipGroup(context).apply {
-            // Update layout parameters
             layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
             isSingleLine = false
         }
 
         addView(chipGroup)
 
-        // Create an AutoCompleteTextView
         tagInputEditText = AutoCompleteTextView(context).apply {
             layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
             hint = "Add a tag"
@@ -46,31 +40,16 @@ class TagInputField(context: Context, attrs: AttributeSet) : LinearLayout(contex
             textSize = 16f
             setPadding(8, 8, 8, 8)
         }
+
         addView(tagInputEditText)
 
         tagInputEditText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
-                if (currentChipsCount < maxChips && s?.endsWith(" ") == true) {
-                    val chip = Chip(context).apply {
-                        text = s.trim()
-                        isCloseIconVisible = true
-                        setChipBackgroundColorResource(com.example.common.R.color.secondary_color)
-                        setTextColor(Color.WHITE)
-                        setCloseIconTintResource(com.example.common.R.color.main_accent_color)
-                        setOnCloseIconClickListener {
-                            // Decrease chip count when chip is removed
-                            chipGroup.removeView(this)
-                            currentChipsCount--
-                        }
-                    }
-                    chipGroup.addView(chip)
-                    tagInputEditText.text = null
-                    // Increase chip count when chip is added
-                    currentChipsCount++
-
-                    // Check if maxChips is reached
-                    if (currentChipsCount >= maxChips) {
-                        onMaxChipsReached?.invoke()
+                if (s?.endsWith(" ") == true) {
+                    val tag = s.trim().toString()
+                    if (tag.isNotEmpty()) {
+                        onTagAdded?.invoke(tag)
+                        tagInputEditText.text = null
                     }
                 }
             }
@@ -79,8 +58,36 @@ class TagInputField(context: Context, attrs: AttributeSet) : LinearLayout(contex
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
     }
-    /** Change the number of chips user could enter */
-    fun setMaxChips(count: Int) {
-        maxChips = count
+
+    private fun createChip(tag: String): Chip {
+        return Chip(context).apply {
+            text = tag
+            isCloseIconVisible = true
+            setChipBackgroundColorResource(com.example.common.R.color.secondary_color)
+            setTextColor(Color.WHITE)
+            setCloseIconTintResource(com.example.common.R.color.main_accent_color)
+            setOnCloseIconClickListener {
+                // When a chip is removed, we remove it from the UI and notify about removal
+                chipGroup.removeView(this)
+                onTagRemoved?.invoke(tag)
+            }
+        }
+    }
+
+
+    fun setTags(tags: List<String>) {
+        chipGroup.removeAllViews()
+        tags.forEach { tag ->
+            chipGroup.addView(createChip(tag))
+        }
+    }
+
+    fun getCurrentTags(): List<String> {
+        val tags = mutableListOf<String>()
+        for (i in 0 until chipGroup.childCount) {
+            val chip = chipGroup.getChildAt(i) as? Chip
+            chip?.let { tags.add(it.text.toString()) }
+        }
+        return tags
     }
 }

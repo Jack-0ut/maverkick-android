@@ -55,7 +55,7 @@ class TeacherHomeFragment : Fragment(), CourseAdapter.OnCourseClickListener{
     }
 
     override fun onCourseClick(courseId: String) {
-        val action = TeacherHomeFragmentDirections.actionHomeFragmentToCourseEditFragment(courseId)
+        val action = TeacherHomeFragmentDirections.actionHomeFragmentToEditCourseFragment(courseId)
         findNavController().navigate(action)
     }
 

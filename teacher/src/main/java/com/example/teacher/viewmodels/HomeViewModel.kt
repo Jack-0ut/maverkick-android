@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.data.models.Course
 import com.example.data.repositories.CourseRepository
-import com.example.data.repositories.TeacherRepository
+import com.example.data.sharedpref.SharedPrefManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -19,7 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val courseRepository: CourseRepository,
-    private val teacherRepository: TeacherRepository
+    private val sharedPrefManager: SharedPrefManager
 ): ViewModel() {
 
     // LiveData object that the Fragment can observe to get the list of lessons

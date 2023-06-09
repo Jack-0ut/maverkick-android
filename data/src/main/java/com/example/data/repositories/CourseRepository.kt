@@ -4,6 +4,7 @@ import android.content.ContentValues.TAG
 import android.util.Log
 import com.example.data.IDatabaseService
 import com.example.data.models.Course
+import com.example.data.models.FirebaseCourse
 import javax.inject.Inject
 
 /**
@@ -12,26 +13,30 @@ import javax.inject.Inject
  * @param databaseService - database to which we're connecting
  **/
 class CourseRepository @Inject constructor(private val databaseService: IDatabaseService) {
-
-    /** Add new Course object to the database **/
-    fun addCourse(course: Course) {
+    /** Add new Course **/
+    fun addCourse(course: Course, onSuccess: (String) -> Unit, onFailure: (Exception) -> Unit) {
+        val firebaseCourse = course.toFirebaseCourse()
         databaseService.db.collection("courses")
-            .add(course)
+            .add(firebaseCourse)
             .addOnSuccessListener { documentReference ->
-                Log.d(TAG, "DocumentSnapshot added with ID: ${documentReference.id}")
+                val courseId = documentReference.id
+                Log.d(TAG, "DocumentSnapshot added with ID: $courseId")
+                onSuccess(courseId)
             }
             .addOnFailureListener { e ->
                 Log.w(TAG, "Error adding document", e)
+                onFailure(e)
             }
     }
 
-    /** Search courses in the database **/
+    /** Method that searches courses for given query**/
     fun searchCourses(query: String, onSuccess: (List<Course>) -> Unit, onFailure: (Exception) -> Unit) {
         databaseService.db.collection("courses")
             .whereEqualTo("name", query)
             .get()
             .addOnSuccessListener { documents ->
-                val courses = documents.mapNotNull { it.toObject(Course::class.java) }
+                val courses = documents.mapNotNull { it.toObject(FirebaseCourse::class.java)
+                    .toCourse(it.id) }
                 onSuccess(courses)
             }
             .addOnFailureListener { exception ->
@@ -39,7 +44,7 @@ class CourseRepository @Inject constructor(private val databaseService: IDatabas
             }
     }
 
-    /** Remove a course from the database **/
+    /** Remove course with given id **/
     fun removeCourse(courseId: String) {
         databaseService.db.collection("courses").document(courseId)
             .delete()
@@ -51,21 +56,36 @@ class CourseRepository @Inject constructor(private val databaseService: IDatabas
             }
     }
 
-    /** Get all of the courses a Student is currently studying **/
+    /** Get Course object by it's id **/
+    fun getCourseById(courseId: String, onSuccess: (Course?) -> Unit, onFailure: (Exception) -> Unit) {
+        databaseService.db.collection("courses").document(courseId)
+            .get()
+            .addOnSuccessListener { documentSnapshot ->
+                val firebaseCourse = documentSnapshot.toObject(FirebaseCourse::class.java)
+                val course = firebaseCourse?.toCourse(documentSnapshot.id)
+                onSuccess(course)
+            }
+            .addOnFailureListener { exception ->
+                onFailure(exception)
+            }
+    }
+
+    /** Get the list of courses for the student with given Id*/
     fun getStudentCourses(studentID: String, onSuccess: (List<Course>) -> Unit, onFailure: (Exception) -> Unit) {
         databaseService.db.collection("studentCourses")
-            .whereEqualTo("student_id", studentID)
+            .whereEqualTo("studentId", studentID)
             .whereEqualTo("active", true)
             .get()
             .addOnSuccessListener { documents ->
-                val courseIds = documents.mapNotNull { it.getString("course_id") }
+                val courseIds = documents.mapNotNull { it.getString("courseId") }
 
                 val courses = mutableListOf<Course>()
                 courseIds.forEach { courseId ->
                     databaseService.db.collection("courses").document(courseId)
                         .get()
                         .addOnSuccessListener { documentSnapshot ->
-                            val course = documentSnapshot.toObject(Course::class.java)
+                            val firebaseCourse = documentSnapshot.toObject(FirebaseCourse::class.java)
+                            val course = firebaseCourse?.toCourse(documentSnapshot.id)
                             if (course != null) {
                                 courses.add(course)
                             }
@@ -80,5 +100,7 @@ class CourseRepository @Inject constructor(private val databaseService: IDatabas
                 onFailure(exception)
             }
     }
+
+    /** Convert the Firebase course into our Course object*/
 
 }
