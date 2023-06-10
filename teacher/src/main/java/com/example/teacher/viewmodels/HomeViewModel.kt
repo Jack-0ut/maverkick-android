@@ -22,14 +22,23 @@ class HomeViewModel @Inject constructor(
     private val sharedPrefManager: SharedPrefManager
 ): ViewModel() {
 
-    // LiveData object that the Fragmwent can observe to get the list of lessons
+    // LiveData object that the Fragment can observe to get the list of courses
     private val _courses = MutableLiveData<List<Course>>()
     val courses: LiveData<List<Course>> get() = _courses
 
     init {
-        // getting the list of today's lessons
-        //fetchCourses()
+        fetchCourses()
     }
 
+    /** Fetch the list of the courses for the current teacher **/
+    private fun fetchCourses() {
+        val teacherId = sharedPrefManager.getTeacher()?.teacherId
+        teacherId?.let {
+            courseRepository.getCoursesByTeacher(it, { courses ->
+                _courses.value = courses
+            }, { exception ->
+                // Handle error: Show error message to the user
+            })
+        }
+    }
 }
-

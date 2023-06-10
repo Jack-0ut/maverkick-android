@@ -10,9 +10,36 @@ package com.example.data.models
  **/
 
 data class Student(
-    var studentId: String,
+    val studentId: String,
     val userId: String,
     val age: Int,
     val dailyStudyTimeMinutes: Int,
     val interests: List<String>
-)
+) {
+    fun toFirebaseStudent(): FirebaseStudent {
+        return FirebaseStudent(
+            userId = this.userId,
+            age = this.age,
+            dailyStudyTimeMinutes = this.dailyStudyTimeMinutes,
+            interests = this.interests
+        )
+    }
+}
+
+
+data class FirebaseStudent(
+    val userId: String,
+    val age: Int,
+    val dailyStudyTimeMinutes: Int,
+    val interests: List<String>
+){
+    fun toStudent(studentId: String): Student {
+        return Student(
+            studentId,
+            userId,
+            age,
+            dailyStudyTimeMinutes,
+            interests
+        )
+    }
+}

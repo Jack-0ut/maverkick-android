@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.teacher.adapters.CourseAdapter
 import com.example.teacher.databinding.FragmentTeacherHomeBinding
 import com.example.teacher.viewmodels.HomeViewModel
@@ -39,6 +40,9 @@ class TeacherHomeFragment : Fragment(), CourseAdapter.OnCourseClickListener{
 
         // Initialize your CourseAdapter
         val courseAdapter = CourseAdapter(this)
+
+        // Set the LayoutManager of your RecyclerView
+        binding.teacherCourses.layoutManager = LinearLayoutManager(context)
 
         // Set the adapter of your RecyclerView
         binding.teacherCourses.adapter = courseAdapter

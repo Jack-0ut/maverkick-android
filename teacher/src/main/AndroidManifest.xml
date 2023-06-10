@@ -3,7 +3,11 @@
     package="com.example.teacher">
 
     <application>
-        <activity android:name=".TeacherMainActivity"
+        <activity
+            android:name=".addlesson.AddLessonActivity"
+            android:exported="false" />
+        <activity
+            android:name=".TeacherMainActivity"
             android:exported="true"
             android:windowSoftInputMode="adjustPan">
             <intent-filter>
@@ -12,9 +16,10 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <data android:scheme="app"
+                <data
                     android:host="teacher"
-                    android:path="/main" />
+                    android:path="/main"
+                    android:scheme="app" />
             </intent-filter>
         </activity>
     </application>

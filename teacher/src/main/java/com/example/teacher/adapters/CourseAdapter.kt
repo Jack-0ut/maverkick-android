@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.data.models.Course
-import com.example.teacher.databinding.ItemCourseBinding
+import com.example.teacher.databinding.TeacherItemCourseBinding
 
 /**
  * Interface that will define the course on which Teacher clicked
@@ -26,10 +26,10 @@ class CourseAdapter(private val clickListener: OnCourseClickListener) : ListAdap
         fun onCourseClick(courseId: String)
     }
 
-    inner class CourseViewHolder(private val binding: ItemCourseBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class CourseViewHolder(private val binding: TeacherItemCourseBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(course: Course) {
             binding.courseTitle.text = course.courseName
-
+            binding.courseImage.setImageResource(com.example.common.R.drawable.course)
             // Loading the image from the URL using an image loading library such as Glide or Picasso
             /*Glide.with(holder.itemView.context)
                 .load(course.poster) // provide your image URL
@@ -44,7 +44,7 @@ class CourseAdapter(private val clickListener: OnCourseClickListener) : ListAdap
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CourseViewHolder {
-        val binding = ItemCourseBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding = TeacherItemCourseBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return CourseViewHolder(binding)
     }
 

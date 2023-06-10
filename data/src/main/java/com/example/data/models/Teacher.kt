@@ -13,4 +13,27 @@ data class Teacher(
     val userId: String,
     val fullName: String,
     val expertise: List<String>
-)
+) {
+    fun toFirebaseTeacher(): FirebaseTeacher {
+        return FirebaseTeacher(
+            userId = this.userId,
+            fullName = this.fullName,
+            expertise = this.expertise
+        )
+    }
+}
+
+data class FirebaseTeacher(
+    val userId: String,
+    val fullName: String,
+    val expertise: List<String>
+){
+    fun toTeacher(teacherId: String): Teacher {
+        return Teacher(
+            teacherId,
+            userId,
+            fullName,
+            expertise
+        )
+    }
+}

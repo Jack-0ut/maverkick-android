@@ -25,7 +25,7 @@ import kotlinx.coroutines.launch
 
 /**
  * Fragment, where Teacher would add information
- * about new course
+ * about new course like courseName, language, tags and maybe something more
  **/
 @AndroidEntryPoint
 class AddCourseFragment : Fragment() {

@@ -101,6 +101,21 @@ class CourseRepository @Inject constructor(private val databaseService: IDatabas
             }
     }
 
-    /** Convert the Firebase course into our Course object*/
+    /** Get the list of courses for the teacher(author) with given Id*/
+    fun getCoursesByTeacher(teacherID: String, onSuccess: (List<Course>) -> Unit, onFailure: (Exception) -> Unit) {
+        databaseService.db.collection("courses")
+            .whereEqualTo("teacherId", teacherID)
+            .get()
+            .addOnSuccessListener { documents ->
+                val courses = documents.mapNotNull { document ->
+                    document.toObject(FirebaseCourse::class.java).toCourse(document.id)
+                }
+                onSuccess(courses)
+            }
+            .addOnFailureListener { exception ->
+                onFailure(exception)
+            }
+    }
+
 
 }

@@ -1,5 +1,6 @@
 package com.example.teacher.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.example.data.models.Course
 import com.example.data.repositories.CourseRepository
@@ -62,13 +63,17 @@ class AddCourseViewModel @Inject constructor(
         val language = _selectedLanguage.value
         val tags = _tags.value
 
-        if (courseName.isNotBlank() && language.isNotBlank()) {
-            val student = sharedPrefManager.getStudent()
-            student?.let {
+        // if teacher filled out all of the fields, create the course
+        if (courseName.isNotBlank() && language.isNotBlank() && tags.isNotEmpty()) {
+            // get the id of the current teacher
+            val teacher = sharedPrefManager.getTeacher()
+            Log.d("SubmitCourseTeacher", "Teacher: $teacher") // Add this line
+
+            teacher?.let {
                 val newCourse = Course(
                     courseId = "", // It will be replaced in the Firestore
                     courseName = courseName,
-                    authorId = it.studentId, // You should implement this function
+                    teacherId = it.teacherId, // You should implement this function
                     language = language,
                     poster = "", // It will be updated later
                     tags = tags,

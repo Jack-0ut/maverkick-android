@@ -3,7 +3,6 @@ package com.example.auth
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -105,10 +104,6 @@ class LoginActivity : AppCompatActivity() {
                 },
                 onFailure = { println("Error fetching teacher: ${it.message}") }
             )
-
-            Log.d("IsTeacher@",isTeacher.toString())
-            Log.d("IsStudent@",isStudent.toString())
-
             // check for the different cases when we have role == student | teacher or both
             when {
                 isStudent && isTeacher -> showRoleSelectionDialog()

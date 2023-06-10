@@ -1,6 +1,7 @@
 package com.example.data.repositories
 
 import com.example.data.IDatabaseService
+import com.example.data.models.FirebaseTeacher
 import com.example.data.models.Teacher
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -18,11 +19,11 @@ class TeacherRepository @Inject constructor(private val databaseService: IDataba
 
     /** Add new Teacher into the database */
     suspend fun addTeacher(userId: String, fullNameValue: String, expertiseValue: List<String>): Result<Teacher> {
-        val teacher = Teacher("", userId, fullNameValue, expertiseValue)
+        val firebaseTeacher = FirebaseTeacher(userId, fullNameValue, expertiseValue)
         return try {
-            val documentReference = databaseService.db.collection("teachers").add(teacher).await()
+            val documentReference = databaseService.db.collection("teachers").add(firebaseTeacher).await()
             val teacherId = documentReference.id
-            teacher.teacherId = teacherId
+            val teacher = firebaseTeacher.toTeacher(teacherId)
             Result.success(teacher)
         } catch (e: Exception) {
             Result.failure(e)
@@ -38,12 +39,12 @@ class TeacherRepository @Inject constructor(private val databaseService: IDataba
                 .addOnSuccessListener { querySnapshot ->
                     if (!querySnapshot.isEmpty) {
                         val document = querySnapshot.documents[0]
-                        val teacher = Teacher(
-                            teacherId = document.getString("teacherId") ?: "",
+                        val firebaseTeacher = FirebaseTeacher(
                             userId = document.getString("userId") ?: "",
                             fullName = document.getString("fullName") ?: "",
                             expertise = document.get("expertise") as List<String>? ?: listOf()
                         )
+                        val teacher = firebaseTeacher.toTeacher(document.id)
                         continuation.resume(Result.success(teacher))
                     } else {
                         continuation.resume(Result.failure(Exception("No such teacher")))
