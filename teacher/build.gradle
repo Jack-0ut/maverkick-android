@@ -48,6 +48,12 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth-ktx:22.0.0'
     kapt "com.google.dagger:hilt-android-compiler:$rootProject.hilt_version"
 
+    // For Glide
+    implementation 'com.github.bumptech.glide:glide:4.12.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.12.0'
+
+    implementation 'com.google.android.exoplayer:exoplayer:2.18.7' // For exoplayer
+
     implementation 'androidx.core:core-ktx:1.10.1'
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.9.0'

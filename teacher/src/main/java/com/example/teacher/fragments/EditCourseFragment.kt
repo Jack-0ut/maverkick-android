@@ -1,5 +1,6 @@
 package com.example.teacher.fragments
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -7,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
+import com.example.teacher.addlesson.SelectVideoActivity
 import com.example.teacher.databinding.FragmentCourseEditBinding
 import com.example.teacher.viewmodels.EditCourseViewModel
 import com.google.android.material.chip.Chip
@@ -49,7 +51,7 @@ class EditCourseFragment : Fragment() {
             // Update course related UI...
             binding.courseName.text = course.courseName
 
-            // Set image for the course poster using a library like Glide or Picasso
+            // TODO Set image for the course poster using a library like Glide or Picasso
             // Glide.with(this).load(course.poster).into(binding.coursePoster)
 
             // Clear old chips if any before adding new ones
@@ -68,8 +70,11 @@ class EditCourseFragment : Fragment() {
             // Here you will likely bind your RecyclerView adapter with the fetched lessons
         }
 
-        binding.addLessonButton.setOnClickListener{
-
+        binding.addLessonButton.setOnClickListener {
+            val intent = Intent(requireContext(), SelectVideoActivity::class.java).apply{
+                putExtra("COURSE_ID", courseId)
+            }
+            startActivity(intent)
         }
     }
 
