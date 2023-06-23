@@ -5,20 +5,14 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.data.models.Course
 import com.example.teacher.databinding.TeacherItemCourseBinding
 
 /**
- * Interface that will define the course on which Teacher clicked
- **/
-interface OnCourseClickListener {
-    fun onCourseClick(courseId: String)
-}
-
-/**
  * Adapter for displaying the picture of the course, title and the edit button
- * in the Home Teacher
- * @param courseList stores the list of Courses, which current Teacher published
+ * in the Home Teacher, basically listing all of the course for a Teacher
+ * @param clickListener the action that happens on the course click
  **/
 class CourseAdapter(private val clickListener: OnCourseClickListener) : ListAdapter<Course, CourseAdapter.CourseViewHolder>(CourseDiffCallback()) {
 
@@ -30,11 +24,11 @@ class CourseAdapter(private val clickListener: OnCourseClickListener) : ListAdap
         fun bind(course: Course) {
             binding.courseTitle.text = course.courseName
             binding.courseImage.setImageResource(com.example.common.R.drawable.course)
-            // Loading the image from the URL using an image loading library such as Glide or Picasso
-            /*Glide.with(holder.itemView.context)
-                .load(course.poster) // provide your image URL
-                .into(holder.courseImage)
-            */
+
+            // Loading the image from the URL
+            Glide.with(binding.root.context)
+                .load(course.poster)
+                .into(binding.courseImage)
 
             // open the particular course for editing
             binding.editCourseButton.setOnClickListener {

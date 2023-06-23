@@ -1,6 +1,5 @@
 package com.example.teacher.viewmodels
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.example.data.models.Course
 import com.example.data.repositories.CourseRepository
@@ -60,21 +59,22 @@ class AddCourseViewModel @Inject constructor(
 
     fun submitCourse(onResult: (Boolean, String) -> Unit) {
         val courseName = _courseName.value
+
         val language = _selectedLanguage.value
+
         val tags = _tags.value
 
         // if teacher filled out all of the fields, create the course
         if (courseName.isNotBlank() && language.isNotBlank() && tags.isNotEmpty()) {
             // get the id of the current teacher
             val teacher = sharedPrefManager.getTeacher()
-            Log.d("SubmitCourseTeacher", "Teacher: $teacher") // Add this line
 
             teacher?.let {
                 val newCourse = Course(
                     courseId = "", // It will be replaced in the Firestore
                     courseName = courseName,
                     teacherId = it.teacherId, // You should implement this function
-                    language = language,
+                    language = getBCP47LanguageTag(language),
                     poster = "", // It will be updated later
                     tags = tags,
                     creationDate = Date() // Current date
@@ -82,7 +82,7 @@ class AddCourseViewModel @Inject constructor(
                 courseRepository.addCourse(newCourse, { courseId ->
                     // Handle success: You have a new course with courseId
                     onResult(true, courseId) // Call the callback with success status and courseId
-                }, { exception ->
+                }, {
                     // Handle error: Show error message to the user
                     onResult(false, "Sorry, but we can't create the course, try it again!")
                 })
@@ -96,5 +96,15 @@ class AddCourseViewModel @Inject constructor(
         }
     }
 
-
+    /** Stupid function that converts the name of the language into it's code */
+    private fun getBCP47LanguageTag(language: String): String {
+        return when (language) {
+            "English US" -> "en-US"
+            "English UK" -> "en-GB"
+            "French" -> "fr-FR"
+            "Spanish" -> "es-ES"
+            "Ukrainian" -> "uk-UA"
+            else -> "en-US" // default to English if no match
+        }
+    }
 }

@@ -5,16 +5,17 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
 /**
- * ViewModel Class for the Chat in the Video Player.
- * It's responsible for storing the messages
+ * ViewModel Class for the 'El Bricko' Learning Assistant
+ * It's responsible for storing the messages and chat-bot responses
  **/
 class ChatViewModel : ViewModel() {
-    // This list will hold your chat messages
+    // This list will hold chat messages
     private val _messages = MutableLiveData<MutableList<Message>>(mutableListOf())
     val messages: LiveData<MutableList<Message>> get() = _messages
 
+    /** Add new message to the dialog */
     fun addMessage(message: Message) {
         _messages.value?.add(message)
-        _messages.value = _messages.value // Trigger the observer
+        _messages.value = _messages.value
     }
 }

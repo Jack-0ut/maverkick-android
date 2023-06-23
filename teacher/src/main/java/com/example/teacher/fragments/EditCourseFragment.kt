@@ -1,14 +1,19 @@
 package com.example.teacher.fragments
 
-import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.example.teacher.addlesson.SelectVideoActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.Glide
+import com.example.teacher.adapters.LessonAdapter
 import com.example.teacher.databinding.FragmentCourseEditBinding
 import com.example.teacher.viewmodels.EditCourseViewModel
 import com.google.android.material.chip.Chip
@@ -19,14 +24,15 @@ import dagger.hilt.android.AndroidEntryPoint
  * updating some things, uploading new videos and so on
  **/
 @AndroidEntryPoint
-class EditCourseFragment : Fragment() {
+class EditCourseFragment : Fragment(),LessonAdapter.OnLessonClickListener {
     private var _binding: FragmentCourseEditBinding? = null
     private val binding get() = _binding!!
 
     private val args: EditCourseFragmentArgs by navArgs()
-    private lateinit var courseId: String
+    private val viewModel: EditCourseViewModel by viewModels()
 
-    private val viewModel: EditCourseViewModel by viewModels() // If using Hilt, use "by hiltNavGraphViewModels(R.id.nav_graph)"
+    private lateinit var courseId: String
+    private val lessonAdapter = LessonAdapter()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -43,16 +49,20 @@ class EditCourseFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Fetch the necessary data from the database
         viewModel.fetchCourse(courseId)
         viewModel.fetchLessons(courseId)
 
-        viewModel.course.observe(viewLifecycleOwner) { course ->
+        // Set up RecyclerView
+        binding.lessonList.layoutManager = LinearLayoutManager(context)
+        binding.lessonList.adapter = lessonAdapter
+        lessonAdapter.setOnLessonClickListener(this)
 
-            // Update course related UI...
+        viewModel.course.observe(viewLifecycleOwner) { course ->
+            // Update course related UI
             binding.courseName.text = course.courseName
 
-            // TODO Set image for the course poster using a library like Glide or Picasso
-            // Glide.with(this).load(course.poster).into(binding.coursePoster)
+            Glide.with(this).load(course.poster).into(binding.coursePoster)
 
             // Clear old chips if any before adding new ones
             binding.tags.removeAllViews()
@@ -66,20 +76,38 @@ class EditCourseFragment : Fragment() {
         }
 
         viewModel.lessons.observe(viewLifecycleOwner) { lessons ->
-            // Update lessons list UI...
-            // Here you will likely bind your RecyclerView adapter with the fetched lessons
+            lessonAdapter.submitList(lessons)
         }
 
         binding.addLessonButton.setOnClickListener {
-            val intent = Intent(requireContext(), SelectVideoActivity::class.java).apply{
-                putExtra("COURSE_ID", courseId)
+            viewModel.course.value?.let { course ->
+                val action = EditCourseFragmentDirections.actionEditCourseFragmentToSelectVideoFragment(courseId, course.language)
+                findNavController().navigate(action)
+            } ?: run {
+                // Handle the error if the course is null. For example, show an error message to the user.
             }
-            startActivity(intent)
+        }
+
+        binding.editPosterIcon.setOnClickListener{
+            getContent.launch("image/*")
+        }
+    }
+
+    /** get new poster from gallery */
+    private val getContent = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+        if (uri != null) {
+            viewModel.updatePoster(uri)
         }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    /** When click on the particular lesson toggle icon **/
+    override fun onLessonClick(lessonId: String, position: Int) {
+        Toast.makeText(context,"Clicked",Toast.LENGTH_SHORT).show()
+        lessonAdapter.onLessonClick(lessonId, position)
     }
 }

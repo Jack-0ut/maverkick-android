@@ -17,6 +17,7 @@
             <option value="$PROJECT_DIR$/profile" />
             <option value="$PROJECT_DIR$/student" />
             <option value="$PROJECT_DIR$/teacher" />
+            <option value="$PROJECT_DIR$/videoplayer" />
           </set>
         </option>
       </GradleProjectSettings>

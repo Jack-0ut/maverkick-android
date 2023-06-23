@@ -90,17 +90,5 @@
 
     </LinearLayout>
 
-    <Button
-        android:id="@+id/go_button"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="64dp"
-        android:text="Let's go"
-        android:textColor="@color/black"
-        app:backgroundTint="@color/main_accent_color"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/options_layout"
-        app:layout_constraintWidth_percent="0.5" />
 </androidx.constraintlayout.widget.ConstraintLayout>
 

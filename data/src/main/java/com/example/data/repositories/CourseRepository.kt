@@ -1,10 +1,14 @@
 package com.example.data.repositories
 
 import android.content.ContentValues.TAG
+import android.net.Uri
 import android.util.Log
+import com.algolia.search.saas.Client
+import com.algolia.search.saas.Index
 import com.example.data.IDatabaseService
 import com.example.data.models.Course
 import com.example.data.models.FirebaseCourse
+import com.google.firebase.storage.FirebaseStorage
 import javax.inject.Inject
 
 /**
@@ -12,7 +16,14 @@ import javax.inject.Inject
  * the Cloud Database using Dependency Injection
  * @param databaseService - database to which we're connecting
  **/
-class CourseRepository @Inject constructor(private val databaseService: IDatabaseService) {
+class CourseRepository @Inject constructor(
+    private val databaseService: IDatabaseService,
+    private val firebaseStorage: FirebaseStorage,
+    private val client: Client,
+    private val index: Index
+)
+{
+
     /** Add new Course **/
     fun addCourse(course: Course, onSuccess: (String) -> Unit, onFailure: (Exception) -> Unit) {
         val firebaseCourse = course.toFirebaseCourse()
@@ -117,5 +128,32 @@ class CourseRepository @Inject constructor(private val databaseService: IDatabas
             }
     }
 
+    /** Save new poster to the firebase storage under the courseId name */
+    fun updatePoster(courseId:String,uri: Uri) {
+        val storageRef = firebaseStorage.reference
+        val posterRef = storageRef.child("posters/$courseId")
 
+        val uploadTask = posterRef.putFile(uri)
+        uploadTask.addOnFailureListener {
+            // Handle unsuccessful uploads
+        }.addOnSuccessListener {
+            // taskSnapshot.metadata contains file metadata such as size, content-type, etc.
+            posterRef.downloadUrl.addOnSuccessListener { downloadUri ->
+                updateCoursePoster(courseId,downloadUri.toString())
+            }
+        }
+    }
+
+    /** Update the url of the poster inside the firestore courses collection **/
+    private fun updateCoursePoster(courseId:String, posterUrl: String) {
+        val courseRef = databaseService.db.collection("courses").document(courseId)
+        courseRef
+            .update("poster", posterUrl)
+            .addOnSuccessListener {
+                // Successfully updated the document
+            }
+            .addOnFailureListener { e ->
+                // Handle failure
+            }
+    }
 }

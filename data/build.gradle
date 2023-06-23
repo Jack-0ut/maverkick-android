@@ -38,6 +38,7 @@ dependencies {
     implementation 'androidx.core:core-ktx:1.10.1'
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.9.0'
+    implementation 'androidx.work:work-runtime-ktx:2.8.1'
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
@@ -45,11 +46,20 @@ dependencies {
 
     implementation 'com.google.firebase:firebase-firestore-ktx:24.6.1' // for firebase firestore
     implementation 'com.google.firebase:firebase-auth-ktx:22.0.0' // for firebase authentication
-    implementation 'com.google.firebase:firebase-storage-ktx:20.2.0' // for firebase storage
+    implementation 'com.google.firebase:firebase-storage-ktx:20.2.1' // for firebase storage
+
+    // For Retrofit (send the request to the api service)
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+    implementation 'com.squareup.okhttp3:okhttp:4.9.0'
 
     // Hilt DI
     implementation "com.google.dagger:hilt-android:$rootProject.hilt_version"
     kapt "com.google.dagger:hilt-android-compiler:$rootProject.hilt_version"
 
     implementation 'com.google.code.gson:gson:2.9.0' // for gson
+
+    implementation 'com.algolia:algoliasearch-android:3.27.0' // for database search (Algolia)
+
+    implementation "androidx.work:work-runtime-ktx:$rootProject.work_version" // background workers
 }

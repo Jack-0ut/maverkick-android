@@ -15,7 +15,7 @@
         android:padding="8dp">
 
         <TextView
-            android:id="@+id/lesson_name"
+            android:id="@+id/lesson_title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="Lesson Name"
@@ -24,11 +24,11 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/lesson_duration"
+            android:id="@+id/lesson_length"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="Duration"
-            app:layout_constraintTop_toBottomOf="@+id/lesson_name"
+            app:layout_constraintTop_toBottomOf="@+id/lesson_title"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/toggle_details_button" />
 
@@ -40,14 +40,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <VideoView
-            android:id="@+id/lesson_video"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            app:layout_constraintTop_toBottomOf="@+id/lesson_duration"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -17,8 +17,23 @@
     <fragment
         android:id="@+id/courseEditFragment"
         android:name="com.example.teacher.fragments.EditCourseFragment" >
+        <action
+            android:id="@+id/action_editCourseFragment_to_selectVideoFragment"
+            app:destination="@id/selectVideoFragment" />
         <argument
             android:name="courseId"
+            app:argType="string" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/selectVideoFragment"
+        android:name="com.example.teacher.addlesson.SelectVideoFragment">
+        <argument
+            android:name="courseId"
+            app:argType="string" />
+        <argument
+            android:name="languageCode"
             app:argType="string" />
     </fragment>
 
@@ -30,6 +45,7 @@
             android:id="@+id/action_addCourseFragment_to_editCourseFragment"
             app:destination="@id/courseEditFragment" />
     </fragment>
+
 
     <fragment
         android:id="@+id/teacherProfileFragment"

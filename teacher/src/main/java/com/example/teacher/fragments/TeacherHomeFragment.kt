@@ -58,6 +58,7 @@ class TeacherHomeFragment : Fragment(), CourseAdapter.OnCourseClickListener{
         _binding = null
     }
 
+    /** When click on the particular course edit icon, redirect to the EditCourseFragment for that course**/
     override fun onCourseClick(courseId: String) {
         val action = TeacherHomeFragmentDirections.actionHomeFragmentToEditCourseFragment(courseId)
         findNavController().navigate(action)

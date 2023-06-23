@@ -3,12 +3,17 @@ package com.example.teacher.addlesson
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.workDataOf
 import com.example.teacher.databinding.ActivityAddLessonBinding
+import com.example.teacher.workers.UploadWorker
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import dagger.hilt.android.AndroidEntryPoint
@@ -26,7 +31,6 @@ class AddLessonActivity : AppCompatActivity() {
     private val viewModel: AddVideoLessonViewModel by viewModels()
     private var player: ExoPlayer? = null
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAddLessonBinding.inflate(layoutInflater)
@@ -43,6 +47,14 @@ class AddLessonActivity : AppCompatActivity() {
 
         intent.getStringExtra("VIDEO_URI")?.let { uriString ->
             viewModel.selectVideo(Uri.parse(uriString))
+        }
+
+        intent.getIntExtra("VIDEO_DURATION", 0).let { duration ->
+            viewModel.setVideoDuration(duration)
+        }
+
+        intent.getStringExtra("LANGUAGE_CODE")?.let{ languageCode ->
+            viewModel.setCourseLanguageCode(languageCode)
         }
 
         lifecycleScope.launch {
@@ -78,6 +90,7 @@ class AddLessonActivity : AppCompatActivity() {
                             }
                             is UploadStatus.InProgress -> {
                                 binding.progressBar.visibility = View.VISIBLE
+                                //binding.buttonSave.visibility = View.GONE
                             }
                         }
                     }
@@ -86,7 +99,19 @@ class AddLessonActivity : AppCompatActivity() {
         }
 
         binding.buttonSave.setOnClickListener {
-            viewModel.uploadVideo()
+            val data = workDataOf(
+                "courseId" to viewModel.courseId.value,
+                "videoUri" to viewModel.videoUri.value.toString(),
+                "languageCode" to viewModel.languageCode.value
+            )
+
+            val uploadWorkRequest = OneTimeWorkRequestBuilder<UploadWorker>()
+                .setInputData(data)
+                .build()
+
+            WorkManager.getInstance(applicationContext).enqueue(uploadWorkRequest)
+
+            Toast.makeText(this, "Upload started", Toast.LENGTH_SHORT).show()
         }
     }
 
