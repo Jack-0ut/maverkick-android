@@ -3,8 +3,6 @@ package com.example.data.repositories
 import com.example.data.IDatabaseService
 import com.example.data.models.FirebaseTeacher
 import com.example.data.models.Teacher
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import kotlin.coroutines.resume
@@ -56,13 +54,29 @@ class TeacherRepository @Inject constructor(private val databaseService: IDataba
         }
     }
 
-    /** Getting the current Teacher from database **/
-    suspend fun getCurrentTeacher(): Result<Teacher> {
-        val firebaseUser = Firebase.auth.currentUser
-        return if (firebaseUser != null) {
-            getTeacherByUserId(firebaseUser.uid)
-        } else {
-            Result.failure(Exception("No current Teacher"))
+    /** Get a Teacher by their ID **/
+    suspend fun getTeacherById(teacherId: String): Result<Teacher> {
+        return suspendCoroutine { continuation ->
+            databaseService.db.collection("teachers")
+                .document(teacherId)
+                .get()
+                .addOnSuccessListener { documentSnapshot ->
+                    if (documentSnapshot.exists()) {
+                        val firebaseTeacher = FirebaseTeacher(
+                            userId = documentSnapshot.getString("userId") ?: "",
+                            fullName = documentSnapshot.getString("fullName") ?: "",
+                            expertise = documentSnapshot.get("expertise") as List<String>? ?: listOf()
+                        )
+                        val teacher = firebaseTeacher.toTeacher(documentSnapshot.id)
+                        continuation.resume(Result.success(teacher))
+                    } else {
+                        continuation.resume(Result.failure(Exception("No such teacher")))
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    continuation.resume(Result.failure(exception))
+                }
         }
     }
+
 }

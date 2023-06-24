@@ -2,13 +2,10 @@ package com.example.teacher.addlesson
 
 import android.net.Uri
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.example.data.repositories.LessonRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
@@ -28,8 +25,8 @@ class AddVideoLessonViewModel @Inject constructor(
     private val _videoDuration = MutableStateFlow<Int?>(null)
     val videoDuration: StateFlow<Int?> = _videoDuration
 
-    private val _languageCode = MutableStateFlow<String?>(null)
-    val languageCode: StateFlow<String?> = _languageCode
+    private val _language = MutableStateFlow<String?>(null)
+    val language: StateFlow<String?> = _language
 
     private val _uploadProgress = MutableStateFlow(0)
     val uploadProgress: StateFlow<Int> = _uploadProgress
@@ -51,12 +48,21 @@ class AddVideoLessonViewModel @Inject constructor(
         _videoDuration.value = duration
     }
 
-    fun setCourseLanguageCode(languageCode:String) {
-        _languageCode.value = languageCode
+    fun setCourseLanguage(language:String) {
+        _language.value = language
     }
 
-
-    /** Upload video with given uri and add it to the lesson document */
+    /** Stupid function that converts the name of the language into it's code */
+    fun getBCP47LanguageTag(language: String?): String {
+        return when (language) {
+            "English US" -> "en-US"
+            "English UK" -> "en-GB"
+            "French" -> "fr-FR"
+            "Spanish" -> "es-ES"
+            "Ukrainian" -> "uk-UA"
+            else -> "en-US"
+        }
+    }
 }
 
 /** Track the uploading of the video to the cloud storage **/

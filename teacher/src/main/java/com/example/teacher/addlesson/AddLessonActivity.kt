@@ -54,7 +54,7 @@ class AddLessonActivity : AppCompatActivity() {
         }
 
         intent.getStringExtra("LANGUAGE_CODE")?.let{ languageCode ->
-            viewModel.setCourseLanguageCode(languageCode)
+            viewModel.setCourseLanguage(languageCode)
         }
 
         lifecycleScope.launch {
@@ -102,7 +102,8 @@ class AddLessonActivity : AppCompatActivity() {
             val data = workDataOf(
                 "courseId" to viewModel.courseId.value,
                 "videoUri" to viewModel.videoUri.value.toString(),
-                "languageCode" to viewModel.languageCode.value
+                "languageCode" to viewModel.getBCP47LanguageTag(viewModel.language.value),
+                "videoDuration" to viewModel.videoDuration.value
             )
 
             val uploadWorkRequest = OneTimeWorkRequestBuilder<UploadWorker>()

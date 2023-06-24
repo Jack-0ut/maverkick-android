@@ -30,8 +30,7 @@ class LessonAdapter : ListAdapter<Lesson, LessonAdapter.LessonViewHolder>(Lesson
 
         fun bind(lesson: Lesson) {
             binding.lessonTitle.text = lesson.title
-            binding.lessonLength.text = secondsToMinutesSeconds(lesson.length)
-
+            binding.lessonLength.text = secondsToMinutesSeconds(lesson.duration)
 
             // Set the click listener for the toggle button
             binding.toggleDetailsButton.setOnClickListener {

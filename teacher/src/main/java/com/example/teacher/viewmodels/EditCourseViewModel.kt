@@ -23,19 +23,24 @@ class EditCourseViewModel @Inject constructor(
     private val _course = MutableLiveData<Course>()
     val course: LiveData<Course> = _course
 
-    private val _lessons = MutableLiveData<List<Lesson>>() // Assuming Lesson is a data class representing a lesson
+    private val _lessons = MutableLiveData<List<Lesson>>()
     val lessons: LiveData<List<Lesson>> = _lessons
+
+    val posterUri: MutableLiveData<Uri> = MutableLiveData()
 
     /** update the poster on the cloud when, teacher changed it */
     fun updatePoster(uri: Uri){
         // Extract the courseId from the course object and use it for updating the poster.
         _course.value?.let { course ->
             courseRepository.updatePoster(course.courseId, uri)
+            // Also update the posterUri LiveData
+            posterUri.value = uri
         } ?: run {
             // Handle error: Show error message to the user
         }
     }
 
+    /** Fetch all of the information relation to the course **/
     fun fetchCourse(courseId: String) {
         courseRepository.getCourseById(courseId, { course ->
             _course.value = course
@@ -44,6 +49,7 @@ class EditCourseViewModel @Inject constructor(
         })
     }
 
+    /** Fetch the lessons for a given course **/
     fun fetchLessons(courseId: String) {
         lessonRepository.getCourseLessons(courseId, { lessons ->
             _lessons.value = lessons

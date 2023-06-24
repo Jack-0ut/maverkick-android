@@ -33,7 +33,7 @@
             android:name="courseId"
             app:argType="string" />
         <argument
-            android:name="languageCode"
+            android:name="language"
             app:argType="string" />
     </fragment>
 

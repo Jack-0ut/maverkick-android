@@ -3,11 +3,13 @@ package com.example.data.repositories
 import android.content.ContentValues.TAG
 import android.net.Uri
 import android.util.Log
-import com.algolia.search.saas.Client
-import com.algolia.search.saas.Index
+import com.algolia.search.client.Index
+import com.algolia.search.helper.deserialize
+import com.algolia.search.model.search.Query
 import com.example.data.IDatabaseService
 import com.example.data.models.Course
 import com.example.data.models.FirebaseCourse
+import com.example.data.models.SearchCourseHit
 import com.google.firebase.storage.FirebaseStorage
 import javax.inject.Inject
 
@@ -19,11 +21,8 @@ import javax.inject.Inject
 class CourseRepository @Inject constructor(
     private val databaseService: IDatabaseService,
     private val firebaseStorage: FirebaseStorage,
-    private val client: Client,
-    private val index: Index
-)
-{
-
+    private val algoliaIndex: Index
+) {
     /** Add new Course **/
     fun addCourse(course: Course, onSuccess: (String) -> Unit, onFailure: (Exception) -> Unit) {
         val firebaseCourse = course.toFirebaseCourse()
@@ -41,18 +40,12 @@ class CourseRepository @Inject constructor(
     }
 
     /** Method that searches courses for given query**/
-    fun searchCourses(query: String, onSuccess: (List<Course>) -> Unit, onFailure: (Exception) -> Unit) {
-        databaseService.db.collection("courses")
-            .whereEqualTo("name", query)
-            .get()
-            .addOnSuccessListener { documents ->
-                val courses = documents.mapNotNull { it.toObject(FirebaseCourse::class.java)
-                    .toCourse(it.id) }
-                onSuccess(courses)
-            }
-            .addOnFailureListener { exception ->
-                onFailure(exception)
-            }
+    suspend fun searchCourses(query: String): List<SearchCourseHit> {
+        Log.d("CourseRepository", "searchCourses called with query: $query")
+        val response = algoliaIndex.run { search(Query(query)) }
+        val hits = response.hits.deserialize(SearchCourseHit.serializer())
+        Log.d("CourseRepository", "Number of hits found: ${hits.size}")
+        return hits
     }
 
     /** Remove course with given id **/
@@ -152,7 +145,7 @@ class CourseRepository @Inject constructor(
             .addOnSuccessListener {
                 // Successfully updated the document
             }
-            .addOnFailureListener { e ->
+            .addOnFailureListener {
                 // Handle failure
             }
     }

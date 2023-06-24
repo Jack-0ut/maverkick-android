@@ -3,6 +3,7 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt' // for hilt
     id 'dagger.hilt.android.plugin' // for hilt
+    id 'androidx.navigation.safeargs.kotlin' // for argument passing between the fragments
 }
 
 android {
@@ -43,25 +44,25 @@ dependencies {
     implementation project(':profile')
 
     // For Menu Navigation
-    implementation 'androidx.navigation:navigation-fragment-ktx:2.5.3'
-    implementation 'androidx.navigation:navigation-ui-ktx:2.5.3'
-
-    // For Tab Layout for Profile
-    implementation 'com.google.android.material:material:1.9.0'
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.6.0'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.6.0'
+    implementation 'androidx.fragment:fragment-ktx:1.6.0'
 
     // For video player
     implementation 'com.google.android.exoplayer:exoplayer:2.18.7'
-    implementation 'androidx.fragment:fragment-ktx:1.5.7'
 
     // For Hilt DI
     implementation "com.google.dagger:hilt-android:$rootProject.hilt_version"
     implementation 'com.google.firebase:firebase-auth-ktx:22.0.0'
-
     kapt "com.google.dagger:hilt-android-compiler:$rootProject.hilt_version"
 
     // Glide for the image downloading and displaying
     implementation 'com.github.bumptech.glide:glide:4.12.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.12.0'
+
+    // For rounded image view 
+    implementation 'de.hdodenhof:circleimageview:3.1.0'
+    implementation 'com.github.fornewid:neumorphism:0.3.0'
 
     implementation 'androidx.core:core-ktx:1.10.1'
     implementation 'androidx.appcompat:appcompat:1.6.1'

@@ -74,7 +74,7 @@ class AddCourseViewModel @Inject constructor(
                     courseId = "", // It will be replaced in the Firestore
                     courseName = courseName,
                     teacherId = it.teacherId, // You should implement this function
-                    language = getBCP47LanguageTag(language),
+                    language = language,
                     poster = "", // It will be updated later
                     tags = tags,
                     creationDate = Date() // Current date
@@ -93,18 +93,6 @@ class AddCourseViewModel @Inject constructor(
         } else {
             // Handle case where course name or language is not filled in
             onResult(false, "Please, fill in the course name,language and tags")
-        }
-    }
-
-    /** Stupid function that converts the name of the language into it's code */
-    private fun getBCP47LanguageTag(language: String): String {
-        return when (language) {
-            "English US" -> "en-US"
-            "English UK" -> "en-GB"
-            "French" -> "fr-FR"
-            "Spanish" -> "es-ES"
-            "Ukrainian" -> "uk-UA"
-            else -> "en-US" // default to English if no match
         }
     }
 }

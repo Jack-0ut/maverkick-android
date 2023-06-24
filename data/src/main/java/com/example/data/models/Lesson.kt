@@ -6,7 +6,7 @@ import java.util.*
  * Class storage for the Lesson objects
  * @param lessonId - id of the lesson
  * @param title - title of the video-lesson
- * @param length - length of the video-lesson (in seconds) <= 300
+ * @param duration - length of the video-lesson (in seconds) <= 300
  * @param videoUrl - path to the storage where video is stored
  * @param transcription - text transcription of what is said in the video
  * @param lessonOrder - the order of the lesson in the course (1,2,3,4...)
@@ -15,7 +15,7 @@ import java.util.*
 data class Lesson(
     val lessonId: String,
     val title: String,
-    val length: Int,
+    val duration: Int,
     val videoUrl: String,
     val transcription: String,
     val lessonOrder: Int,
@@ -24,7 +24,7 @@ data class Lesson(
     fun toFirebaseLesson(): LessonFirebase {
         return LessonFirebase(
             title = this.title,
-            length = this.length,
+            duration = this.duration,
             videoUrl = this.videoUrl,
             transcription = this.transcription,
             lessonOrder = this.lessonOrder,
@@ -38,7 +38,7 @@ data class Lesson(
  **/
 data class LessonFirebase @JvmOverloads constructor(
     val title: String = "",
-    val length: Int = 0,
+    val duration: Int = 0,
     val videoUrl: String? = null,
     val transcription: String? = null,
     val lessonOrder: Int = 0,
@@ -48,7 +48,7 @@ data class LessonFirebase @JvmOverloads constructor(
         return Lesson(
             lessonId,
             title,
-            length,
+            duration,
             videoUrl ?: "",  // if videoUrl is null, use empty string
             transcription ?: "",  // if transcription is null, use empty string
             lessonOrder,

@@ -33,6 +33,7 @@ class UploadWorker @Inject constructor(
         val courseId = inputData.getString("courseId")
         val videoUri = inputData.getString("videoUri")?.let { Uri.parse(it) }
         val languageCode = inputData.getString("languageCode")
+        val videoDuration = inputData.getInt("videoDuration",0)
 
         if (courseId == null || videoUri == null || languageCode == null) {
             return Result.failure()
@@ -45,8 +46,8 @@ class UploadWorker @Inject constructor(
             // Upload the video
             val (lessonId, downloadUrl) = lessonRepository.uploadVideo(courseId, videoUri)
 
-            // Update Firestore with video URL
-            lessonRepository.updateFirestoreWithVideoUrl(courseId, lessonId, downloadUrl)
+            // Update Firestore with video URL and duration
+            lessonRepository.updateFirestoreWithVideoUrl(courseId, lessonId, downloadUrl, videoDuration)
 
             // Transcribe video
             lessonRepository.transcribeVideo(courseId, lessonId, downloadUrl, languageCode)

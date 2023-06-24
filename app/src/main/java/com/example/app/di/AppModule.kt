@@ -5,8 +5,11 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
-import com.algolia.search.saas.Client
-import com.algolia.search.saas.Index
+import com.algolia.search.client.ClientSearch
+import com.algolia.search.client.Index
+import com.algolia.search.model.APIKey
+import com.algolia.search.model.ApplicationID
+import com.algolia.search.model.IndexName
 import com.example.data.FirebaseService
 import com.example.data.IDatabaseService
 import com.example.data.api.Api
@@ -70,8 +73,8 @@ object AppModule {
     fun provideSharedPrefManager(sharedPreferences: SharedPreferences): SharedPrefManager {
         return SharedPrefManager(sharedPreferences)
     }
-
 }
+
 /** Module that provides dependencies for the Api interactions */
 @Module
 @InstallIn(SingletonComponent::class)
@@ -110,12 +113,15 @@ object AlgoliaModule {
 
     @Provides
     @Singleton
-    fun provideAlgoliaClient(): Client {
-        return Client("E4XSC4B7C4", "244e61482e1bd3f71ea6c54f6a4ad00a")
+    fun provideAlgoliaClient(): ClientSearch {
+        return ClientSearch(
+            applicationID = ApplicationID("E4XSC4B7C4"),
+            apiKey = APIKey("244e61482e1bd3f71ea6c54f6a4ad00a")
+        )
     }
 
     @Provides
-    fun provideAlgoliaIndex(client: Client): Index {
-        return client.getIndex("courses")
+    fun provideAlgoliaIndex(client: ClientSearch): Index {
+        return client.initIndex(indexName= IndexName("courses"))
     }
 }

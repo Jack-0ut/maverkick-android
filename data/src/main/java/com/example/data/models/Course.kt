@@ -1,5 +1,7 @@
 package com.example.data.models
 
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import java.util.*
 
 /**
@@ -58,3 +60,13 @@ data class FirebaseCourse @JvmOverloads constructor(
         )
     }
 }
+/** Course class representation in the algolia index, used for the courses search*/
+@Serializable
+data class SearchCourseHit(
+    @SerialName("objectID")
+    val objectId: String, // this is the Algolia objectID, which is courseId
+    val courseName: String,
+    val language: String,
+    val poster: String?,
+    val tags: List<String>
+    )

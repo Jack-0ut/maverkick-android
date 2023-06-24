@@ -106,11 +106,11 @@ class LessonRepository @Inject constructor(
         }
 
     /** After we uploaded the video, we're adding the url of that video to the lesson document **/
-    suspend fun updateFirestoreWithVideoUrl(courseId: String, lessonId: String, downloadUrl: String) {
+    suspend fun updateFirestoreWithVideoUrl(courseId: String, lessonId: String, downloadUrl: String,videoDuration: Int) {
         suspendCancellableCoroutine { continuation ->
             val lessonDocument = databaseService.db.collection("courses").document(courseId).collection("lessons").document(lessonId)
 
-            lessonDocument.set(hashMapOf("videoUrl" to downloadUrl), SetOptions.merge())
+            lessonDocument.set(hashMapOf("videoUrl" to downloadUrl, "duration" to videoDuration), SetOptions.merge())
                 .addOnSuccessListener {
                     Log.d(TAG, "DocumentSnapshot successfully written!")
                     continuation.resume(Unit)
@@ -170,7 +170,7 @@ class LessonRepository @Inject constructor(
                                             val queue = lessonQueues[i % lessonQueues.size]
                                             if (queue.isNotEmpty()) {
                                                 val lesson = queue.poll()
-                                                val lessonTime = lesson.length
+                                                val lessonTime = lesson.duration
                                                 // Add the lesson to the list if there is enough remaining study time
                                                 if (totalLessonTime + lessonTime <= (dailyStudyTime * 60)) {
                                                     todayLessons.add(lesson)

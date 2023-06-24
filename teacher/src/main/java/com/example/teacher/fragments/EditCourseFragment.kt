@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -75,6 +74,12 @@ class EditCourseFragment : Fragment(),LessonAdapter.OnLessonClickListener {
             }
         }
 
+        // Observe the posterUri LiveData
+        viewModel.posterUri.observe(viewLifecycleOwner) { uri ->
+            // Load the poster image from the updated Uri
+            Glide.with(this).load(uri).into(binding.coursePoster)
+        }
+
         viewModel.lessons.observe(viewLifecycleOwner) { lessons ->
             lessonAdapter.submitList(lessons)
         }
@@ -107,7 +112,6 @@ class EditCourseFragment : Fragment(),LessonAdapter.OnLessonClickListener {
 
     /** When click on the particular lesson toggle icon **/
     override fun onLessonClick(lessonId: String, position: Int) {
-        Toast.makeText(context,"Clicked",Toast.LENGTH_SHORT).show()
         lessonAdapter.onLessonClick(lessonId, position)
     }
 }

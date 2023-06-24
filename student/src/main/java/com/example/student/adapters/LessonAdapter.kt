@@ -20,7 +20,7 @@ class LessonAdapter : ListAdapter<Lesson, LessonAdapter.LessonViewHolder>(Lesson
     // Define the view holder
     inner class LessonViewHolder(private val binding: ItemLessonBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(lesson: Lesson) {
-            binding.videoLength.text = lesson.length.toString()
+            binding.videoLength.text = lesson.duration.toString()
             // TODO add the path to the url of the image of lesson/course
         }
     }

@@ -5,42 +5,56 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.data.models.Course
+import androidx.lifecycle.viewModelScope
+import com.example.data.models.SearchCourseHit
 import com.example.data.repositories.CourseRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
 /**
  * ViewModel for the GalleryFragment
  * This viewModel class will be responsible for
- * the displaying the search results for course searching
- * @param repository - CourseRepository, from which we will be fetching the courses
+ * the displaying the search results for course searching and caching the results
  **/
 @HiltViewModel
 class GalleryViewModel @Inject constructor(
-    private val repository: CourseRepository
+    private val courseRepository: CourseRepository
 ) : ViewModel() {
 
-    // MutableLiveData that will store the list of courses
-    private val _courses = MutableLiveData<List<Course>>()
-    val courses: LiveData<List<Course>> = _courses
+    // Mutable LiveData for the list of search hits
+    private val _searchHits = MutableLiveData<List<SearchCourseHit>?>()
+    val searchHits: LiveData<List<SearchCourseHit>?> = _searchHits
 
     // MutableLiveData to hold the search query
     val searchQuery = MutableLiveData<String>()
 
-    // Function to search for courses based on a query.
+    // In-memory cache for search results
+    private var searchResultsCache: List<SearchCourseHit>? = null
+
+    /** Search the courses for a given query **/
     fun searchCourses(query: String) {
-        // Fetch the list of courses from the repository based on the query
-        repository.searchCourses(query,
-            onSuccess = { fetchedCourses ->
-                // Update the _courses LiveData with the fetched courses
-                _courses.value = fetchedCourses
-            },
-            onFailure = { exception ->
+        // Launch a coroutine in the ViewModel's scope
+        viewModelScope.launch {
+            // If the query is empty, load from cache
+            if (query.isBlank() && searchResultsCache != null) {
+                _searchHits.value = searchResultsCache
+                return@launch
+            }
+
+            runCatching {
+                // Fetch the list of search hits from the repository based on the query
+                courseRepository.searchCourses(query)
+            }.onSuccess { fetchedHits ->
+                // Cache the fetched hits
+                searchResultsCache = fetchedHits
+                // Update the _searchHits LiveData with the fetched hits
+                _searchHits.value = fetchedHits
+            }.onFailure { exception ->
                 // Handle the exception here
                 Log.e(TAG, "Failed to fetch courses: ", exception)
             }
-        )
+        }
     }
 }

@@ -49,4 +49,17 @@ class UserRepository @Inject constructor(private val databaseService: IDatabaseS
             }
     }
 
+    /** Getting the object of a User given the userId **/
+    fun getUserById(userId: String, onSuccess: (User?) -> Unit, onFailure: (Exception) -> Unit) {
+        databaseService.db.collection("users").document(userId)
+            .get()
+            .addOnSuccessListener { documentSnapshot ->
+                val user = documentSnapshot.toObject(User::class.java)
+                onSuccess(user)
+            }
+            .addOnFailureListener { exception ->
+                onFailure(exception)
+            }
+    }
+
 }

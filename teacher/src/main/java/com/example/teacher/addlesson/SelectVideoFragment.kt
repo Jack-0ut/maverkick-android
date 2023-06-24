@@ -47,11 +47,11 @@ class SelectVideoFragment : Fragment() {
 
         // Later, you can use args to access the passed arguments
         val courseId = args.courseId
-        val languageCode = args.languageCode
+        val language = args.language
 
         // Set the courseId and the languageCode in the ViewModel
         viewModel.setCourseId(courseId)
-        viewModel.setCourseLanguageCode(languageCode)
+        viewModel.setCourseLanguage(language)
 
         binding.btnSelect.setOnClickListener {
             getContent.launch("video/*")
@@ -67,7 +67,7 @@ class SelectVideoFragment : Fragment() {
                     putExtra("VIDEO_URI", uri.toString())
                     putExtra("COURSE_ID", viewModel.courseId.value)
                     putExtra("VIDEO_DURATION", videoDuration)
-                    putExtra("LANGUAGE_CODE", viewModel.languageCode.value)
+                    putExtra("LANGUAGE_CODE", viewModel.language.value)
                 }
                 startActivity(intent)
             }

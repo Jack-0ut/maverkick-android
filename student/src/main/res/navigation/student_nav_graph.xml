@@ -8,10 +8,26 @@
         android:id="@+id/studentHomeFragment"
         android:name="com.example.student.fragments.StudentHomeFragment"
         android:label="Home" />
+
     <fragment
         android:id="@+id/galleryFragment"
         android:name="com.example.student.fragments.GalleryFragment"
-        android:label="Gallery" />
+        android:label="GalleryFragment">
+        <action
+            android:id="@+id/action_to_courseDetailsFragment"
+            app:destination="@id/courseDetailsFragment">
+            <argument
+                android:name="courseId"
+                app:argType="string" />
+        </action>
+    </fragment>
+
+    <fragment
+        android:id="@+id/courseDetailsFragment"
+        android:name="com.example.student.fragments.CourseDetailsFragment"
+        android:label="CourseDetailsFragment">
+    </fragment>
+
     <fragment
         android:id="@+id/studentProfileFragment"
         android:name="com.example.student.fragments.StudentProfileFragment"
