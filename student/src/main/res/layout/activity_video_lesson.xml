@@ -45,7 +45,6 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:text="Video Title"
         android:textColor="@android:color/white"
         android:textSize="16sp"
         android:ellipsize="end"

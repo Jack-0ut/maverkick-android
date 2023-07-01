@@ -7,7 +7,7 @@
     <application>
         <activity
             android:name=".videolesson.VideoLessonActivity"
-            android:configChanges="orientation|screenSize"
+            android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize"
             android:exported="false" />
 
         <activity android:name=".StudentMainActivity"

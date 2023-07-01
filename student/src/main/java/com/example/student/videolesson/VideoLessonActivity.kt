@@ -1,13 +1,21 @@
 package com.example.student.videolesson
 
-
+import android.app.Dialog
 import android.content.Context
+import android.content.res.Configuration
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.media.AudioAttributes
 import android.media.AudioFocusRequest
 import android.media.AudioManager
 import android.net.Uri
 import android.os.Bundle
+import android.view.View
+import android.view.WindowManager
+import android.widget.GridView
 import androidx.appcompat.app.AppCompatActivity
+import com.example.student.R
+import com.example.student.adapters.EmojiAdapter
 import com.example.student.databinding.ActivityVideoLessonBinding
 import com.example.student.exercise.ExerciseDialogFragment
 import com.google.android.exoplayer2.ExoPlayer
@@ -42,6 +50,8 @@ class VideoLessonActivity : AppCompatActivity() {
     private var currentWindow = 0
     private var playbackPosition: Long = 0
 
+    val emojis = listOf("🤩", "😊", "😐", "😕", "😡")
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -74,6 +84,21 @@ class VideoLessonActivity : AppCompatActivity() {
             dialogFragment.show(supportFragmentManager, "AskQuestionDialogFragment")
         }
 
+        binding.reactionButton.setOnClickListener {
+            val dialog = Dialog(this)
+            dialog.setContentView(R.layout.emoji_picker)
+            // Add these lines to make the dialog window background transparent
+            dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+            val gridView = dialog.findViewById<GridView>(R.id.grid_view)
+            val adapter = EmojiAdapter(this, R.layout.item_emoji, emojis) { selectedEmoji ->
+                dialog.dismiss()
+                // Here you can handle selected emoji
+            }
+            gridView.adapter = adapter
+
+            dialog.show()
+        }
         // Initialize the AudioManager and AudioFocusRequest
         audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
 
@@ -123,6 +148,23 @@ class VideoLessonActivity : AppCompatActivity() {
             player.prepare()
         }
     }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+
+        // Checks the orientation of the screen
+        when (newConfig.orientation) {
+            Configuration.ORIENTATION_LANDSCAPE -> {
+                binding.videoTitle.visibility = View.GONE
+                window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+            }
+            Configuration.ORIENTATION_PORTRAIT -> {
+                binding.videoTitle.visibility = View.VISIBLE
+                window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+            }
+        }
+    }
+
     /**
      * Releases the ExoPlayer when it's not needed to free up resources.
      */
@@ -165,3 +207,4 @@ class VideoLessonActivity : AppCompatActivity() {
         }
     }
 }
+
