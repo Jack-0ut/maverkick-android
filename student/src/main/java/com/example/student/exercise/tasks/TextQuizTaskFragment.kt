@@ -1,4 +1,4 @@
-package com.example.student.videolesson.exercise.tasks
+package com.example.student.exercise.tasks
 
 
 import android.os.Bundle
@@ -9,7 +9,7 @@ import android.widget.RadioButton
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.student.databinding.FragmentTextQuizTaskBinding
-import com.example.student.videolesson.exercise.TextQuizTask
+import com.example.student.exercise.TextQuizTask
 
 /**
  * Fragment for the classical quiz task.

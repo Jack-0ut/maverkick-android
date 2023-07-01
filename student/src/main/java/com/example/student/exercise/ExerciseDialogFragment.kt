@@ -1,14 +1,12 @@
-package com.example.student.videolesson.exercise
+package com.example.student.exercise
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.Fragment
-import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.example.student.databinding.FragmentExerciseBinding
-import com.example.student.videolesson.exercise.tasks.TextQuizTaskFragment
+import com.example.student.exercise.tasks.TaskPagerAdapter
 
 /**
  * Fragment in which we're gonna be displaying the Tasks
@@ -17,7 +15,6 @@ import com.example.student.videolesson.exercise.tasks.TextQuizTaskFragment
  **/
 class ExerciseDialogFragment : DialogFragment() {
     private var _binding: FragmentExerciseBinding? = null
-    // This property is only valid between onCreateView and onDestroyView.
     private val binding get() = _binding!!
 
     private lateinit var adapter: TaskPagerAdapter
@@ -99,35 +96,6 @@ class ExerciseDialogFragment : DialogFragment() {
     companion object {
         fun newInstance() = ExerciseDialogFragment()
     }
-}
-
-
-/**
- * Adapter class which is responsible for displaying the list of different
- * tasks to the user, also choosing which tasks are gonna be displayed and
- * how many of them we should display
- **/
-class TaskPagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
-    private var tasks: List<Task> = emptyList()
-
-    /** Method that sets the list of tasks for this Exercise **/
-    fun setTasks(tasks: List<Task>) {
-        this.tasks = tasks
-        notifyDataSetChanged()
-    }
-
-    override fun getItemCount() = tasks.size
-
-    /** This is used for creation of different tasks for the same lesson**/
-    override fun createFragment(position: Int): Fragment {
-        val task = tasks[position]
-        return when (task.type) {
-            TaskType.QUIZ -> TextQuizTaskFragment.newInstance(task as TextQuizTask)
-            // Add more types here as needed
-            else -> throw IllegalArgumentException("Unsupported task type: ${task.type}")
-        }
-    }
-
 }
 
 

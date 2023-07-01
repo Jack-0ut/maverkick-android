@@ -7,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.data.models.Lesson
 import com.example.data.repositories.LessonRepository
 import com.example.data.sharedpref.SharedPrefManager
-import com.google.android.exoplayer2.util.Log
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -30,32 +29,20 @@ class HomeViewModel @Inject constructor(
     val lessons: LiveData<List<Lesson>> get() = _lessons
 
     init {
-        // getting the list of today's lessons
-        //fetchLessons()
+        loadCourseLessons("lASW082C05SIStmgNl8d")
     }
 
-    /** A coroutine method that fetch the list of lessons from the repository and assign it to the adapter*/
-    private fun fetchLessons() {
+    /** A coroutine method that fetch the list of lessons from the repository and assign it to the adapter */
+    private fun loadCourseLessons(courseId: String) {
         viewModelScope.launch {
-            val studentId = sharedPrefManager.getStudent()?.studentId
-            if (studentId != null) {
-                lessonRepository.getTodayLessons(
-                    studentId,
-                    onSuccess = { lessons ->
-                        _lessons.value = lessons
-                    },
-                    onFailure = { exception ->
-                        // Handle the error case
-                        Log.e("HomeViewModel", "Error fetching lessons: $exception")
-                    }
-                )
-            } else {
-                // Handle the case where there is no studentId in shared preferences
-                Log.e("HomeViewModel", "No studentId in shared preferences")
+            val student = sharedPrefManager.getStudent()
+            if (student != null) {
+                lessonRepository.getCourseLessons(courseId, { lessons ->
+                    _lessons.postValue(lessons)
+                }, { exception ->
+                    // Handle the error
+                })
             }
         }
     }
-
-
 }
-

@@ -9,21 +9,29 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.example.student.databinding.ActivityVideoLessonBinding
-import com.example.student.videolesson.exercise.ExerciseDialogFragment
+import com.example.student.exercise.ExerciseDialogFragment
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.util.Util
+import dagger.hilt.android.AndroidEntryPoint
 
 /**
  * This is the VideoActivity class. It is responsible for displaying the video lessons to the students.
  * The activity allows students to interact with the video by pausing and playing it.
  * They can also ask questions while the video is playing by clicking on the 'ASK' icon.
  */
+@AndroidEntryPoint
 class VideoLessonActivity : AppCompatActivity() {
     // Initialize the View Binding and ExoPlayer variables
     private lateinit var binding: ActivityVideoLessonBinding
     private lateinit var player: ExoPlayer
+
+    // Passed parameters
+    private lateinit var lessonId: String
+    private lateinit var videoUri: String
+    private lateinit var transcription: String
+    private lateinit var title: String
 
     // Initialize the AudioFocusRequest and AudioManager variables
     private lateinit var focusRequest: AudioFocusRequest
@@ -41,22 +49,29 @@ class VideoLessonActivity : AppCompatActivity() {
         binding = ActivityVideoLessonBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Get extras from intent
+        lessonId = intent.getStringExtra("lessonId") ?: ""
+        videoUri = intent.getStringExtra("videoUri") ?: ""
+        transcription = intent.getStringExtra("transcription") ?: ""
+        title = intent.getStringExtra("title") ?: ""
+
+        binding.videoTitle.text = title
+
         // Prevent the screen from timing out while the video is playing
         binding.videoView.keepScreenOn = true
 
-        // Set click listener for the video view to pause/play the video
-        binding.videoView.setOnClickListener {
-            if (player.isPlaying) {
-                player.pause()
-            } else {
-                player.play()
-            }
-        }
 
         // Set click listener for the "ASK" icon to pause the video and show the AskQuestionDialogFragment
-        binding.askIcon.setOnClickListener {
+        binding.chatButton.setOnClickListener {
             player.pause()
-            AskQuestionDialogFragment().show(supportFragmentManager, "AskQuestionDialogFragment")
+
+            val dialogFragment = AskQuestionDialogFragment().apply {
+                arguments = Bundle().apply {
+                    putString("transcription", transcription)
+                    putString("lessonId", lessonId)
+                }
+            }
+            dialogFragment.show(supportFragmentManager, "AskQuestionDialogFragment")
         }
 
         // Initialize the AudioManager and AudioFocusRequest
@@ -80,7 +95,6 @@ class VideoLessonActivity : AppCompatActivity() {
             .build()
     }
 
-
     /**
      * Initializes the ExoPlayer instance and sets the video source URL.
      */
@@ -97,7 +111,7 @@ class VideoLessonActivity : AppCompatActivity() {
             }
         })
 
-        val videoUri = Uri.parse("https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4")
+        val videoUri = Uri.parse(this.videoUri) // Use the videoUri retrieved from Intent extras
         val mediaItem = MediaItem.fromUri(videoUri)
 
         player.setMediaItem(mediaItem)

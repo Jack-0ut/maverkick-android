@@ -12,7 +12,8 @@ import com.algolia.search.model.ApplicationID
 import com.algolia.search.model.IndexName
 import com.example.data.FirebaseService
 import com.example.data.IDatabaseService
-import com.example.data.api.Api
+import com.example.data.api.ChatApi
+import com.example.data.api.LessonApi
 import com.example.data.sharedpref.SharedPrefManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.storage.FirebaseStorage
@@ -25,6 +26,7 @@ import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
+import javax.inject.Named
 import javax.inject.Singleton
 
 /**
@@ -91,18 +93,36 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
+    @Named("LessonApiRetrofit")
+    fun provideRetrofitForLessonApi(okHttpClient: OkHttpClient): Retrofit {
         return Retrofit.Builder()
             .baseUrl("https://maverkick-api-mkqizzjwda-uc.a.run.app/")
             .addConverterFactory(GsonConverterFactory.create())
-            .client(okHttpClient)  // Use the custom OkHttp client
+            .client(okHttpClient)
             .build()
     }
 
     @Provides
     @Singleton
-    fun provideVideoProcessingApi(retrofit: Retrofit): Api {
-        return retrofit.create(Api::class.java)
+    @Named("ChatApiRetrofit")
+    fun provideRetrofitForChatApi(okHttpClient: OkHttpClient): Retrofit {
+        return Retrofit.Builder()
+            .baseUrl("https://chat-api-mkqizzjwda-ue.a.run.app/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(okHttpClient)
+            .build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideLessonApi(@Named("LessonApiRetrofit") retrofitForLessonApi: Retrofit): LessonApi {
+        return retrofitForLessonApi.create(LessonApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideChatApi(@Named("ChatApiRetrofit") retrofitForChatApi: Retrofit): ChatApi {
+        return retrofitForChatApi.create(ChatApi::class.java)
     }
 }
 

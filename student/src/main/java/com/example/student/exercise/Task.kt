@@ -1,4 +1,4 @@
-package com.example.student.videolesson.exercise
+package com.example.student.exercise
 
 import android.os.Parcel
 import android.os.Parcelable

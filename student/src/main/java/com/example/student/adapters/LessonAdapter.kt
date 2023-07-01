@@ -15,13 +15,24 @@ import com.example.student.databinding.ItemLessonBinding
  * Takes the list of lessons from different disciplines that Student should learn today
  * and display it to the HomeFragment
  **/
-class LessonAdapter : ListAdapter<Lesson, LessonAdapter.LessonViewHolder>(LessonDiffCallback()) {
+class LessonAdapter(private val onLessonClickListener: OnLessonClickListener) : ListAdapter<Lesson, LessonAdapter.LessonViewHolder>(LessonDiffCallback()) {
 
     // Define the view holder
     inner class LessonViewHolder(private val binding: ItemLessonBinding) : RecyclerView.ViewHolder(binding.root) {
+        init {
+            binding.root.setOnClickListener {
+                val position = adapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    val lesson = getItem(position)
+                    onLessonClickListener.onLessonClick(lesson)
+                }
+            }
+        }
+
         fun bind(lesson: Lesson) {
-            binding.videoLength.text = lesson.duration.toString()
-            // TODO add the path to the url of the image of lesson/course
+            val minutes = lesson.duration / 60
+            val seconds = lesson.duration % 60
+            binding.videoLength.text = String.format("%02d:%02d", minutes, seconds)
         }
     }
 
@@ -40,6 +51,10 @@ class LessonAdapter : ListAdapter<Lesson, LessonAdapter.LessonViewHolder>(Lesson
         // Bind the data model to the item views
         holder.bind(lesson)
     }
+}
+
+interface OnLessonClickListener {
+    fun onLessonClick(lesson: Lesson)
 }
 
 class LessonDiffCallback : DiffUtil.ItemCallback<Lesson>() {

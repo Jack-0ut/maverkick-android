@@ -4,7 +4,7 @@ import android.content.ContentValues.TAG
 import android.net.Uri
 import android.util.Log
 import com.example.data.IDatabaseService
-import com.example.data.api.Api
+import com.example.data.api.LessonApi
 import com.example.data.api.TranscriptionRequest
 import com.example.data.models.Lesson
 import com.example.data.models.LessonFirebase
@@ -24,12 +24,13 @@ import kotlin.coroutines.resumeWithException
  * the Cloud Database using Dependency Injection
  * @param databaseService - database to which we're connecting
  * @param firebaseStorage - the object of our storage
+ * @param lessonApi - the api that transcribe the video and stores it to the database
  **/
 class LessonRepository @Inject constructor(
     private val databaseService: IDatabaseService,
     private val firebaseStorage: FirebaseStorage,
-    private val api: Api
-    ) {
+    private val lessonApi: LessonApi
+) {
 
     /** Add new lesson to the database **/
     fun addLesson(
@@ -126,7 +127,7 @@ class LessonRepository @Inject constructor(
     suspend fun transcribeVideo(courseId: String, lessonId: String, filePath: String, languageCode: String):
             Response<String> {
         val request = TranscriptionRequest(courseId, lessonId, filePath, languageCode)
-        val response = api.transcribeVideo(request)
+        val response = lessonApi.transcribeVideo(request)
 
         if (response.isSuccessful) {
             Log.d("LessonRepository", "Transcription successful: ${response.body()}")
