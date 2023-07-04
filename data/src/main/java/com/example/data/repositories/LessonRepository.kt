@@ -8,7 +8,7 @@ import com.example.data.api.LessonApi
 import com.example.data.api.TranscriptionRequest
 import com.example.data.models.Lesson
 import com.example.data.models.LessonFirebase
-import com.example.data.models.Student
+import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -17,6 +17,7 @@ import java.util.*
 import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 
 
 /**
@@ -139,63 +140,74 @@ class LessonRepository @Inject constructor(
     }
 
     /** Get the list of today's lessons for the student **/
-    fun getTodayLessons(studentID: String, onSuccess: (List<Lesson>) -> Unit, onFailure: (Exception) -> Unit) {
-        // Fetch the student document
-        databaseService.db.collection("students").document(studentID).get()
-            .addOnSuccessListener { studentDoc ->
-                val student = studentDoc.toObject(Student::class.java)
-                val dailyStudyTime = student?.dailyStudyTimeMinutes ?: 0
+    suspend fun getTodayLessons(studentId: String, dailyStudyTimeMinutes: Int): List<Lesson> {
+        val dailyStudyTime = dailyStudyTimeMinutes * 60
+        Log.d("getTodayLessons", "Target study time: $dailyStudyTime seconds")
 
-                // Fetch the active courses for the student
-                databaseService.db.collection("studentCourses").whereEqualTo("studentId", studentID).whereEqualTo("active", true).get()
-                    .addOnSuccessListener { courseDocs ->
-                        val courseIds = courseDocs.mapNotNull { it.getString("courseId") }
-                        val lessonQueues = mutableListOf<Queue<Lesson>>()
-                        var coursesProcessed = 0
+        // Fetch the active courses for the student
+        val courseDocs = suspendCoroutine<QuerySnapshot> { continuation ->
+            databaseService.db.collection("studentCourses")
+                .whereEqualTo("studentId", studentId)
+                .whereEqualTo("active", true)
+                .get()
+                .addOnSuccessListener { querySnapshot ->
+                    Log.d("getTodayLessons", "Fetched ${querySnapshot.size()} active courses for student $studentId")
+                    continuation.resume(querySnapshot)
+                }
+                .addOnFailureListener { exception ->
+                    Log.e("getTodayLessons", "Failed to fetch active courses", exception)
+                    continuation.resumeWithException(exception)
+                }
+        }
 
-                        // Fetch the lessons for each active course
-                        for (courseID in courseIds) {
-                            databaseService.db.collection("courses").document(courseID).collection("lessons").orderBy("lesson_order").get()
-                                .addOnSuccessListener { lessonDocs ->
-                                    val lessons = lessonDocs.mapNotNull { it.toObject(Lesson::class.java) }
-                                    lessonQueues.add(LinkedList(lessons))
-                                    coursesProcessed++
+        val courseIds = courseDocs.documents.mapNotNull { it.getString("courseId") }
+        val lessonQueues = mutableListOf<Queue<Lesson>>()
 
-                                    // Round-robin through the lesson queues once all courses have been processed
-                                    if (coursesProcessed == courseIds.size) {
-                                        val todayLessons = mutableListOf<Lesson>()
-                                        var totalLessonTime = 0
-                                        var i = 0
-
-                                        while (totalLessonTime < dailyStudyTime && lessonQueues.any { it.isNotEmpty() }) {
-                                            val queue = lessonQueues[i % lessonQueues.size]
-                                            if (queue.isNotEmpty()) {
-                                                val lesson = queue.poll()
-                                                val lessonTime = lesson.duration
-                                                // Add the lesson to the list if there is enough remaining study time
-                                                if (totalLessonTime + lessonTime <= (dailyStudyTime * 60)) {
-                                                    todayLessons.add(lesson)
-                                                    totalLessonTime += lessonTime
-                                                }
-                                            }
-                                            i++
-                                        }
-                                        onSuccess(todayLessons)
-                                    }
-                                }
-                                .addOnFailureListener { exception ->
-                                    onFailure(exception)
-                                    return@addOnFailureListener
-                                }
-                        }
+        // Fetch the lessons for each active course
+        for (courseID in courseIds) {
+            val lessonDocs = suspendCoroutine<QuerySnapshot> { continuation ->
+                databaseService.db.collection("courses").document(courseID)
+                    .collection("lessons")
+                    .orderBy("lesson_order")
+                    .get()
+                    .addOnSuccessListener { querySnapshot ->
+                        Log.d("getTodayLessons", "Fetched ${querySnapshot.size()} lessons for course $courseID")
+                        continuation.resume(querySnapshot)
                     }
                     .addOnFailureListener { exception ->
-                        onFailure(exception)
-                        return@addOnFailureListener
+                        Log.e("getTodayLessons", "Failed to fetch lessons for course $courseID", exception)
+                        continuation.resumeWithException(exception)
                     }
             }
-            .addOnFailureListener { exception ->
-                onFailure(exception)
+
+            val lessons = lessonDocs.documents.mapNotNull { it.toObject(Lesson::class.java) }
+            lessonQueues.add(LinkedList(lessons))
+        }
+
+        // Round-robin through the lesson queues
+        val todayLessons = mutableListOf<Lesson>()
+        var totalLessonTime = 0
+        var i = 0
+
+        while (totalLessonTime < dailyStudyTime && lessonQueues.any { it.isNotEmpty() }) {
+            val queue = lessonQueues[i % lessonQueues.size]
+            if (queue.isNotEmpty()) {
+                val lesson = queue.poll()
+                val lessonTime = lesson.duration
+                // Add the lesson to the list if there is enough remaining study time
+                if (totalLessonTime + lessonTime <= dailyStudyTime) {
+                    todayLessons.add(lesson)
+                    totalLessonTime += lessonTime
+                    Log.d("getTodayLessons", "Added lesson ${lesson.lessonId} to today's lessons. Current total lesson time: $totalLessonTime seconds")
+                }
             }
+            i++
+        }
+
+        Log.d("getTodayLessons", "Prepared ${todayLessons.size} lessons for today")
+
+        return todayLessons
     }
+
+
 }

@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.data.models.Course
 import com.example.data.repositories.CourseRepository
-import com.example.data.repositories.StudentRepository
+import com.example.data.sharedpref.SharedPrefManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -19,7 +19,7 @@ import javax.inject.Inject
  **/
 @HiltViewModel
 class StudentProfileCoursesViewModel @Inject constructor(
-    private val studentRepository: StudentRepository,
+    private val sharedPrefManager: SharedPrefManager,
     private val courseRepository: CourseRepository
 ) : ViewModel() {
 
@@ -32,28 +32,28 @@ class StudentProfileCoursesViewModel @Inject constructor(
 
     /** A coroutine method that fetches the list of the courses that student is taking */
     private fun fetchCourses() {
-        // Fetch the list of courses from the repository using a coroutine
         viewModelScope.launch {
-            val studentResult = studentRepository.getCurrentStudent()
-            studentResult.fold(
-                onSuccess = { student ->
-                    courseRepository.getStudentCourses(
-                        student.studentId,
-                        onSuccess = { courses ->
-                            // Update the _courses LiveData with the fetched courses
-                            _currentCourses.value = courses
-                        },
-                        onFailure = { error ->
-                            // Handle the error case
-                            Log.e("ProfileSettingsViewModel", "Error fetching student data: $error")
-                        }
-                    )
-                },
-                onFailure = { error ->
-                    // Handle the error case
-                    Log.e("ProfileSettingsViewModel", "Error fetching user data: $error")
-                }
-            )
+            // Get the current user from shared preferences
+            val student = sharedPrefManager.getStudent()
+            student?.let {
+                courseRepository.getStudentCourses(
+                    it.studentId,
+                    onSuccess = { courses ->
+                        // Update the _courses LiveData with the fetched courses
+                        _currentCourses.value = courses
+
+                        // Log the fetched courses
+                        Log.d("StudentProfileCoursesViewModel", "Fetched ${courses.size} courses: $courses")
+                    },
+                    onFailure = { error ->
+                        // Handle the error case and log the error
+                        Log.e("StudentProfileCoursesViewModel", "Error fetching courses: $error")
+                    }
+                )
+            } ?: run {
+                // Handle the case where there is no user in shared preferences and log the case
+                Log.e("StudentProfileCoursesViewModel", "No user found in shared preferences")
+            }
         }
     }
 

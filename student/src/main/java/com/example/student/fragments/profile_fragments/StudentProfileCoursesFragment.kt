@@ -19,8 +19,6 @@ import dagger.hilt.android.AndroidEntryPoint
  **/
 @AndroidEntryPoint
 class StudentProfileCoursesFragment : Fragment() {
-
-    // Get a reference to the ViewModel
     private val viewModel: StudentProfileCoursesViewModel by viewModels()
 
     private var _binding: FragmentStudentProfileCoursesBinding? = null

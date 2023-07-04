@@ -23,7 +23,6 @@ class CourseAdapter(private val clickListener: OnCourseClickListener) : ListAdap
     inner class CourseViewHolder(private val binding: TeacherItemCourseBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(course: Course) {
             binding.courseTitle.text = course.courseName
-            binding.courseImage.setImageResource(com.example.common.R.drawable.course)
 
             // Loading the image from the URL
             Glide.with(binding.root.context)

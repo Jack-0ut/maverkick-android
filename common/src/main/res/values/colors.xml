@@ -10,6 +10,7 @@
 
     <color name="grey">#BDBDBD</color>
     <color name="main_color">#2C3E50</color>
+    <color name="main_color_semi_transparent">#CC2C3E50</color>
     <color name="main_accent_color">#FFA31A</color>
     <color name="secondary_color">#009BF9</color>
     <color name="accent_color">#EEFBFF</color>

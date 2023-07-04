@@ -34,7 +34,7 @@ class HomeViewModel @Inject constructor(
     private fun fetchCourses() {
         val teacherId = sharedPrefManager.getTeacher()?.teacherId
         teacherId?.let {
-            courseRepository.getCoursesByTeacher(it, { courses ->
+            courseRepository.getTeacherCourses(it, { courses ->
                 _courses.value = courses
             }, { exception ->
                 // Handle error: Show error message to the user

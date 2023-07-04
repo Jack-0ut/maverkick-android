@@ -55,7 +55,6 @@ class UploadWorker @Inject constructor(
             Result.success()
         } catch (e: Exception) {
             // If there's an exception, return failure
-            Log.e("UploadingShit", "Work failed", e)
             return Result.failure()
         }
     }

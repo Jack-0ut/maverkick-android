@@ -1,5 +1,6 @@
 package com.example.student.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -12,6 +13,7 @@ import com.example.data.repositories.CourseRepository
 import com.example.data.repositories.LessonRepository
 import com.example.data.repositories.TeacherRepository
 import com.example.data.repositories.UserRepository
+import com.example.data.sharedpref.SharedPrefManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -21,7 +23,8 @@ class CourseDetailsViewModel @Inject constructor(
     private val courseRepository: CourseRepository,
     private val lessonRepository: LessonRepository,
     private val teacherRepository: TeacherRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val sharedPrefManager: SharedPrefManager,
 ) : ViewModel() {
 
     private val _course = MutableLiveData<Course>()
@@ -40,7 +43,7 @@ class CourseDetailsViewModel @Inject constructor(
     fun fetchCourseDetails(courseId: String) {
         courseRepository.getCourseById(courseId, { course ->
             _course.value = course
-            course?.let { fetchTeacherName(it.teacherId) }
+            course?.let { fetchTeacherData(it.teacherId) }
         }, { exception ->
             // Handle error: Show error message to the user
         })
@@ -56,12 +59,14 @@ class CourseDetailsViewModel @Inject constructor(
     }
 
     /** Fetch teacher name for a given teacherId **/
-    private fun fetchTeacherName(teacherId: String) {
+    private fun fetchTeacherData(teacherId: String) {
         viewModelScope.launch {
             try {
                 val result = teacherRepository.getTeacherById(teacherId)
                 if (result.isSuccess) {
                     _teacher.value = result.getOrNull()
+                    // Fetch the profile of the user who is a teacher
+                    fetchUserProfile(teacherId)
                 } else {
                     // Handle error: Show error message to the user
                 }
@@ -70,6 +75,7 @@ class CourseDetailsViewModel @Inject constructor(
             }
         }
     }
+
 
     /** Fetch user profile for a given userId **/
     private fun fetchUserProfile(userId: String) {
@@ -87,5 +93,24 @@ class CourseDetailsViewModel @Inject constructor(
             }
         }
     }
+
+    /** Enroll student in the course **/
+    fun enrollStudent(courseId: String) {
+        val student = sharedPrefManager.getStudent()
+        student?.let {
+            viewModelScope.launch {
+                try {
+                    courseRepository.enrollStudent(it.studentId, courseId)
+                    // If student was successfully enrolled, initialize their course progress
+                    courseRepository.initStudentCourseProgress(it.studentId, courseId)
+                } catch (e: Exception) {
+                    // Handle the error
+                    Log.e("Error", "Failed to enroll student and initialize their course progress: ${e.message}")
+                }
+            }
+        } ?: run {
+        }
+    }
+
 
 }

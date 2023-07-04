@@ -20,3 +20,10 @@ interface LessonApi {
     ):Response<String>
 }
 
+/** Class which represent the body for the /transcribe endpoint**/
+data class TranscriptionRequest(
+    val courseId: String,
+    val lessonId: String,
+    val filePath: String,
+    val languageCode: String
+)

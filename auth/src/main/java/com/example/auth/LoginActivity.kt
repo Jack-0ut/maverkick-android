@@ -86,8 +86,8 @@ class LoginActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
 
-            val studentResult = async { studentRepository.getStudentByUserId(userId) }
-            val teacherResult = async { teacherRepository.getTeacherByUserId(userId) }
+            val studentResult = async { studentRepository.getStudentById(userId) }
+            val teacherResult = async { teacherRepository.getTeacherById(userId) }
 
             studentResult.await().fold(
                 onSuccess = {

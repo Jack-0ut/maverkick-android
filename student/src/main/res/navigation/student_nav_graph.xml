@@ -26,6 +26,9 @@
         android:id="@+id/courseDetailsFragment"
         android:name="com.example.student.fragments.CourseDetailsFragment"
         android:label="CourseDetailsFragment">
+        <action
+            android:id="@+id/action_to_studentHomeFragment"
+            app:destination="@id/studentHomeFragment" />
     </fragment>
 
     <fragment

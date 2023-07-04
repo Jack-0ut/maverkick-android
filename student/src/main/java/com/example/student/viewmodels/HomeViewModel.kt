@@ -29,7 +29,8 @@ class HomeViewModel @Inject constructor(
     val lessons: LiveData<List<Lesson>> get() = _lessons
 
     init {
-        loadCourseLessons("lASW082C05SIStmgNl8d")
+        //loadCourseLessons("lASW082C05SIStmgNl8d")
+        loadDailyLearningPlan()
     }
 
     /** A coroutine method that fetch the list of lessons from the repository and assign it to the adapter */
@@ -39,9 +40,19 @@ class HomeViewModel @Inject constructor(
             if (student != null) {
                 lessonRepository.getCourseLessons(courseId, { lessons ->
                     _lessons.postValue(lessons)
-                }, { exception ->
+                }, {
                     // Handle the error
                 })
+            }
+        }
+    }
+
+    /** Function that create the daily learning plan **/
+    private fun loadDailyLearningPlan(){
+        viewModelScope.launch{
+            val student = sharedPrefManager.getStudent()
+            if (student != null){
+                _lessons.value = lessonRepository.getTodayLessons(student.studentId,student.dailyStudyTimeMinutes)
             }
         }
     }

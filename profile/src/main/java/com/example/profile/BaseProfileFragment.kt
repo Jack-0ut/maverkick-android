@@ -7,14 +7,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
-import com.example.data.sharedpref.SharedPrefManager
+import com.bumptech.glide.Glide
 import com.example.profile.databinding.FragmentProfileBinding
 import com.google.android.material.tabs.TabLayoutMediator
-import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 /**
  * The base class for the Profile Activities, which abstract the
@@ -22,11 +20,7 @@ import javax.inject.Inject
  **/
 @AndroidEntryPoint
 abstract class BaseProfileFragment : Fragment() {
-    @Inject
-    lateinit var sharedPrefManager: SharedPrefManager
-    @Inject lateinit var auth: FirebaseAuth
-
-    private val viewModel: ProfileViewModel by viewModels()
+    protected abstract fun getViewModel(): ProfileViewModelInterface
 
     private var _binding: FragmentProfileBinding? = null
     private val binding get() = _binding!!
@@ -52,26 +46,40 @@ abstract class BaseProfileFragment : Fragment() {
         binding.logOut.setOnClickListener{
             handleLogout()
         }
+
+        binding.editProfilePicture.setOnClickListener {
+            getContent.launch("image/*")
+        }
+
         TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
             tab.text = getTabTitle(position)
         }.attach()
 
+        // Use the getViewModel() method to get the ViewModel
+        val viewModel = getViewModel()
 
-        // Observe the data from ViewModel
+        // Observe the username
         viewModel.username.observe(viewLifecycleOwner) { username ->
             binding.username.text = username
         }
 
-        /*viewModel.userImageURL.observe(viewLifecycleOwner) { userImageUrl ->
+        // Observe the profile picture
+        viewModel.profilePicture.observe(viewLifecycleOwner) { profilePictureUrl ->
             // Load the image from the URL into your ImageView
-            // If you're using Glide:
-            Glide.with(this).load(userImageUrl).into(binding.profilePicture)
-        }*/
+            Glide.with(this).load(profilePictureUrl).into(binding.profilePicture)
+        }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    /** get the profile picture from gallery */
+    private val getContent = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+        if (uri != null) {
+            getViewModel().updateProfilePicture(uri)
+        }
     }
 
     protected abstract fun getFragments(): List<Fragment>
@@ -86,8 +94,8 @@ abstract class BaseProfileFragment : Fragment() {
     }
 
     private fun handleLogout() {
-        auth.signOut()
-        sharedPrefManager.clearPreferences()
+        getViewModel().logout()
+        getViewModel().clearPreferences()
         Toast.makeText(context, "You have been signed out.", Toast.LENGTH_SHORT).show()
         val intent = Intent(Intent.ACTION_VIEW, Uri.parse("app://auth/login"))
         startActivity(intent)

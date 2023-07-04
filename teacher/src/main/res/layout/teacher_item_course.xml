@@ -7,12 +7,13 @@
     android:layout_margin="8dp"
     app:cardCornerRadius="8dp"
     app:cardElevation="8dp"
-    app:cardBackgroundColor="#802C3E50">
+    app:cardBackgroundColor="@color/main_color_semi_transparent">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp">
+        android:padding="16dp"
+        android:background="@drawable/card_border">
 
         <TextView
             android:id="@+id/course_title"
@@ -20,6 +21,7 @@
             android:layout_height="wrap_content"
             android:text="Course Name"
             android:textSize="20sp"
+            android:gravity="center"
             android:textColor="@color/main_accent_color"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
@@ -40,10 +42,12 @@
             android:id="@+id/edit_course_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_edit"
             android:background="?attr/selectableItemBackgroundBorderless"
-            app:layout_constraintRight_toRightOf="@id/course_image"
-            app:layout_constraintBottom_toBottomOf="@id/course_image" />
+            android:minWidth="48dp"
+            android:minHeight="48dp"
+            android:src="@drawable/ic_edit"
+            app:layout_constraintBottom_toBottomOf="@id/course_image"
+            app:layout_constraintRight_toRightOf="@id/course_image" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

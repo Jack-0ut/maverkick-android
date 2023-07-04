@@ -26,6 +26,7 @@ class TeacherOnboardingViewModel @Inject constructor(
 ): ViewModel(){
 
     val fullName = MutableLiveData<String>()
+    val country = MutableLiveData<String>()
     val expertiseList = MutableLiveData<List<String>>()
 
     private val _createTeacherResult= MutableLiveData<Result<Teacher>>()
@@ -34,8 +35,9 @@ class TeacherOnboardingViewModel @Inject constructor(
     fun createTeacherAndAddToFirestore() {
         val fullNameValue = fullName.value
         val expertiseListValue = expertiseList.value
+        val countryValue = country.value
 
-        if (fullNameValue != null && expertiseListValue != null) {
+        if (fullNameValue != null && countryValue != null && expertiseListValue != null) {
             viewModelScope.launch {
                 // Get current user
                 val firebaseUser = firebaseAuth.currentUser
@@ -43,7 +45,7 @@ class TeacherOnboardingViewModel @Inject constructor(
                     val userId = firebaseUser.uid
                     // Create teacher and add to Firestore
                     val result = runCatching {
-                        teacherRepository.addTeacher(userId, fullNameValue, expertiseListValue)
+                        teacherRepository.addTeacher(userId, fullNameValue,countryValue, expertiseListValue)
                     }
                     result.onSuccess { teacher ->
                         // If successful, save teacher and set current role to the teacher

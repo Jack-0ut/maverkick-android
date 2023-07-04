@@ -48,6 +48,10 @@ dependencies {
     implementation "com.google.dagger:hilt-android:$rootProject.hilt_version"
     kapt "com.google.dagger:hilt-android-compiler:$rootProject.hilt_version"
 
-    implementation 'androidx.navigation:navigation-fragment-ktx:2.5.3'// For ViewModel
-    implementation 'com.google.firebase:firebase-auth-ktx:22.0.0' // for firebase authentication
+    // For ViewModel
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.6.0'
+
+    implementation 'com.google.firebase:firebase-auth-ktx:22.0.0'
+    // For country picking
+    implementation 'com.hbb20:ccp:2.6.0'
 }

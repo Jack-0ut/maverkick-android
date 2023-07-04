@@ -8,6 +8,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.example.auth.databinding.ActivityOnboardingBinding
 import com.example.auth.onboarding.OnboardingAdapter
+import com.example.auth.onboarding.teacher.fragments.CountryFragment
 import com.example.auth.onboarding.teacher.fragments.ExpertiseFragment
 import com.example.auth.onboarding.teacher.fragments.FullNameFragment
 import dagger.hilt.android.AndroidEntryPoint
@@ -22,6 +23,7 @@ class TeacherOnboarding: AppCompatActivity() {
 
     private lateinit var binding: ActivityOnboardingBinding
     private lateinit var fullNameFragment: FullNameFragment
+    private lateinit var countryFragment: CountryFragment
     private lateinit var expertiseFragment: ExpertiseFragment
 
     private val onboardingViewModel by viewModels<TeacherOnboardingViewModel>()
@@ -33,11 +35,13 @@ class TeacherOnboarding: AppCompatActivity() {
 
         // Initialize fragments
         fullNameFragment = FullNameFragment()
+        countryFragment = CountryFragment()
         expertiseFragment = ExpertiseFragment()
 
         // Set up your ViewPager with the fragments
         val adapter = OnboardingAdapter(this)
         adapter.addFragment(fullNameFragment)
+        adapter.addFragment(countryFragment)
         adapter.addFragment(expertiseFragment)
         binding.onboardingViewPager.adapter = adapter
 
@@ -48,9 +52,7 @@ class TeacherOnboarding: AppCompatActivity() {
                 startActivity(intent)
                 finish()
             } else {
-                // Handle error case
-                // For example, show a Toast with the error message
-                Toast.makeText(this, result.exceptionOrNull()?.message, Toast.LENGTH_LONG).show()
+                Toast.makeText(this, "Can't create the teacher, try it again!", Toast.LENGTH_LONG).show()
             }
         }
 
@@ -58,7 +60,8 @@ class TeacherOnboarding: AppCompatActivity() {
         binding.nextButton.setOnClickListener {
             when (binding.onboardingViewPager.currentItem) {
                 0 -> fullNameFragment.onNextClicked()
-                1 -> {
+                1 -> countryFragment.onNextClicked()
+                2 -> {
                     expertiseFragment.onNextClicked()
                     onboardingViewModel.createTeacherAndAddToFirestore()
                 }

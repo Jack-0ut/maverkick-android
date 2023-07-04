@@ -4,10 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
+import com.example.student.R
 import com.example.student.adapters.CourseLessonAdapter
 import com.example.student.databinding.FragmentCourseDetailsBinding
 import com.example.student.viewmodels.CourseDetailsViewModel
@@ -44,6 +47,17 @@ class CourseDetailsFragment : Fragment() {
         val courseLessonAdapter = CourseLessonAdapter()
         binding.lessonsRecyclerView.layoutManager = LinearLayoutManager(context)
         binding.lessonsRecyclerView.adapter = courseLessonAdapter
+
+        // navigate back to the home screen
+        binding.enrollButton.setOnClickListener {
+            if (courseId != null) {
+                viewModel.enrollStudent(courseId)
+                findNavController().navigate(R.id.action_to_studentHomeFragment)
+
+            }else{
+                Toast.makeText(context,"Can't get the id of the course.Try again,please!",Toast.LENGTH_SHORT).show()
+            }
+        }
 
         // Observe course details LiveData
         viewModel.course.observe(viewLifecycleOwner) { course ->
