@@ -4,7 +4,6 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.net.Uri
-import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
@@ -23,7 +22,7 @@ import kotlin.random.Random
 @HiltWorker
 class UploadWorker @Inject constructor(
     private val context: Context,
-    private val workerParameters: WorkerParameters,
+    workerParameters: WorkerParameters,
     private val lessonRepository: LessonRepository
 ): CoroutineWorker(context, workerParameters) {
 

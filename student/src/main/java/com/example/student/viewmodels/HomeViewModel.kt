@@ -4,56 +4,87 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.data.models.Lesson
-import com.example.data.repositories.LessonRepository
+import com.example.data.models.DailyLearningPlan
+import com.example.data.repositories.DailyLearningPlanRepository
+import com.example.data.repositories.StudentCourseRepository
 import com.example.data.sharedpref.SharedPrefManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
- * ViewModel for the HomeFragment class
- * This ViewModel class would interact with our data source and
- * expose LiveData objects that Fragment can observe to update the UI.
- * So, basically it's fetching the list of lessons from the database and
- * store it, and it's gonna be used in the HomeFragment to display those lessons
- **/
+ * The ViewModel for the HomeFragment.
+ * This ViewModel interacts with the data sources,updates the progress of the student and exposes LiveData objects
+ * that the Fragment can observe to update the UI.
+ */
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val lessonRepository: LessonRepository,
+    private val dailyLearningPlanRepository: DailyLearningPlanRepository,
+    private val studentCourseRepository: StudentCourseRepository,
     private val sharedPrefManager: SharedPrefManager
 ): ViewModel() {
 
-    // LiveData object that the Fragment can observe to get the list of lessons
-    private val _lessons = MutableLiveData<List<Lesson>>()
-    val lessons: LiveData<List<Lesson>> get() = _lessons
+    private val _dailyLearningPlan = MutableLiveData<DailyLearningPlan>()
+    val dailyLearningPlan: LiveData<DailyLearningPlan> get() = _dailyLearningPlan
 
+    private val _currentLessonIndex = MutableLiveData<Int>()
+    val currentLessonIndex: LiveData<Int> get() = _currentLessonIndex
+
+    private val studentId: String = sharedPrefManager.getStudent()?.studentId ?: ""
+    private val dailyStudyTimeMinutes = sharedPrefManager.getStudent()?.dailyStudyTimeMinutes ?: 0
     init {
-        //loadCourseLessons("lASW082C05SIStmgNl8d")
         loadDailyLearningPlan()
     }
 
-    /** A coroutine method that fetch the list of lessons from the repository and assign it to the adapter */
-    private fun loadCourseLessons(courseId: String) {
+    fun updateStudentLearningProgress(lessonId: String, courseId: String) {
+        if (!isLessonInCompleted(lessonId)) {
+            incrementProgressAndStore(lessonId, courseId)
+            addLessonToCompletedInPreferences(lessonId)
+        }
+    }
+    /** Load the daily learning plan for today **/
+    private fun loadDailyLearningPlan() {
         viewModelScope.launch {
-            val student = sharedPrefManager.getStudent()
-            if (student != null) {
-                lessonRepository.getCourseLessons(courseId, { lessons ->
-                    _lessons.postValue(lessons)
-                }, {
-                    // Handle the error
-                })
-            }
+            val plan = dailyLearningPlanRepository.fetchOrGenerateDailyPlan(studentId, dailyStudyTimeMinutes)
+            _dailyLearningPlan.value = plan
+            _currentLessonIndex.value = plan.progress
         }
     }
 
-    /** Function that create the daily learning plan **/
-    private fun loadDailyLearningPlan(){
-        viewModelScope.launch{
-            val student = sharedPrefManager.getStudent()
-            if (student != null){
-                _lessons.value = lessonRepository.getTodayLessons(student.studentId,student.dailyStudyTimeMinutes)
-            }
+    private fun incrementProgressAndStore(lessonId: String, courseId: String) {
+        val dailyPlan = _dailyLearningPlan.value
+        dailyPlan?.incrementProgress()
+        _dailyLearningPlan.value = dailyPlan!!
+        _currentLessonIndex.value = dailyPlan.progress
+
+        incrementProgressInFirestore(dailyPlan.studentId, dailyPlan.date)
+
+        val studentCoursesId = "${studentId}_$courseId"
+        updateStudentCourseProgress(studentCoursesId, lessonId)
+    }
+
+    /** Update the StudentCoursesProgress by adding new lesson to the completed list **/
+    private fun updateStudentCourseProgress(studentCourseId:String, lessonId:String){
+        viewModelScope.launch {
+            studentCourseRepository.addLessonToCompleted(studentCourseId, lessonId)
         }
+    }
+
+    /** Store progress to the daily learning plan in the database **/
+    private fun incrementProgressInFirestore(studentId: String, date: String) {
+        viewModelScope.launch {
+            val dailyLearningPlanId = "$studentId-$date"
+            dailyLearningPlanRepository.incrementProgress(dailyLearningPlanId)
+        }
+    }
+
+    /**Add lesson to a list of completed lessons locally **/
+    private fun addLessonToCompletedInPreferences(lessonId: String) {
+        sharedPrefManager.addLessonToCompleted(lessonId)
+    }
+
+    /** Check local list of completed lessons and tells if given lesson is in there **/
+    private fun isLessonInCompleted(lessonId: String): Boolean {
+        return sharedPrefManager.getCompletedLessonsMap().containsKey(lessonId)
     }
 }

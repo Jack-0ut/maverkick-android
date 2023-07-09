@@ -5,6 +5,7 @@ import com.example.data.models.Student
 import com.example.data.models.Teacher
 import com.example.data.models.User
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import javax.inject.Inject
 
 /**
@@ -55,5 +56,27 @@ class SharedPrefManager @Inject constructor(private val sharedPreferences: Share
     /** Clear the entire preferences */
     fun clearPreferences() {
         sharedPreferences.edit().clear().apply()
+    }
+
+    /** Add finished lesson to the map of completed **/
+    fun addLessonToCompleted(lessonId: String) {
+        val completedLessonsMap = getCompletedLessonsMap().toMutableMap()
+        completedLessonsMap[lessonId] = true
+        setCompletedLessonsMap(completedLessonsMap)
+    }
+    /** Set the map of completed lessons **/
+    private fun setCompletedLessonsMap(completedLessonsMap: Map<String, Boolean>) {
+        val jsonString = gson.toJson(completedLessonsMap)
+        sharedPreferences.edit().putString("completed_lessons_map", jsonString).apply()
+    }
+
+    /** Get the map of completed lessons **/
+    fun getCompletedLessonsMap(): Map<String, Boolean> {
+        val jsonString = sharedPreferences.getString("completed_lessons_map", null)
+        return if (jsonString != null) {
+            gson.fromJson(jsonString, object : TypeToken<Map<String, Boolean>>() {}.type)
+        } else {
+            emptyMap()
+        }
     }
 }

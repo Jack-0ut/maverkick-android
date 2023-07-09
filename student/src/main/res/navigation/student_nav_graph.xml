@@ -13,22 +13,6 @@
         android:id="@+id/galleryFragment"
         android:name="com.example.student.fragments.GalleryFragment"
         android:label="GalleryFragment">
-        <action
-            android:id="@+id/action_to_courseDetailsFragment"
-            app:destination="@id/courseDetailsFragment">
-            <argument
-                android:name="courseId"
-                app:argType="string" />
-        </action>
-    </fragment>
-
-    <fragment
-        android:id="@+id/courseDetailsFragment"
-        android:name="com.example.student.fragments.CourseDetailsFragment"
-        android:label="CourseDetailsFragment">
-        <action
-            android:id="@+id/action_to_studentHomeFragment"
-            app:destination="@id/studentHomeFragment" />
     </fragment>
 
     <fragment

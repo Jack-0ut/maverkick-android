@@ -27,13 +27,14 @@ class InterestsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentInterestsBinding.inflate(inflater, container, false)
-        //TODO we need to get this list from somewhere
-        val interests = listOf("Psychology", "Solar Engineering", "Math","Mental Health","Quantum Mechanics","Digital Marketing") // replace this with your actual skills
+
+        val interests = listOf("Math", "Transportation", "Energy","English","Marketing","Finance","Physics","Economy","AI")
         for (interest in interests) {
             val chip = Chip(context)
             chip.text = interest
             chip.isClickable = true
             chip.isCheckable = true
+            chip.isCloseIconVisible = false
             chip.setOnCheckedChangeListener { _, isChecked ->
                 if (isChecked) {
                     selectedInterests.add(interest)

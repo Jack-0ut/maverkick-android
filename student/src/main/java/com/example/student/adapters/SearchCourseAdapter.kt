@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.data.models.SearchCourseHit
+import com.example.data.models.Course
 import com.example.student.databinding.ItemSearchCourseBinding
 
 interface OnSearchCourseClickListener {
@@ -16,48 +16,47 @@ interface OnSearchCourseClickListener {
 /**
  * Display the course that fits user search query
  **/
-class SearchCourseAdapter(private val onSearchCourseClickListener: OnSearchCourseClickListener) :
-    ListAdapter<SearchCourseHit, SearchCourseAdapter.SearchCourseViewHolder>(SearchHitDiffCallback()) {
+class SearchCourseAdapter(private val onCourseClickListener: OnSearchCourseClickListener) :
+    ListAdapter<Course, SearchCourseAdapter.CourseViewHolder>(CourseDiffCallback()) {
 
-    inner class SearchCourseViewHolder(private val binding: ItemSearchCourseBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class CourseViewHolder(private val binding: ItemSearchCourseBinding) : RecyclerView.ViewHolder(binding.root) {
         init {
             binding.root.setOnClickListener {
                 val position = bindingAdapterPosition
                 if (position != RecyclerView.NO_POSITION) {
                     val item = getItem(position)
-                    onSearchCourseClickListener.onSearchCourseClick(item.objectId)
+                    onCourseClickListener.onSearchCourseClick(item.courseId)
                 }
             }
         }
-        fun bind(searchHit: SearchCourseHit) {
-            binding.courseTitle.text = searchHit.courseName
+
+        fun bind(course: Course) {
+            binding.courseTitle.text = course.courseName
 
             // Loading the image from the URL
             Glide.with(binding.root.context)
-                .load(searchHit.poster)
+                .load(course.poster)
                 .into(binding.courseImage)
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchCourseViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CourseViewHolder {
         val binding = ItemSearchCourseBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return SearchCourseViewHolder(binding)
+        return CourseViewHolder(binding)
     }
 
-    override fun onBindViewHolder(holder: SearchCourseViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: CourseViewHolder, position: Int) {
         holder.bind(getItem(position))
     }
 }
 
-class SearchHitDiffCallback : DiffUtil.ItemCallback<SearchCourseHit>() {
-    override fun areItemsTheSame(oldItem: SearchCourseHit, newItem: SearchCourseHit): Boolean {
-        // Here, you should compare item IDs, assuming they are unique.
-        return oldItem.objectId == newItem.objectId
+
+class SearchCourseDiffCallback : DiffUtil.ItemCallback<Course>() {
+    override fun areItemsTheSame(oldItem: Course, newItem: Course): Boolean {
+        return oldItem.courseId == newItem.courseId
     }
 
-    override fun areContentsTheSame(oldItem: SearchCourseHit, newItem: SearchCourseHit): Boolean {
-        // Here, you are comparing the full item to check if there are differences.
-        // Adjust this if your SearchCourseHit class needs a more sophisticated comparison.
+    override fun areContentsTheSame(oldItem: Course, newItem: Course): Boolean {
         return oldItem == newItem
     }
 }

@@ -1,10 +1,8 @@
-package com.example.student.exercise.tasks
+package com.example.tasks.task
 
+import android.util.SparseArray
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import com.example.student.exercise.Task
-import com.example.student.exercise.TaskType
-import com.example.student.exercise.TextQuizTask
 
 /**
  * Adapter class which is responsible for displaying the list of different
@@ -13,6 +11,9 @@ import com.example.student.exercise.TextQuizTask
  **/
 class TaskPagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
     private var tasks: List<Task> = emptyList()
+
+    // SparseArray to keep track of the fragments in the ViewPager
+    private val fragmentMap = SparseArray<Fragment>()
 
     /** Method that sets the list of tasks for this Exercise **/
     fun setTasks(tasks: List<Task>) {
@@ -24,12 +25,17 @@ class TaskPagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
 
     /** This is used for creation of different tasks for the same lesson**/
     override fun createFragment(position: Int): Fragment {
-        val task = tasks[position]
-        return when (task.type) {
-            TaskType.QUIZ -> TextQuizTaskFragment.newInstance(task as TextQuizTask)
-            // Add more types here as needed
-            else -> throw IllegalArgumentException("Unsupported task type: ${task.type}")
-        }
+        // The creation logic is now delegated to the task itself
+        val fragment = tasks[position].createFragment()
+
+        // Save the fragment instance to the map
+        fragmentMap.put(position, fragment)
+
+        return fragment
     }
 
+    /** Method to get a reference to the fragment at the given position **/
+    fun getFragment(position: Int): Fragment? {
+        return fragmentMap.get(position)
+    }
 }

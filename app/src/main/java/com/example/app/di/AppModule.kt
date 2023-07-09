@@ -96,7 +96,7 @@ object NetworkModule {
     @Named("LessonApiRetrofit")
     fun provideRetrofitForLessonApi(okHttpClient: OkHttpClient): Retrofit {
         return Retrofit.Builder()
-            .baseUrl("https://maverkick-api-mkqizzjwda-uc.a.run.app/")
+            .baseUrl("https://lesson-api-mkqizzjwda-uc.a.run.app/")
             .addConverterFactory(GsonConverterFactory.create())
             .client(okHttpClient)
             .build()

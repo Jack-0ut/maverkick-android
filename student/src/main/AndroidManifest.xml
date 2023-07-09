@@ -24,6 +24,11 @@
                     android:path="/main" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".fragments.CourseDetailsActivity"
+            android:exported="false" />
+
     </application>
 
 </manifest>

@@ -13,7 +13,7 @@
         android:id="@+id/interests_headline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="What you want to learn"
+        android:text="Your interests"
         android:textColor="@color/white"
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"

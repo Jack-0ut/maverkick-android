@@ -12,7 +12,6 @@ import com.example.student.databinding.ItemCourseBinding
 /**
  * Adapter for displaying the picture of the course
  * and it's title in the Profile -> Courses
- * @param courseList stores the list of Courses, on which Student currently enrolled
  **/
 class CourseAdapter : ListAdapter<Course, CourseAdapter.CourseViewHolder>(CourseDiffCallback()) {
 

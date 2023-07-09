@@ -40,7 +40,7 @@ class EditCourseViewModel @Inject constructor(
         }
     }
 
-    /** Fetch all of the information relation to the course **/
+    /** Fetch all of the information related to the course **/
     fun fetchCourse(courseId: String) {
         courseRepository.getCourseById(courseId, { course ->
             _course.value = course

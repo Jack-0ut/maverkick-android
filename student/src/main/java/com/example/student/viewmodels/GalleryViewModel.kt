@@ -6,7 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.data.models.SearchCourseHit
+import com.example.data.models.Course
 import com.example.data.repositories.CourseRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -23,34 +23,24 @@ class GalleryViewModel @Inject constructor(
     private val courseRepository: CourseRepository
 ) : ViewModel() {
 
-    // Mutable LiveData for the list of search hits
-    private val _searchHits = MutableLiveData<List<SearchCourseHit>?>()
-    val searchHits: LiveData<List<SearchCourseHit>?> = _searchHits
+    // Mutable LiveData for the list of courses
+    private val _courses = MutableLiveData<List<Course>>()
+    val courses: LiveData<List<Course>> get() = _courses
 
-    // MutableLiveData to hold the search query
-    val searchQuery = MutableLiveData<String>()
+    init {
+        fetchCourses()
+    }
 
-    // In-memory cache for search results
-    private var searchResultsCache: List<SearchCourseHit>? = null
-
-    /** Search the courses for a given query **/
-    fun searchCourses(query: String) {
+    /** Fetch all the courses **/
+    private fun fetchCourses() {
         // Launch a coroutine in the ViewModel's scope
         viewModelScope.launch {
-            // If the query is empty, load from cache
-            if (query.isBlank() && searchResultsCache != null) {
-                _searchHits.value = searchResultsCache
-                return@launch
-            }
-
             runCatching {
-                // Fetch the list of search hits from the repository based on the query
-                courseRepository.searchCourses(query)
-            }.onSuccess { fetchedHits ->
-                // Cache the fetched hits
-                searchResultsCache = fetchedHits
-                // Update the _searchHits LiveData with the fetched hits
-                _searchHits.value = fetchedHits
+                // Fetch the list of courses from the repository
+                courseRepository.getAllCourses()
+            }.onSuccess { fetchedCourses ->
+                // Update the _courses LiveData with the fetched courses
+                _courses.value = fetchedCourses
             }.onFailure { exception ->
                 // Handle the exception here
                 Log.e(TAG, "Failed to fetch courses: ", exception)

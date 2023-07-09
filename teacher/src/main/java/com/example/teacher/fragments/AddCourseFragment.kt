@@ -1,6 +1,7 @@
 package com.example.teacher.fragments
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -15,7 +16,6 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.navigation.fragment.findNavController
 import com.example.teacher.R
 import com.example.teacher.databinding.FragmentAddCourseBinding
 import com.example.teacher.viewmodels.AddCourseViewModel
@@ -55,10 +55,11 @@ class AddCourseFragment : Fragment() {
             // Ask the ViewModel to handle course submission
             viewModel.submitCourse { success, courseId ->
                 if (success) {
-                    // If course was added successfully, navigate to the EditCourseFragment
-                    // Use the Navigation component to navigate and pass the courseId as an argument
-                    val action = AddCourseFragmentDirections.actionAddCourseFragmentToEditCourseFragment(courseId)
-                    findNavController().navigate(action)
+                    // If course was added successfully, navigate to the EditCourseActivity
+                    // Use an Intent to navigate and pass the courseId as an extra
+                    val intent = Intent(activity, EditCourseActivity::class.java)
+                    intent.putExtra("courseId", courseId)
+                    startActivity(intent)
                 } else {
                     // Handle error case
                 }

@@ -1,17 +1,21 @@
 package com.example.teacher.fragments
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.teacher.adapters.CourseAdapter
 import com.example.teacher.databinding.FragmentTeacherHomeBinding
 import com.example.teacher.viewmodels.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 
 /**
@@ -48,8 +52,12 @@ class TeacherHomeFragment : Fragment(), CourseAdapter.OnCourseClickListener{
         binding.teacherCourses.adapter = courseAdapter
 
         // Observe the changes to the list, if happens it will be automatically updated
-        viewModel.courses.observe(viewLifecycleOwner) { lessons ->
-            courseAdapter.submitList(lessons)
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.courses.collect { courses ->
+                    courseAdapter.submitList(courses)
+                }
+            }
         }
     }
 
@@ -60,8 +68,10 @@ class TeacherHomeFragment : Fragment(), CourseAdapter.OnCourseClickListener{
 
     /** When click on the particular course edit icon, redirect to the EditCourseFragment for that course**/
     override fun onCourseClick(courseId: String) {
-        val action = TeacherHomeFragmentDirections.actionHomeFragmentToEditCourseFragment(courseId)
-        findNavController().navigate(action)
+        val intent = Intent(activity, EditCourseActivity::class.java)
+        intent.putExtra("courseId", courseId)
+        startActivity(intent)
     }
+
 
 }

@@ -37,6 +37,7 @@ class StudentProfileViewModel @Inject constructor(
                     val teacher = teacherResult.getOrNull()
                     if (teacher != null) {
                         sharedPrefManager.saveTeacher(teacher)
+                        sharedPrefManager.saveActiveRole("teacher")
                         return true
                     } else {
                         _errorLiveData.postValue("Failed to retrieve teacher data")

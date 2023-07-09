@@ -43,6 +43,8 @@ class StudentProfileSettingsFragment : Fragment() {
             interests?.let {
                 for (interest in it) {
                     val chip = Chip(context)
+                    chip.isCheckable = false
+                    chip.isCloseIconVisible = false
                     chip.text = interest
                     binding.interestsChipGroup.addView(chip)
                 }

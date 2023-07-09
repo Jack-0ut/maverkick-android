@@ -5,41 +5,31 @@
     android:layout_height="match_parent"
     android:background="@color/main_color">
 
-    <ImageView
-        android:id="@+id/top_image"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:scaleType="centerCrop"
-        android:src="@drawable/onboarding_picture"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintHeight_percent="0.5" />
-
     <TextView
         android:id="@+id/choose_role"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp"
         android:text="Choose your role"
-        android:textSize="25sp"
-        android:textColor="@color/accent_color"
+        android:textColor="@color/main_accent_color"
+        android:textSize="30sp"
+        android:fontFamily="@font/itim"
         app:layout_constraintBottom_toTopOf="@+id/options_layout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/top_image" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.4" />
 
     <LinearLayout
         android:id="@+id/options_layout"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginBottom="128dp"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/choose_role"
-        app:layout_constraintHeight_percent="0.2"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHeight_percent="0.3"
         android:baselineAligned="false">
 
         <FrameLayout
@@ -47,6 +37,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:layout_marginEnd="8dp"
             android:background="@drawable/frame_border">
 
             <ImageView
@@ -62,7 +53,7 @@
                 android:textSize="20sp"
                 android:textColor="@color/black"
                 android:layout_gravity="bottom|center_horizontal"
-                android:text="Want to layer bricks" />
+                android:text="Student" />
         </FrameLayout>
 
         <FrameLayout
@@ -70,6 +61,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:layout_marginStart="8dp"
             android:background="@drawable/frame_border">
 
             <ImageView
@@ -85,7 +77,7 @@
                 android:textSize="20sp"
                 android:textColor="@color/black"
                 android:layout_gravity="bottom|center_horizontal"
-                android:text="Want to make bricks" />
+                android:text="Teacher" />
         </FrameLayout>
 
     </LinearLayout>

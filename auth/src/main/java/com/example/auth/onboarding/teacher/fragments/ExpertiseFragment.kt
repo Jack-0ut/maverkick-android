@@ -27,13 +27,13 @@ class ExpertiseFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentExpertiseBinding.inflate(inflater, container, false)
-        //TODO we need to get this list from somewhere
-        val expertiseList = listOf("Psychology", "Solar Engineering", "Math","Mental Health","Quantum Mechanics","Digital Marketing") // replace this with your actual skills
+        val expertiseList = listOf("Math", "Transportation", "Energy","English","Marketing","Finance","Physics","Economy","AI")
         for (expertise in expertiseList) {
             val chip = Chip(context)
             chip.text = expertise
             chip.isClickable = true
             chip.isCheckable = true
+            chip.isCloseIconVisible = false
             chip.setOnCheckedChangeListener { _, isChecked ->
                 if (isChecked) {
                     selectedExpertiseAreas.add(expertise)
@@ -46,7 +46,6 @@ class ExpertiseFragment : Fragment() {
 
         return binding.root
     }
-
 
     fun onNextClicked() {
         onboardingViewModel.expertiseList.value = selectedExpertiseAreas

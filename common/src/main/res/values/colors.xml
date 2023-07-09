@@ -17,4 +17,6 @@
     <color name="blocks_color">#D9D9D9</color>
     <color name="accent_tone_color">#F9F871</color>
     <color name="main_tone_color">#11181f</color>
+    <color name="green">#A4DA65</color>
+    <color name="red">#F8675D</color>
 </resources>

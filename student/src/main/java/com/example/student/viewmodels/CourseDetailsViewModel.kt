@@ -9,10 +9,7 @@ import com.example.data.models.Course
 import com.example.data.models.Lesson
 import com.example.data.models.Teacher
 import com.example.data.models.User
-import com.example.data.repositories.CourseRepository
-import com.example.data.repositories.LessonRepository
-import com.example.data.repositories.TeacherRepository
-import com.example.data.repositories.UserRepository
+import com.example.data.repositories.*
 import com.example.data.sharedpref.SharedPrefManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -25,6 +22,7 @@ class CourseDetailsViewModel @Inject constructor(
     private val teacherRepository: TeacherRepository,
     private val userRepository: UserRepository,
     private val sharedPrefManager: SharedPrefManager,
+    private val studentCourseRepository: StudentCourseRepository
 ) : ViewModel() {
 
     private val _course = MutableLiveData<Course>()
@@ -54,7 +52,7 @@ class CourseDetailsViewModel @Inject constructor(
         lessonRepository.getCourseLessons(courseId, { lessons ->
             _lessons.value= lessons
         }, { exception ->
-            // Handle error: Show error message to the user
+
         })
     }
 
@@ -100,9 +98,9 @@ class CourseDetailsViewModel @Inject constructor(
         student?.let {
             viewModelScope.launch {
                 try {
-                    courseRepository.enrollStudent(it.studentId, courseId)
+                    studentCourseRepository.enrollStudent(it.studentId, courseId)
                     // If student was successfully enrolled, initialize their course progress
-                    courseRepository.initStudentCourseProgress(it.studentId, courseId)
+                    studentCourseRepository.initStudentCourseProgress(it.studentId, courseId)
                 } catch (e: Exception) {
                     // Handle the error
                     Log.e("Error", "Failed to enroll student and initialize their course progress: ${e.message}")

@@ -2,6 +2,7 @@ package com.example.student.videolesson
 
 import android.app.Dialog
 import android.content.Context
+import android.content.Intent
 import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -14,10 +15,11 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.GridView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.example.student.R
 import com.example.student.adapters.EmojiAdapter
 import com.example.student.databinding.ActivityVideoLessonBinding
-import com.example.student.exercise.ExerciseDialogFragment
+import com.example.tasks.ExerciseDialogFragment
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
@@ -30,7 +32,7 @@ import dagger.hilt.android.AndroidEntryPoint
  * They can also ask questions while the video is playing by clicking on the 'ASK' icon.
  */
 @AndroidEntryPoint
-class VideoLessonActivity : AppCompatActivity() {
+class VideoLessonActivity : AppCompatActivity(), ExerciseDialogFragment.ExerciseDialogListener {
     // Initialize the View Binding and ExoPlayer variables
     private lateinit var binding: ActivityVideoLessonBinding
     private lateinit var player: ExoPlayer
@@ -40,6 +42,7 @@ class VideoLessonActivity : AppCompatActivity() {
     private lateinit var videoUri: String
     private lateinit var transcription: String
     private lateinit var title: String
+    private lateinit var courseId: String
 
     // Initialize the AudioFocusRequest and AudioManager variables
     private lateinit var focusRequest: AudioFocusRequest
@@ -50,7 +53,7 @@ class VideoLessonActivity : AppCompatActivity() {
     private var currentWindow = 0
     private var playbackPosition: Long = 0
 
-    val emojis = listOf("🤩", "😊", "😐", "😕", "😡")
+    private val emojis = listOf("🤩", "😊", "😐", "😕", "😡")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,12 +67,12 @@ class VideoLessonActivity : AppCompatActivity() {
         videoUri = intent.getStringExtra("videoUri") ?: ""
         transcription = intent.getStringExtra("transcription") ?: ""
         title = intent.getStringExtra("title") ?: ""
+        courseId = intent.getStringExtra("courseId") ?: ""
 
         binding.videoTitle.text = title
 
         // Prevent the screen from timing out while the video is playing
         binding.videoView.keepScreenOn = true
-
 
         // Set click listener for the "ASK" icon to pause the video and show the AskQuestionDialogFragment
         binding.chatButton.setOnClickListener {
@@ -84,6 +87,7 @@ class VideoLessonActivity : AppCompatActivity() {
             dialogFragment.show(supportFragmentManager, "AskQuestionDialogFragment")
         }
 
+        // emoji reaction button
         binding.reactionButton.setOnClickListener {
             val dialog = Dialog(this)
             dialog.setContentView(R.layout.emoji_picker)
@@ -120,9 +124,7 @@ class VideoLessonActivity : AppCompatActivity() {
             .build()
     }
 
-    /**
-     * Initializes the ExoPlayer instance and sets the video source URL.
-     */
+    /** Initializes the ExoPlayer instance and sets the video source URL. */
     private fun initializePlayer() {
         player = ExoPlayer.Builder(this).build()
         binding.videoView.player = player
@@ -131,12 +133,25 @@ class VideoLessonActivity : AppCompatActivity() {
         player.addListener(object : Player.Listener {
             override fun onPlaybackStateChanged(playbackState: Int) {
                 if (playbackState == Player.STATE_ENDED) {
-                    ExerciseDialogFragment().show(supportFragmentManager, "ExerciseDialogFragment")
+                    // Create an Intent with an action named "LESSON_COMPLETED_ACTION"
+                    val intent = Intent("LESSON_COMPLETED_ACTION")
+
+                    // Add additional data to the intent
+                    intent.putExtra("lessonId", lessonId)
+                    intent.putExtra("courseId", courseId)
+
+                    // Send the broadcast
+                    LocalBroadcastManager.getInstance(this@VideoLessonActivity).sendBroadcast(intent)
+
+                    val exerciseDialogFragment = ExerciseDialogFragment.newInstance(courseId,lessonId)
+
+                    // Show the ExerciseDialogFragment
+                    exerciseDialogFragment.show(supportFragmentManager, "ExerciseDialogFragment")
                 }
             }
         })
 
-        val videoUri = Uri.parse(this.videoUri) // Use the videoUri retrieved from Intent extras
+        val videoUri = Uri.parse(this.videoUri)
         val mediaItem = MediaItem.fromUri(videoUri)
 
         player.setMediaItem(mediaItem)
@@ -151,7 +166,6 @@ class VideoLessonActivity : AppCompatActivity() {
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-
         // Checks the orientation of the screen
         when (newConfig.orientation) {
             Configuration.ORIENTATION_LANDSCAPE -> {
@@ -165,9 +179,7 @@ class VideoLessonActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * Releases the ExoPlayer when it's not needed to free up resources.
-     */
+    /** Releases the ExoPlayer when it's not needed to free up resources.*/
     private fun releasePlayer() {
         if (::player.isInitialized) {
             playbackPosition = player.currentPosition
@@ -205,6 +217,11 @@ class VideoLessonActivity : AppCompatActivity() {
         if (Util.SDK_INT >= 24) {
             releasePlayer()
         }
+    }
+
+    /** When student completes all of the tasks, just finish the activity **/
+    override fun onExercisesCompleted() {
+        finish()
     }
 }
 

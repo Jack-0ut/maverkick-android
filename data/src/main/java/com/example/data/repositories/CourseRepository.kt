@@ -10,10 +10,11 @@ import com.example.data.IDatabaseService
 import com.example.data.models.Course
 import com.example.data.models.FirebaseCourse
 import com.example.data.models.SearchCourseHit
-import com.google.firebase.Timestamp
 import com.google.firebase.storage.FirebaseStorage
-import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 
 /**
  * Class responsible for the Course objects interaction with
@@ -43,11 +44,8 @@ class CourseRepository @Inject constructor(
 
     /** Method that searches courses for given query**/
     suspend fun searchCourses(query: String): List<SearchCourseHit> {
-        Log.d("CourseRepository", "searchCourses called with query: $query")
         val response = algoliaIndex.run { search(Query(query)) }
-        val hits = response.hits.deserialize(SearchCourseHit.serializer())
-        Log.d("CourseRepository", "Number of hits found: ${hits.size}")
-        return hits
+        return response.hits.deserialize(SearchCourseHit.serializer())
     }
 
     /** Remove course with given id **/
@@ -123,6 +121,21 @@ class CourseRepository @Inject constructor(
             }
     }
 
+    suspend fun getAllCourses(): List<Course> = suspendCoroutine { continuation ->
+        databaseService.db.collection("courses")
+            .get()
+            .addOnSuccessListener { documents ->
+                val courses = documents.mapNotNull { document ->
+                    document.toObject(FirebaseCourse::class.java).toCourse(document.id)
+                }
+                continuation.resume(courses)
+            }
+            .addOnFailureListener { exception ->
+                continuation.resumeWithException(exception)
+            }
+    }
+
+
     /** Save new poster to the firebase storage under the courseId name */
     fun updatePoster(courseId:String,uri: Uri) {
         val storageRef = firebaseStorage.reference
@@ -152,49 +165,10 @@ class CourseRepository @Inject constructor(
             }
     }
 
-    /** Enroll student in the particular course **/
-    suspend fun enrollStudent(studentId: String, courseId: String) {
-        // Perform the enrollment operation in the Firebase Firestore or any other remote data source
-        val studentCoursesCollection = databaseService.db.collection("studentCourses")
 
-        val studentCourseDocumentId = "${studentId}_$courseId"
-        val studentCourseDocument = studentCoursesCollection.document(studentCourseDocumentId).get().await()
-
-        if (!studentCourseDocument.exists()) {
-            // If the document does not exist, enroll the student in the course
-            val newStudentCourse = hashMapOf(
-                "studentId" to studentId,
-                "courseId" to courseId,
-                "enrollmentDate" to Timestamp.now(), // Use the current time as the enrollment date
-                "active" to true
-            )
-
-            studentCoursesCollection.document(studentCourseDocumentId).set(newStudentCourse).await()
-        } else {
-            throw Exception("Student already enrolled in the course")
-        }
+    /** Recommend the list of courses for student, taking into account interests**/
+    suspend fun getRecommendedCourses(interestsList:List<String>): List<SearchCourseHit> {
+        val response = algoliaIndex.run { search(Query(interestsList.toString())) }
+        return response.hits.deserialize(SearchCourseHit.serializer())
     }
-    /** Init student course progress collection **/
-    suspend fun initStudentCourseProgress(studentId: String, courseId: String) {
-        // Perform the initialization operation in the Firebase Firestore or any other remote data source
-        val studentCourseProgressCollection = databaseService.db.collection("studentCourseProgress")
-
-        val studentCourseDocumentId = "${studentId}_$courseId"
-        val studentCourseProgressDocument = studentCourseProgressCollection.document(studentCourseDocumentId).get().await()
-
-        if (!studentCourseProgressDocument.exists()) {
-            // If the document does not exist, initialize the student's course progress
-            val newStudentCourseProgress = hashMapOf(
-                "studentId" to studentId,
-                "courseId" to courseId,
-                "lastCompletedLesson" to 0, // The student has not completed any lessons yet
-                "progressDate" to Timestamp.now() // Use the current time as the progress date
-            )
-
-            studentCourseProgressCollection.document(studentCourseDocumentId).set(newStudentCourseProgress).await()
-        } else {
-            throw Exception("Student's course progress has already been initialized")
-        }
-    }
-
 }

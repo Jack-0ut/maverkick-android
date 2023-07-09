@@ -1,14 +1,5 @@
 package com.example.teacher.viewmodels
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import com.example.data.models.Course
-import com.example.data.repositories.CourseRepository
-import com.example.data.sharedpref.SharedPrefManager
-import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
-
 /**
  * ViewModel for the Teacher HomeFragment class
  * This ViewModel class would interact with our data source and
@@ -16,6 +7,18 @@ import javax.inject.Inject
  * So, basically it's fetching the list of courses from the database and
  * display it to the teacher, so he could edit or add new lessons to it
  **/
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.data.models.Course
+import com.example.data.repositories.CourseRepository
+import com.example.data.sharedpref.SharedPrefManager
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
+import javax.inject.Inject
+
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val courseRepository: CourseRepository,
@@ -23,11 +26,19 @@ class HomeViewModel @Inject constructor(
 ): ViewModel() {
 
     // LiveData object that the Fragment can observe to get the list of courses
-    private val _courses = MutableLiveData<List<Course>>()
-    val courses: LiveData<List<Course>> get() = _courses
+    private val _courses = MutableStateFlow<List<Course>>(emptyList())
+    val courses: StateFlow<List<Course>> get() = _courses
+
+    private val courseAddedFlow = MutableSharedFlow<Unit>()
 
     init {
         fetchCourses()
+
+        viewModelScope.launch {
+            courseAddedFlow.collect {
+                fetchCourses()
+            }
+        }
     }
 
     /** Fetch the list of the courses for the current teacher **/
@@ -39,6 +50,12 @@ class HomeViewModel @Inject constructor(
             }, { exception ->
                 // Handle error: Show error message to the user
             })
+        }
+    }
+
+    fun notifyCourseAdded() {
+        viewModelScope.launch {
+            courseAddedFlow.emit(Unit)
         }
     }
 }

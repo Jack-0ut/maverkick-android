@@ -1,19 +1,16 @@
 package com.example.teacher.fragments
 
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
+import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.example.teacher.adapters.LessonAdapter
-import com.example.teacher.databinding.FragmentCourseEditBinding
+import com.example.teacher.addlesson.SelectVideoActivity
+import com.example.teacher.databinding.ActivityCourseEditBinding
 import com.example.teacher.viewmodels.EditCourseViewModel
 import com.google.android.material.chip.Chip
 import dagger.hilt.android.AndroidEntryPoint
@@ -23,41 +20,31 @@ import dagger.hilt.android.AndroidEntryPoint
  * updating some things, uploading new videos and so on
  **/
 @AndroidEntryPoint
-class EditCourseFragment : Fragment(),LessonAdapter.OnLessonClickListener {
-    private var _binding: FragmentCourseEditBinding? = null
-    private val binding get() = _binding!!
+class EditCourseActivity : AppCompatActivity(),LessonAdapter.OnLessonClickListener {
+    private lateinit var binding: ActivityCourseEditBinding
 
-    private val args: EditCourseFragmentArgs by navArgs()
     private val viewModel: EditCourseViewModel by viewModels()
 
     private lateinit var courseId: String
     private val lessonAdapter = LessonAdapter()
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentCourseEditBinding.inflate(inflater, container, false)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivityCourseEditBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        courseId = args.courseId
-
-        return binding.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+        courseId = intent.getStringExtra("courseId").toString()
 
         // Fetch the necessary data from the database
         viewModel.fetchCourse(courseId)
         viewModel.fetchLessons(courseId)
 
         // Set up RecyclerView
-        binding.lessonList.layoutManager = LinearLayoutManager(context)
+        binding.lessonList.layoutManager = LinearLayoutManager(this)
         binding.lessonList.adapter = lessonAdapter
         lessonAdapter.setOnLessonClickListener(this)
 
-        viewModel.course.observe(viewLifecycleOwner) { course ->
+        viewModel.course.observe(this) { course ->
             // Update course related UI
             binding.courseName.text = course.courseName
 
@@ -68,26 +55,29 @@ class EditCourseFragment : Fragment(),LessonAdapter.OnLessonClickListener {
 
             // Create a new Chip for each tag and add it to the ChipGroup
             course.tags.forEach { tag ->
-                val chip = Chip(context)
+                val chip = Chip(this)
                 chip.text = tag
                 binding.tags.addView(chip)
             }
         }
 
         // Observe the posterUri LiveData
-        viewModel.posterUri.observe(viewLifecycleOwner) { uri ->
+        viewModel.posterUri.observe(this) { uri ->
             // Load the poster image from the updated Uri
             Glide.with(this).load(uri).into(binding.coursePoster)
         }
 
-        viewModel.lessons.observe(viewLifecycleOwner) { lessons ->
+        viewModel.lessons.observe(this) { lessons ->
             lessonAdapter.submitList(lessons)
         }
 
+        // add new lesson button
         binding.addLessonButton.setOnClickListener {
             viewModel.course.value?.let { course ->
-                val action = EditCourseFragmentDirections.actionEditCourseFragmentToSelectVideoFragment(courseId, course.language)
-                findNavController().navigate(action)
+                val intent = Intent(this, SelectVideoActivity::class.java)
+                intent.putExtra("courseId", courseId)
+                intent.putExtra("language", course.language)
+                startActivity(intent)
             } ?: run {
                 // Handle the error if the course is null. For example, show an error message to the user.
             }
@@ -98,16 +88,11 @@ class EditCourseFragment : Fragment(),LessonAdapter.OnLessonClickListener {
         }
     }
 
-    /** get new poster from gallery */
+    /** Get new poster from gallery */
     private val getContent = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         if (uri != null) {
             viewModel.updatePoster(uri)
         }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 
     /** When click on the particular lesson toggle icon **/

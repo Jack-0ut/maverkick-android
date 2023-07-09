@@ -19,6 +19,13 @@
             android:name=".addlesson.AddLessonActivity"
             android:exported="false" />
         <activity
+            android:name=".fragments.EditCourseActivity"
+            android:exported="false" />
+        <activity
+            android:name=".addlesson.SelectVideoActivity"
+            android:exported="false" />
+
+        <activity
             android:name=".TeacherMainActivity"
             android:exported="true"
             android:windowSoftInputMode="adjustPan">

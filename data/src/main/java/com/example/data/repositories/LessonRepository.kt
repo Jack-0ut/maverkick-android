@@ -8,7 +8,6 @@ import com.example.data.api.LessonApi
 import com.example.data.api.TranscriptionRequest
 import com.example.data.models.Lesson
 import com.example.data.models.LessonFirebase
-import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -17,7 +16,6 @@ import java.util.*
 import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
-import kotlin.coroutines.suspendCoroutine
 
 
 /**
@@ -33,27 +31,14 @@ class LessonRepository @Inject constructor(
     private val lessonApi: LessonApi
 ) {
 
-    /** Add new lesson to the database **/
-    fun addLesson(
-        courseID: String,
-        lesson: Lesson,
-        onSuccess: () -> Unit,
-        onFailure: (Exception) -> Unit
-    ) {
-        databaseService.db.collection("courses").document(courseID).collection("lessons")
-            .add(lesson)
-            .addOnSuccessListener { onSuccess() }
-            .addOnFailureListener { exception -> onFailure(exception) }
-    }
-
     /** Get the lessons for the course **/
     fun getCourseLessons(
-        courseID: String,
+        courseId: String,
         onSuccess: (List<Lesson>) -> Unit,
         onFailure: (Exception) -> Unit
     ) {
         val lessonsRef =
-            databaseService.db.collection("courses").document(courseID).collection("lessons")
+            databaseService.db.collection("courses").document(courseId).collection("lessons")
         lessonsRef.get()
             .addOnSuccessListener { documents ->
                 val lessons = documents.mapNotNull { document ->
@@ -61,7 +46,7 @@ class LessonRepository @Inject constructor(
                         val firebaseLesson = document.toObject(LessonFirebase::class.java)
                         // Convert firebaseLesson to Lesson only if videoUrl and transcription are not null
                         if (firebaseLesson.videoUrl != null && firebaseLesson.transcription != null) {
-                            firebaseLesson.toLesson(document.id)
+                            firebaseLesson.toLesson(courseId,document.id)
                         } else {
                             null // Ignore documents that can't be converted to Lesson
                         }
@@ -89,9 +74,7 @@ class LessonRepository @Inject constructor(
 
             // Monitor state of upload
             uploadTask.addOnProgressListener { taskSnapshot ->
-                val progress =
-                    ((100.0 * taskSnapshot.bytesTransferred) / taskSnapshot.totalByteCount).toInt()
-                // onProgressListener(progress)
+                ((100.0 * taskSnapshot.bytesTransferred) / taskSnapshot.totalByteCount).toInt()
             }.addOnPausedListener {
                 Log.d("Upload", "Upload is paused")
             }.addOnFailureListener { exception ->
@@ -131,83 +114,12 @@ class LessonRepository @Inject constructor(
         val response = lessonApi.transcribeVideo(request)
 
         if (response.isSuccessful) {
-            Log.d("LessonRepository", "Transcription successful: ${response.body()}")
+            Log.d("LessonRepository", "Transcription successful")
         } else {
             Log.d("LessonRepository", "Transcription failed with response code: ${response.code()}")
         }
 
         return response
     }
-
-    /** Get the list of today's lessons for the student **/
-    suspend fun getTodayLessons(studentId: String, dailyStudyTimeMinutes: Int): List<Lesson> {
-        val dailyStudyTime = dailyStudyTimeMinutes * 60
-        Log.d("getTodayLessons", "Target study time: $dailyStudyTime seconds")
-
-        // Fetch the active courses for the student
-        val courseDocs = suspendCoroutine<QuerySnapshot> { continuation ->
-            databaseService.db.collection("studentCourses")
-                .whereEqualTo("studentId", studentId)
-                .whereEqualTo("active", true)
-                .get()
-                .addOnSuccessListener { querySnapshot ->
-                    Log.d("getTodayLessons", "Fetched ${querySnapshot.size()} active courses for student $studentId")
-                    continuation.resume(querySnapshot)
-                }
-                .addOnFailureListener { exception ->
-                    Log.e("getTodayLessons", "Failed to fetch active courses", exception)
-                    continuation.resumeWithException(exception)
-                }
-        }
-
-        val courseIds = courseDocs.documents.mapNotNull { it.getString("courseId") }
-        val lessonQueues = mutableListOf<Queue<Lesson>>()
-
-        // Fetch the lessons for each active course
-        for (courseID in courseIds) {
-            val lessonDocs = suspendCoroutine<QuerySnapshot> { continuation ->
-                databaseService.db.collection("courses").document(courseID)
-                    .collection("lessons")
-                    .orderBy("lesson_order")
-                    .get()
-                    .addOnSuccessListener { querySnapshot ->
-                        Log.d("getTodayLessons", "Fetched ${querySnapshot.size()} lessons for course $courseID")
-                        continuation.resume(querySnapshot)
-                    }
-                    .addOnFailureListener { exception ->
-                        Log.e("getTodayLessons", "Failed to fetch lessons for course $courseID", exception)
-                        continuation.resumeWithException(exception)
-                    }
-            }
-
-            val lessons = lessonDocs.documents.mapNotNull { it.toObject(Lesson::class.java) }
-            lessonQueues.add(LinkedList(lessons))
-        }
-
-        // Round-robin through the lesson queues
-        val todayLessons = mutableListOf<Lesson>()
-        var totalLessonTime = 0
-        var i = 0
-
-        while (totalLessonTime < dailyStudyTime && lessonQueues.any { it.isNotEmpty() }) {
-            val queue = lessonQueues[i % lessonQueues.size]
-            if (queue.isNotEmpty()) {
-                val lesson = queue.poll()
-                val lessonTime = lesson.duration
-                // Add the lesson to the list if there is enough remaining study time
-                if (totalLessonTime + lessonTime <= dailyStudyTime) {
-                    todayLessons.add(lesson)
-                    totalLessonTime += lessonTime
-                    Log.d("getTodayLessons", "Added lesson ${lesson.lessonId} to today's lessons. Current total lesson time: $totalLessonTime seconds")
-                }
-            }
-            i++
-        }
-
-        Log.d("getTodayLessons", "Prepared ${todayLessons.size} lessons for today")
-
-        return todayLessons
-    }
-
 
 }

@@ -38,6 +38,8 @@ class TeacherProfileSettingsFragment : Fragment() {
             expertise?.let {
                 for (i in it) {
                     val chip = Chip(context)
+                    chip.isCheckable = false
+                    chip.isCloseIconVisible = false
                     chip.text = i
                     binding.expertiseList.addView(chip)
                 }
