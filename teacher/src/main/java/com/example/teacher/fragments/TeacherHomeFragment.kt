@@ -13,6 +13,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.teacher.adapters.CourseAdapter
 import com.example.teacher.databinding.FragmentTeacherHomeBinding
+import com.example.teacher.edit_course.EditCourseActivity
 import com.example.teacher.viewmodels.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch

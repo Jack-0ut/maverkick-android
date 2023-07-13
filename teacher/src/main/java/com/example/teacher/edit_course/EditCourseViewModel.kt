@@ -1,4 +1,4 @@
-package com.example.teacher.viewmodels
+package com.example.teacher.edit_course
 
 import android.net.Uri
 import androidx.lifecycle.LiveData
@@ -29,15 +29,37 @@ class EditCourseViewModel @Inject constructor(
     val posterUri: MutableLiveData<Uri> = MutableLiveData()
 
     /** update the poster on the cloud when, teacher changed it */
-    fun updatePoster(uri: Uri){
+    fun updatePoster(uri: Uri, onSuccess: () -> Unit, onFailure: (Exception) -> Unit){
         // Extract the courseId from the course object and use it for updating the poster.
         _course.value?.let { course ->
-            courseRepository.updatePoster(course.courseId, uri)
-            // Also update the posterUri LiveData
-            posterUri.value = uri
-        } ?: run {
-            // Handle error: Show error message to the user
+            courseRepository.updatePoster(course.courseId, uri,
+                {
+                    // Also update the posterUri LiveData
+                    posterUri.value = uri
+                    onSuccess()
+                },
+                { exception ->
+                    onFailure(exception)
+                }
+            )
         }
+    }
+
+    /** Publish the course **/
+    fun publishCourse(courseId: String, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
+        val totalDurationMinutes = _lessons.value?.sumOf { it.duration } ?: 0
+        val coursePoster = _course.value?.poster
+        if (totalDurationMinutes < 1800) {
+            onFailure(Exception("Total course duration is less than 30 minutes"))
+            return
+        }
+
+        if (coursePoster == null || coursePoster.isBlank()) {
+            onFailure(Exception("The course should have a poster set up for it"))
+            return
+        }
+
+        courseRepository.activateCourse(courseId, onSuccess, onFailure)
     }
 
     /** Fetch all of the information related to the course **/

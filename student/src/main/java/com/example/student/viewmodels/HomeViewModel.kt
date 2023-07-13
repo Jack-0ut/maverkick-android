@@ -21,7 +21,7 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val dailyLearningPlanRepository: DailyLearningPlanRepository,
     private val studentCourseRepository: StudentCourseRepository,
-    private val sharedPrefManager: SharedPrefManager
+    sharedPrefManager: SharedPrefManager
 ): ViewModel() {
 
     private val _dailyLearningPlan = MutableLiveData<DailyLearningPlan>()
@@ -32,16 +32,19 @@ class HomeViewModel @Inject constructor(
 
     private val studentId: String = sharedPrefManager.getStudent()?.studentId ?: ""
     private val dailyStudyTimeMinutes = sharedPrefManager.getStudent()?.dailyStudyTimeMinutes ?: 0
+
     init {
         loadDailyLearningPlan()
     }
 
-    fun updateStudentLearningProgress(lessonId: String, courseId: String) {
-        if (!isLessonInCompleted(lessonId)) {
+    /** Update learning progress for DailyLearningPlan and StudentCourseProgress **/
+    suspend fun updateStudentLearningProgress(lessonId: String, courseId: String) {
+        val dailyPlanId = "${studentId}_${_dailyLearningPlan.value?.date}"
+        if (!dailyLearningPlanRepository.isLessonCompleted(dailyPlanId,lessonId)) {
             incrementProgressAndStore(lessonId, courseId)
-            addLessonToCompletedInPreferences(lessonId)
         }
     }
+
     /** Load the daily learning plan for today **/
     private fun loadDailyLearningPlan() {
         viewModelScope.launch {
@@ -51,13 +54,15 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    /** Update the progress **/
     private fun incrementProgressAndStore(lessonId: String, courseId: String) {
         val dailyPlan = _dailyLearningPlan.value
         dailyPlan?.incrementProgress()
         _dailyLearningPlan.value = dailyPlan!!
         _currentLessonIndex.value = dailyPlan.progress
 
-        incrementProgressInFirestore(dailyPlan.studentId, dailyPlan.date)
+        val dailyPlanId = "${studentId}_${dailyPlan.date}"
+        updateDailyLearningPlanProgress(dailyPlanId)
 
         val studentCoursesId = "${studentId}_$courseId"
         updateStudentCourseProgress(studentCoursesId, lessonId)
@@ -70,21 +75,8 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    /** Store progress to the daily learning plan in the database **/
-    private fun incrementProgressInFirestore(studentId: String, date: String) {
-        viewModelScope.launch {
-            val dailyLearningPlanId = "$studentId-$date"
-            dailyLearningPlanRepository.incrementProgress(dailyLearningPlanId)
-        }
-    }
-
-    /**Add lesson to a list of completed lessons locally **/
-    private fun addLessonToCompletedInPreferences(lessonId: String) {
-        sharedPrefManager.addLessonToCompleted(lessonId)
-    }
-
-    /** Check local list of completed lessons and tells if given lesson is in there **/
-    private fun isLessonInCompleted(lessonId: String): Boolean {
-        return sharedPrefManager.getCompletedLessonsMap().containsKey(lessonId)
+    /** Update progress to the daily learning plan in the database **/
+    private fun updateDailyLearningPlanProgress(dailyPlanId:String) {
+        dailyLearningPlanRepository.incrementProgress(dailyPlanId)
     }
 }

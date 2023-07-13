@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.data.models.Lesson
+import com.example.student.R
 import com.example.student.databinding.ItemLessonBinding
 import kotlin.random.Random
 
@@ -23,17 +24,7 @@ class LessonAdapter(
 ) : ListAdapter<Lesson, LessonAdapter.LessonViewHolder>(LessonDiffCallback){
 
     // Define the view holder
-    inner class LessonViewHolder(private val binding: ItemLessonBinding) : RecyclerView.ViewHolder(binding.root) {
-
-        init {
-            binding.root.setOnClickListener {
-                val position = adapterPosition
-                if (position != RecyclerView.NO_POSITION) {
-                    val lesson = getItem(position)
-                    onLessonClickListener.onLessonClick(lesson)
-                }
-            }
-        }
+    inner class LessonViewHolder(val binding: ItemLessonBinding) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(lesson: Lesson) {
             val minutes = lesson.duration / 60
@@ -42,6 +33,13 @@ class LessonAdapter(
 
             val color = generateColor()
             binding.colorSquare.setBackgroundColor(color)
+
+            // Change the icon based on whether the lesson is accessible
+            if (adapterPosition <= currentLessonIndex) {
+                binding.playIcon.setImageResource(R.drawable.ic_play)
+            } else {
+                binding.playIcon.setImageResource(R.drawable.ic_lock)
+            }
 
             binding.playIcon.isEnabled = adapterPosition <= currentLessonIndex
         }
@@ -68,8 +66,16 @@ class LessonAdapter(
     override fun onBindViewHolder(holder: LessonViewHolder, position: Int) {
         // Get the data model based on position
         val lesson = getItem(position)
+
         // Bind the data model to the item views
         holder.bind(lesson)
+
+        // Set the onClickListener for the item view
+        holder.itemView.setOnClickListener {
+            if (position <= currentLessonIndex) {
+                onLessonClickListener.onLessonClick(lesson)
+            }
+        }
     }
 
     fun updateCurrentLessonIndex(newIndex: Int) {

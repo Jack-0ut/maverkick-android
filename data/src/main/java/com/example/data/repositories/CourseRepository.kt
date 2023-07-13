@@ -137,31 +137,49 @@ class CourseRepository @Inject constructor(
 
 
     /** Save new poster to the firebase storage under the courseId name */
-    fun updatePoster(courseId:String,uri: Uri) {
+    fun updatePoster(courseId:String, uri: Uri, onSuccess: (String) -> Unit, onFailure: (Exception) -> Unit) {
         val storageRef = firebaseStorage.reference
         val posterRef = storageRef.child("posters/$courseId")
 
         val uploadTask = posterRef.putFile(uri)
-        uploadTask.addOnFailureListener {
+        uploadTask.addOnFailureListener { exception ->
             // Handle unsuccessful uploads
+            onFailure(exception)
         }.addOnSuccessListener {
             // taskSnapshot.metadata contains file metadata such as size, content-type, etc.
             posterRef.downloadUrl.addOnSuccessListener { downloadUri ->
-                updateCoursePoster(courseId,downloadUri.toString())
+                updateCoursePoster(courseId, downloadUri.toString(),
+                    onSuccess = { onSuccess(downloadUri.toString()) },
+                    onFailure = { exception -> onFailure(exception) }
+                )
             }
         }
     }
 
+
     /** Update the url of the poster inside the firestore courses collection **/
-    private fun updateCoursePoster(courseId:String, posterUrl: String) {
+    private fun updateCoursePoster(courseId:String, posterUrl: String, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
         val courseRef = databaseService.db.collection("courses").document(courseId)
         courseRef
             .update("poster", posterUrl)
             .addOnSuccessListener {
-                // Successfully updated the document
+                onSuccess()
             }
-            .addOnFailureListener {
-                // Handle failure
+            .addOnFailureListener { exception ->
+                onFailure(exception)
+            }
+    }
+
+
+    /** Make course active - accessible for everyone **/
+    fun activateCourse(courseId: String, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
+        val courseRef = databaseService.db.collection("courses").document(courseId)
+        courseRef.update("active", true)
+            .addOnSuccessListener {
+                onSuccess()
+            }
+            .addOnFailureListener { exception ->
+                onFailure(exception)
             }
     }
 

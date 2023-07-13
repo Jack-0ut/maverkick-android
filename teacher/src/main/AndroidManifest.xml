@@ -19,7 +19,7 @@
             android:name=".addlesson.AddLessonActivity"
             android:exported="false" />
         <activity
-            android:name=".fragments.EditCourseActivity"
+            android:name=".edit_course.EditCourseActivity"
             android:exported="false" />
         <activity
             android:name=".addlesson.SelectVideoActivity"

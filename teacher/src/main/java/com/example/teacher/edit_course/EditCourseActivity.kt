@@ -1,4 +1,4 @@
-package com.example.teacher.fragments
+package com.example.teacher.edit_course
 
 import android.content.Intent
 import android.net.Uri
@@ -11,8 +11,8 @@ import com.bumptech.glide.Glide
 import com.example.teacher.adapters.LessonAdapter
 import com.example.teacher.addlesson.SelectVideoActivity
 import com.example.teacher.databinding.ActivityCourseEditBinding
-import com.example.teacher.viewmodels.EditCourseViewModel
 import com.google.android.material.chip.Chip
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 
 /**
@@ -57,6 +57,8 @@ class EditCourseActivity : AppCompatActivity(),LessonAdapter.OnLessonClickListen
             course.tags.forEach { tag ->
                 val chip = Chip(this)
                 chip.text = tag
+                chip.isCheckable = false
+                chip.isCloseIconVisible = false
                 binding.tags.addView(chip)
             }
         }
@@ -69,6 +71,10 @@ class EditCourseActivity : AppCompatActivity(),LessonAdapter.OnLessonClickListen
 
         viewModel.lessons.observe(this) { lessons ->
             lessonAdapter.submitList(lessons)
+        }
+
+        binding.publishButton.setOnClickListener {
+           publishCourse()
         }
 
         // add new lesson button
@@ -86,12 +92,31 @@ class EditCourseActivity : AppCompatActivity(),LessonAdapter.OnLessonClickListen
         binding.editPosterIcon.setOnClickListener{
             getContent.launch("image/*")
         }
+
+    }
+
+    /** Publish the course and show a Snackbar message based on the result **/
+    private fun publishCourse() {
+        viewModel.publishCourse(courseId,
+            onSuccess = {
+                Snackbar.make(binding.root, "Course has been activated", Snackbar.LENGTH_LONG).show()
+            },
+            onFailure = { exception ->
+                Snackbar.make(binding.root, exception.message ?: "Course hasn't been activated", Snackbar.LENGTH_LONG).show()
+            })
     }
 
     /** Get new poster from gallery */
     private val getContent = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         if (uri != null) {
-            viewModel.updatePoster(uri)
+            viewModel.updatePoster(uri,
+                {
+                    Snackbar.make(binding.root, "Poster has been updated.", Snackbar.LENGTH_SHORT).show()
+                },
+                { exception ->
+                    Snackbar.make(binding.root, "Failed to update the poster: ${exception.message}", Snackbar.LENGTH_SHORT).show()
+                }
+            )
         }
     }
 

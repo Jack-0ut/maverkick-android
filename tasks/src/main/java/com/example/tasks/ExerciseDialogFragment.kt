@@ -2,12 +2,12 @@ package com.example.tasks
 
 import android.content.Context
 import android.content.res.Configuration
-import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
@@ -105,17 +105,16 @@ class ExerciseDialogFragment : DialogFragment() {
                 // Show the snackbar with feedback
                 // Change the color and message of the snackbar based on the result
                 if (result.first) {
-                    snackbarView.setBackgroundColor(Color.GREEN)
+                    snackbarView.setBackgroundColor(ContextCompat.getColor(requireContext(), com.example.common.R.color.green))
                     snackbar.setText("Great job!")
                 } else {
-                    snackbarView.setBackgroundColor(Color.RED)
+                    snackbarView.setBackgroundColor(ContextCompat.getColor(requireContext(), com.example.common.R.color.red))
                     snackbar.setText("The correct answer is: ${result.second}")
                 }
 
                 snackbar.show()
             }
         }
-
 
         binding.checkButton.setOnClickListener {
             if (binding.checkButton.text == "Check") {

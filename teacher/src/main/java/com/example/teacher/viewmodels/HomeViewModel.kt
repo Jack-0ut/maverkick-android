@@ -1,12 +1,5 @@
 package com.example.teacher.viewmodels
 
-/**
- * ViewModel for the Teacher HomeFragment class
- * This ViewModel class would interact with our data source and
- * expose LiveData objects that Fragment can observe to update the UI.
- * So, basically it's fetching the list of courses from the database and
- * display it to the teacher, so he could edit or add new lessons to it
- **/
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.data.models.Course
@@ -19,6 +12,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * ViewModel for the Teacher HomeFragment class.
+ * This ViewModel class would interact with our data source and
+ * expose LiveData objects that Fragment can observe to update the UI.
+ * So, basically it's fetching the list of courses from the database and
+ * display it to the teacher, so he could edit or add new lessons to it
+ **/
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val courseRepository: CourseRepository,
@@ -50,12 +50,6 @@ class HomeViewModel @Inject constructor(
             }, { exception ->
                 // Handle error: Show error message to the user
             })
-        }
-    }
-
-    fun notifyCourseAdded() {
-        viewModelScope.launch {
-            courseAddedFlow.emit(Unit)
         }
     }
 }

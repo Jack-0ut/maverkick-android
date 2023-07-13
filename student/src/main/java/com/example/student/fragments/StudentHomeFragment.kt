@@ -18,6 +18,9 @@ import com.example.student.databinding.FragmentStudentHomeBinding
 import com.example.student.videolesson.VideoLessonActivity
 import com.example.student.viewmodels.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 /**
  * The Fragment for the Home Menu Item (Student)
@@ -68,7 +71,9 @@ class StudentHomeFragment : Fragment(),LessonAdapter.OnLessonClickListener {
                 val courseId = intent.getStringExtra("courseId")
                 // Call the ViewModel function to update student learning progress
                 if (lessonId != null && courseId != null) {
-                    viewModel.updateStudentLearningProgress(lessonId, courseId)
+                    CoroutineScope(Dispatchers.Main).launch {
+                        viewModel.updateStudentLearningProgress(lessonId, courseId)
+                    }
                 }
             }
         }

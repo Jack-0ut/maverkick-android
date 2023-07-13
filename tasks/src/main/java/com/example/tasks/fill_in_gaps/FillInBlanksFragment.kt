@@ -58,7 +58,7 @@ class FillInBlanksFragment : Fragment(),TaskActionsListener {
                         LinearLayout.LayoutParams.WRAP_CONTENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT
                     )
-                    val widthFactor = 40
+                    val widthFactor = 20
                     val answerLength = task.answer.length
                     width = widthFactor * answerLength
 

@@ -18,6 +18,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.teacher.R
 import com.example.teacher.databinding.FragmentAddCourseBinding
+import com.example.teacher.edit_course.EditCourseActivity
 import com.example.teacher.viewmodels.AddCourseViewModel
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
