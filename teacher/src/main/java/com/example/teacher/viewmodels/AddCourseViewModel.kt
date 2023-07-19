@@ -3,6 +3,7 @@ package com.example.teacher.viewmodels
 import androidx.lifecycle.ViewModel
 import com.example.data.models.Course
 import com.example.data.repositories.CourseRepository
+import com.example.data.repositories.CourseStatisticsRepository
 import com.example.data.sharedpref.SharedPrefManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,6 +20,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AddCourseViewModel @Inject constructor(
     private val courseRepository: CourseRepository,
+    private val statisticsRepository: CourseStatisticsRepository,
     private val sharedPrefManager: SharedPrefManager
 ) : ViewModel() {
 
@@ -59,39 +61,39 @@ class AddCourseViewModel @Inject constructor(
 
     fun submitCourse(onResult: (Boolean, String) -> Unit) {
         val courseName = _courseName.value
-
         val language = _selectedLanguage.value
-
         val tags = _tags.value
 
-        // if teacher filled out all of the fields, create the course
         if (courseName.isNotBlank() && language.isNotBlank() && tags.isNotEmpty()) {
-            // get the id of the current teacher
             val teacher = sharedPrefManager.getTeacher()
-
             teacher?.let {
                 val newCourse = Course(
-                    courseId = "", // It will be replaced in the Firestore
-                    courseName = courseName,
-                    teacherId = it.teacherId, // You should implement this function
-                    language = language,
-                    poster = "", // It will be updated later
-                    tags = tags,
-                    creationDate = Date() // Current date
+                    "",
+                    courseName,
+                    it.teacherId,
+                    language,
+                    "",
+                    0,
+                    tags,
+                    Date(),
+                    false
                 )
                 courseRepository.addCourse(newCourse, { courseId ->
-                    // Handle success: You have a new course with courseId
-                    onResult(true, courseId) // Call the callback with success status and courseId
+                    // Once the course is successfully created, initialize the corresponding CourseStatistics
+                    statisticsRepository.addCourseStatistics(courseId,courseName, {
+                        // If initializing the CourseStatistics is successful
+                        onResult(true, courseId)
+                    }, {
+                        // If there was an error initializing the CourseStatistics
+                        onResult(false, "Sorry, but we couldn't initialize course statistics, try again!")
+                    })
                 }, {
-                    // Handle error: Show error message to the user
                     onResult(false, "Sorry, but we can't create the course, try it again!")
                 })
             } ?: run {
-                // Handle case where student is null
-                onResult(false, "Hey, we can't find your student id, what's the matter?")
+                onResult(false, "Hey, we can't find your student id, something is wrong")
             }
         } else {
-            // Handle case where course name or language is not filled in
             onResult(false, "Please, fill in the course name,language and tags")
         }
     }

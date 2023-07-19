@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.data.repositories.StudentRepository
 import com.example.data.sharedpref.SharedPrefManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -16,7 +17,8 @@ import javax.inject.Inject
  **/
 @HiltViewModel
 class StudentProfileSettingsViewModel @Inject constructor(
-    private val sharedPreferences: SharedPrefManager
+    private val sharedPreferences: SharedPrefManager,
+    private val studentRepository: StudentRepository
 ) : ViewModel() {
 
     private val _dailyLearningTime = MutableLiveData<String>()
@@ -24,6 +26,8 @@ class StudentProfileSettingsViewModel @Inject constructor(
 
     private val _interests = MutableLiveData<List<String>>()
     val interests: LiveData<List<String>> get() = _interests
+
+    val snackbarMessage = MutableLiveData<String>()
 
     init {
         fetchStudentData()
@@ -39,5 +43,19 @@ class StudentProfileSettingsViewModel @Inject constructor(
             }
         }
     }
+
+    /** Update the desired learning time per day **/
+    fun updateDailyLearningTime(newTime: String) {
+        val studentId = sharedPreferences.getStudent()!!.studentId
+        viewModelScope.launch {
+            val result = studentRepository.updateDailyStudyTime(studentId, newTime.toInt())
+            if (result.isSuccess) {
+                _dailyLearningTime.value = newTime
+            } else {
+                snackbarMessage.value = "Failed to update daily learning time"
+            }
+        }
+    }
+
 
 }

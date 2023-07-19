@@ -1,17 +1,21 @@
 package com.example.teacher.edit_course
 
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.net.Uri
 import android.os.Bundle
+import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.example.teacher.adapters.LessonAdapter
 import com.example.teacher.addlesson.SelectVideoActivity
 import com.example.teacher.databinding.ActivityCourseEditBinding
 import com.google.android.material.chip.Chip
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -77,6 +81,30 @@ class EditCourseActivity : AppCompatActivity(),LessonAdapter.OnLessonClickListen
            publishCourse()
         }
 
+        binding.removeCourseButton.setOnClickListener{
+            showRemoveCourseDialog()
+        }
+
+        viewModel.course.observe(this) { course ->
+            binding.publishSwitch.isChecked = course.published
+
+            // Update the color of the switch based on the course's publication status
+            val switchColor = if (course.published) {
+                ContextCompat.getColor(this, com.example.common.R.color.green)
+            } else {
+                ContextCompat.getColor(this, com.example.common.R.color.red)
+            }
+            binding.publishSwitch.thumbTintList = ColorStateList.valueOf(switchColor)
+
+            if (course.published) {
+                binding.publishButton.visibility = View.GONE
+                binding.removeCourseButton.visibility = View.GONE
+            } else {
+                binding.publishButton.visibility = View.VISIBLE
+                binding.removeCourseButton.visibility = View.VISIBLE
+            }
+        }
+
         // add new lesson button
         binding.addLessonButton.setOnClickListener {
             viewModel.course.value?.let { course ->
@@ -123,5 +151,24 @@ class EditCourseActivity : AppCompatActivity(),LessonAdapter.OnLessonClickListen
     /** When click on the particular lesson toggle icon **/
     override fun onLessonClick(lessonId: String, position: Int) {
         lessonAdapter.onLessonClick(lessonId, position)
+    }
+    /** Dialog to ensure that teacher really want to remove course */
+    private fun showRemoveCourseDialog() {
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Remove Course")
+            .setMessage("Do you want to remove your course? It will no longer be recommended for new students, but those who are enrolled will have an opportunity to finish it.")
+            .setPositiveButton("Go ahead") { _, _ ->
+                viewModel.deleteCourse(
+                    onSuccess = {
+                        Snackbar.make(binding.root,"The course has been deleted!",5000).show()
+                        finish()
+                    },
+                    onFailure = {
+                        Snackbar.make(binding.root,"Can't delete the Course, try again!",5000).show()
+                    }
+                )
+            }
+            .setNegativeButton("No", null)
+            .show()
     }
 }

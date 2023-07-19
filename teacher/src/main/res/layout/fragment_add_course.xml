@@ -12,6 +12,7 @@
         android:text="You could add course here"
         android:textSize="24sp"
         android:textColor="@color/main_accent_color"
+        android:fontFamily="@font/itim"
         android:layout_marginTop="16dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"

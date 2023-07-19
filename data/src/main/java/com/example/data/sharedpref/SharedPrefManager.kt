@@ -5,7 +5,6 @@ import com.example.data.models.Student
 import com.example.data.models.Teacher
 import com.example.data.models.User
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import javax.inject.Inject
 
 /**
@@ -57,5 +56,4 @@ class SharedPrefManager @Inject constructor(private val sharedPreferences: Share
     fun clearPreferences() {
         sharedPreferences.edit().clear().apply()
     }
-
 }

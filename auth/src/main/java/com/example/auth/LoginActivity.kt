@@ -3,6 +3,7 @@ package com.example.auth
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -34,6 +35,7 @@ class LoginActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.d("LoginActivityXXX","We're in the LoginActivity.....")
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -139,8 +141,8 @@ class LoginActivity : AppCompatActivity() {
         sharedPrefManager.saveActiveRole(role)
 
         val intentUri = when (role) {
-            "student" -> Uri.parse("app://student/main")
-            "teacher" -> Uri.parse("app://teacher/main")
+            "student" -> Uri.parse("maverkick://student/main")
+            "teacher" -> Uri.parse("maverkick://teacher/main")
             else -> throw IllegalArgumentException("Unknown role: $role")
         }
         val intent = Intent(Intent.ACTION_VIEW, intentUri)

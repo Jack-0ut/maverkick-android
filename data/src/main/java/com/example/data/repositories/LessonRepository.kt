@@ -39,7 +39,8 @@ class LessonRepository @Inject constructor(
     ) {
         val lessonsRef =
             databaseService.db.collection("courses").document(courseId).collection("lessons")
-        lessonsRef.get()
+
+        lessonsRef.orderBy("lessonOrder").get()
             .addOnSuccessListener { documents ->
                 val lessons = documents.mapNotNull { document ->
                     try {

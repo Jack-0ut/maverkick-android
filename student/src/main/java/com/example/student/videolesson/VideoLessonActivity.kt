@@ -14,6 +14,7 @@ import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
 import android.widget.GridView
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.example.student.R
@@ -33,9 +34,9 @@ import dagger.hilt.android.AndroidEntryPoint
  */
 @AndroidEntryPoint
 class VideoLessonActivity : AppCompatActivity(), ExerciseDialogFragment.ExerciseDialogListener {
-    // Initialize the View Binding and ExoPlayer variables
     private lateinit var binding: ActivityVideoLessonBinding
     private lateinit var player: ExoPlayer
+    private val viewModel: VideoLessonViewModel by viewModels()
 
     // Passed parameters
     private lateinit var lessonId: String
@@ -95,9 +96,10 @@ class VideoLessonActivity : AppCompatActivity(), ExerciseDialogFragment.Exercise
             dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
             val gridView = dialog.findViewById<GridView>(R.id.grid_view)
-            val adapter = EmojiAdapter(this, R.layout.item_emoji, emojis) { selectedEmoji ->
+            val adapter = EmojiAdapter(this, R.layout.item_emoji, emojis) { selectedEmoji, position ->
                 dialog.dismiss()
-                // Here you can handle selected emoji
+                val rating = 5 - position
+                viewModel.setLessonRating(rating)
             }
             gridView.adapter = adapter
 
@@ -129,24 +131,30 @@ class VideoLessonActivity : AppCompatActivity(), ExerciseDialogFragment.Exercise
         player = ExoPlayer.Builder(this).build()
         binding.videoView.player = player
 
-        // navigate to the exercise fragment, when video ends
         player.addListener(object : Player.Listener {
             override fun onPlaybackStateChanged(playbackState: Int) {
                 if (playbackState == Player.STATE_ENDED) {
-                    // Create an Intent with an action named "LESSON_COMPLETED_ACTION"
-                    val intent = Intent("LESSON_COMPLETED_ACTION")
+                    // Check if the ExerciseDialogFragment is already added
+                    val existingFragment = supportFragmentManager.findFragmentByTag("ExerciseDialogFragment")
+                    if (existingFragment == null) {
+                        // Create an Intent with an action named "LESSON_COMPLETED_ACTION"
+                        val intent = Intent("LESSON_COMPLETED_ACTION")
 
-                    // Add additional data to the intent
-                    intent.putExtra("lessonId", lessonId)
-                    intent.putExtra("courseId", courseId)
+                        // Add additional data to the intent
+                        intent.putExtra("lessonId", lessonId)
+                        intent.putExtra("courseId", courseId)
 
-                    // Send the broadcast
-                    LocalBroadcastManager.getInstance(this@VideoLessonActivity).sendBroadcast(intent)
+                        // Send the broadcast
+                        LocalBroadcastManager.getInstance(this@VideoLessonActivity).sendBroadcast(intent)
 
-                    val exerciseDialogFragment = ExerciseDialogFragment.newInstance(courseId,lessonId)
+                        val exerciseDialogFragment = ExerciseDialogFragment.newInstance(courseId, lessonId)
 
-                    // Show the ExerciseDialogFragment
-                    exerciseDialogFragment.show(supportFragmentManager, "ExerciseDialogFragment")
+                        // Show the ExerciseDialogFragment
+                        exerciseDialogFragment.show(supportFragmentManager, "ExerciseDialogFragment")
+
+                        // Update the rating in the database
+                        viewModel.updateRatings(courseId, {}, {})
+                    }
                 }
             }
         })

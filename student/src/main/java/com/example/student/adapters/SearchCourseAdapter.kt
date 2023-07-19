@@ -17,7 +17,7 @@ interface OnSearchCourseClickListener {
  * Display the course that fits user search query
  **/
 class SearchCourseAdapter(private val onCourseClickListener: OnSearchCourseClickListener) :
-    ListAdapter<Course, SearchCourseAdapter.CourseViewHolder>(CourseDiffCallback()) {
+    ListAdapter<Course, SearchCourseAdapter.CourseViewHolder>(SearchCourseDiffCallback()) {
 
     inner class CourseViewHolder(private val binding: ItemSearchCourseBinding) : RecyclerView.ViewHolder(binding.root) {
         init {

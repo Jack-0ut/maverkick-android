@@ -1,6 +1,5 @@
 package com.example.student.viewmodels
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.data.repositories.TeacherRepository
 import com.example.data.repositories.UserRepository
@@ -20,11 +19,7 @@ class StudentProfileViewModel @Inject constructor(
     private val teacherRepository: TeacherRepository
 ) : ProfileViewModel(sharedPrefManager, userRepository, firebaseAuth), ProfileViewModelInterface {
 
-    private val _teacherAccountExists = MutableLiveData<Boolean>()
-    val teacherAccountExists: LiveData<Boolean> get() = _teacherAccountExists
-
     private val _errorLiveData = MutableLiveData<String>()
-    val errorLiveData: LiveData<String> get() = _errorLiveData
 
     /** Check if teacher account exists for the user**/
     suspend fun checkTeacherAccountExists(): Boolean {
@@ -53,5 +48,4 @@ class StudentProfileViewModel @Inject constructor(
             false
         }
     }
-
 }

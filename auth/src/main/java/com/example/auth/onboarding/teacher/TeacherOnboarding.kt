@@ -48,7 +48,7 @@ class TeacherOnboarding: AppCompatActivity() {
         // Observe createStudentResult here, so that you can handle error cases whenever they occur
         onboardingViewModel.createTeacherResult.observe(this) { result ->
             if (result.isSuccess) {
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("app://teacher/main"))
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("maverkick://teacher/main"))
                 startActivity(intent)
                 finish()
             } else {

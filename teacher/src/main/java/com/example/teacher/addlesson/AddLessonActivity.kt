@@ -2,7 +2,6 @@ package com.example.teacher.addlesson
 
 import android.net.Uri
 import android.os.Bundle
-import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -66,32 +65,6 @@ class AddLessonActivity : AppCompatActivity() {
                             player?.setMediaItem(mediaItem)
                             player?.prepare()
                             player?.playWhenReady = true // auto play
-                        }
-                    }
-                }
-
-                launch {
-                    viewModel.uploadProgress.collect { progress ->
-                        // Update the progress bar with the current progress
-                        binding.progressBar.progress = progress
-                    }
-                }
-
-                launch {
-                    viewModel.uploadStatus.collect { status ->
-                        when(status) {
-                            is UploadStatus.Success -> {
-                                binding.progressBar.visibility = View.GONE
-                                // Show a success message or perform other actions after successful upload
-                            }
-                            is UploadStatus.Failure -> {
-                                binding.progressBar.visibility = View.GONE
-                                // Show an error message based on status.exception
-                            }
-                            is UploadStatus.InProgress -> {
-                                binding.progressBar.visibility = View.VISIBLE
-                                //binding.buttonSave.visibility = View.GONE
-                            }
                         }
                     }
                 }

@@ -18,7 +18,6 @@ import com.example.teacher.viewmodels.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
-
 /**
  * The Fragment for the Home Menu Item (Teacher)
  * It responsible for displaying the courses teacher published
@@ -73,6 +72,4 @@ class TeacherHomeFragment : Fragment(), CourseAdapter.OnCourseClickListener{
         intent.putExtra("courseId", courseId)
         startActivity(intent)
     }
-
-
 }

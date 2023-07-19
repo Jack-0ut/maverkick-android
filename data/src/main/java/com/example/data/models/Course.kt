@@ -13,41 +13,47 @@ import java.util.*
  * @param poster - image/poster for the course to make it appealing and clear
  * @param tags - tags describing 5 things on which course is concentrating
  * @param creationDate - date of the course creation
+ * @param published - is this course available for the students
  **/
 
 data class Course(
-    val courseId:String,
+    val courseId: String,
     val courseName: String,
-    val teacherId:String,
+    val teacherId: String,
     val language: String,
     var poster: String?,
+    var lessonCount: Int,
     val tags: List<String>,
-    val creationDate:Date
+    val creationDate: Date,
+    val published: Boolean
 ) {
     fun toFirebaseCourse(): FirebaseCourse {
         return FirebaseCourse(
             courseName = this.courseName,
             teacherId = this.teacherId,
             language = this.language,
-            poster = this.poster ?: "",  // if poster is null, use empty string
+            poster = this.poster ?: "",
+            lessonCount = this.lessonCount,
             tags = this.tags,
-            creationDate = this.creationDate
+            creationDate = this.creationDate,
+            published = this.published
         )
     }
 }
 
-
 /**
- * The same Course class, but without courseId, specifically for adding to the Firebase
- **/
+ * The same Course class, but without courseId, specifically for adding to Firebase
+ */
 data class FirebaseCourse @JvmOverloads constructor(
     val courseName: String = "",
     val teacherId: String = "",
     val language: String = "",
     val poster: String? = null,
+    val lessonCount: Int = 0,
     val tags: List<String> = listOf(),
-    val creationDate: Date = Date()
-){
+    val creationDate: Date = Date(),
+    val published: Boolean = false
+) {
     fun toCourse(courseId: String): Course {
         return Course(
             courseId,
@@ -55,11 +61,14 @@ data class FirebaseCourse @JvmOverloads constructor(
             teacherId,
             language,
             poster,
+            lessonCount,
             tags,
-            creationDate
+            creationDate,
+            published
         )
     }
 }
+
 /** Course class representation in the algolia index, used for the courses search*/
 @Serializable
 data class SearchCourseHit(

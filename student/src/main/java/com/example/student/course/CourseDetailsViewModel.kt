@@ -1,6 +1,5 @@
-package com.example.student.viewmodels
+package com.example.student.course
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -15,6 +14,11 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * ViewModel for fetching the necessary data from different repositories
+ * to display it in the CourseDetailsActivity. Also responsible for enrollment,
+ * re-enrollment of the Student and how to track that/
+ **/
 @HiltViewModel
 class CourseDetailsViewModel @Inject constructor(
     private val courseRepository: CourseRepository,
@@ -22,7 +26,9 @@ class CourseDetailsViewModel @Inject constructor(
     private val teacherRepository: TeacherRepository,
     private val userRepository: UserRepository,
     private val sharedPrefManager: SharedPrefManager,
-    private val studentCourseRepository: StudentCourseRepository
+    private val studentCourseRepository: StudentCourseRepository,
+    private val studentRepository:StudentRepository,
+    private val courseStatisticsRepository: CourseStatisticsRepository
 ) : ViewModel() {
 
     private val _course = MutableLiveData<Course>()
@@ -37,12 +43,16 @@ class CourseDetailsViewModel @Inject constructor(
     private val _user = MutableLiveData<User>()
     val user: LiveData<User> = _user
 
+    private val _enrollmentComplete = MutableLiveData<Boolean>()
+    val enrollmentComplete: LiveData<Boolean> get() = _enrollmentComplete
+
+
     /** Fetch course details **/
     fun fetchCourseDetails(courseId: String) {
         courseRepository.getCourseById(courseId, { course ->
             _course.value = course
             course?.let { fetchTeacherData(it.teacherId) }
-        }, { exception ->
+        }, {
             // Handle error: Show error message to the user
         })
     }
@@ -51,7 +61,7 @@ class CourseDetailsViewModel @Inject constructor(
     fun fetchLessons(courseId: String) {
         lessonRepository.getCourseLessons(courseId, { lessons ->
             _lessons.value= lessons
-        }, { exception ->
+        }, {
 
         })
     }
@@ -83,8 +93,7 @@ class CourseDetailsViewModel @Inject constructor(
                     user?.let {
                         _user.value = it
                     }
-                }, { exception ->
-                    // Handle error: Show error message to the user
+                }, {
                 })
             } catch (e: Exception) {
                 // Handle error: Show error message to the user
@@ -96,19 +105,45 @@ class CourseDetailsViewModel @Inject constructor(
     fun enrollStudent(courseId: String) {
         val student = sharedPrefManager.getStudent()
         student?.let {
-            viewModelScope.launch {
-                try {
-                    studentCourseRepository.enrollStudent(it.studentId, courseId)
-                    // If student was successfully enrolled, initialize their course progress
-                    studentCourseRepository.initStudentCourseProgress(it.studentId, courseId)
-                } catch (e: Exception) {
-                    // Handle the error
-                    Log.e("Error", "Failed to enroll student and initialize their course progress: ${e.message}")
+            // check if the course is already enrolled
+            if (!it.enrolledCourses.contains(courseId)) {
+                viewModelScope.launch {
+                    try {
+                        studentRepository.addCourseToEnrolled(it.studentId, courseId)
+
+                        val isStudentEverBeenEnrolled = studentCourseRepository.isStudentEverBeenEnrolled(it.studentId, courseId)
+                        if (!isStudentEverBeenEnrolled) {
+                            studentCourseRepository.enrollStudent(it.studentId, courseId)
+                            studentCourseRepository.initStudentCourseProgress(it.studentId, courseId)
+                        } else {
+                            studentCourseRepository.reEnrollStudent(it.studentId, courseId)
+                        }
+
+                        // Add the newly enrolled course to the Student object and save it back to SharedPreferences
+                        val updatedCourses = it.enrolledCourses.toMutableSet()
+                        updatedCourses.add(courseId)
+                        it.enrolledCourses = updatedCourses.toList()
+                        sharedPrefManager.saveStudent(it)
+
+                        // Update courseStatistics for the enrolled course
+                        courseStatisticsRepository.incrementEnrollments(courseId,
+                            onSuccess = {
+                                _enrollmentComplete.postValue(true)
+                            },
+                            onFailure = { e ->
+                                _enrollmentComplete.postValue(false)
+                            }
+                        )
+                    } catch (e: Exception) {
+                        _enrollmentComplete.postValue(false)
+                    }
                 }
             }
-        } ?: run {
         }
     }
 
 
+    fun resetEnrollmentCompleteFlag() {
+        _enrollmentComplete.value = false
+    }
 }

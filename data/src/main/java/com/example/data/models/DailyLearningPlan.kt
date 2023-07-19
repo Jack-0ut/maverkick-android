@@ -14,6 +14,8 @@ data class DailyLearningPlan(
     constructor() : this("", "", emptyList(), 0, 0)
 
     fun incrementProgress() {
-        progress++
+        if (progress <= lessons.size) {
+            progress++
+        }
     }
 }

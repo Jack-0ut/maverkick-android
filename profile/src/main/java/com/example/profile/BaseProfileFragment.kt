@@ -97,7 +97,7 @@ abstract class BaseProfileFragment : Fragment() {
         getViewModel().logout()
         getViewModel().clearPreferences()
         Toast.makeText(context, "You have been signed out.", Toast.LENGTH_SHORT).show()
-        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("app://auth/login"))
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("maverkick://auth/login"))
         startActivity(intent)
     }
 }

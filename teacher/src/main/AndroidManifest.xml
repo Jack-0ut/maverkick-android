@@ -38,7 +38,7 @@
                 <data
                     android:host="teacher"
                     android:path="/main"
-                    android:scheme="app" />
+                    android:scheme="maverkick" />
             </intent-filter>
         </activity>
     </application>

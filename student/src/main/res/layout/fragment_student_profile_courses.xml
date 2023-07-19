@@ -6,15 +6,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/main_color"
-    android:paddingTop="32dp">
+    android:padding="16dp">
 
     <TextView
         android:id="@+id/learning_now"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="You are learning"
+        android:textStyle="bold"
         android:textSize="24sp"
-        android:textColor="@color/main_accent_color"
+        android:textColor="@color/white"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

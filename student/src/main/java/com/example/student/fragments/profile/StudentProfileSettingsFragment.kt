@@ -1,14 +1,19 @@
-package com.example.student.fragments.profile_fragments
+package com.example.student.fragments.profile
 
+import android.graphics.PorterDuff
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.example.common.CounterView
 import com.example.student.databinding.FragmentStudentProfileSettingsBinding
 import com.example.student.viewmodels.StudentProfileSettingsViewModel
 import com.google.android.material.chip.Chip
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 
 /**
@@ -50,6 +55,41 @@ class StudentProfileSettingsFragment : Fragment() {
                 }
             }
         }
+
+        viewModel.snackbarMessage.observe(viewLifecycleOwner) { message ->
+            Snackbar.make(view, message, Snackbar.LENGTH_SHORT).show()
+        }
+
+
+        // When the daily learning time value TextView is clicked
+        binding.dailyLearningTimeValue.setOnClickListener {
+            // Create a new instance of CounterView
+            val counterView = CounterView(requireContext(), null).apply {
+                minValue = 10
+                maxValue = 30
+                value = binding.dailyLearningTimeValue.text.toString().toInt()
+                stepSize = 5
+
+                // Color changes
+                val myColor = ContextCompat.getColor(context, com.example.common.R.color.black)
+                minusIcon.setColorFilter(myColor, PorterDuff.Mode.SRC_IN)
+                plusIcon.setColorFilter(myColor, PorterDuff.Mode.SRC_IN)
+                valueTextView.setTextColor(myColor)
+            }
+
+            val dialog = AlertDialog.Builder(requireContext())
+                .setTitle("Set Daily Learning Time")
+                .setView(counterView) // Set the CounterView as the content of the dialog
+                .setPositiveButton("OK") { _, _ ->
+                    // When the OK button is clicked, update the daily learning time in the ViewModel
+                    viewModel.updateDailyLearningTime(counterView.value.toString())
+                }
+                .setNegativeButton("Cancel", null)
+                .create()
+
+            dialog.show()
+        }
+
     }
 
     override fun onDestroyView() {

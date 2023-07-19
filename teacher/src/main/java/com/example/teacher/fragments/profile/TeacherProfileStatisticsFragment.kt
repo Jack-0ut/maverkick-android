@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.example.teacher.adapters.CourseStatsAdapter
 import com.example.teacher.databinding.FragmentTeacherProfileStatisticsBinding
 import com.example.teacher.viewmodels.TeacherProfileStatisticsViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -18,6 +19,9 @@ class TeacherProfileStatisticsFragment : Fragment() {
 
     // Get a reference to the ViewModel
     private val viewModel: TeacherProfileStatisticsViewModel by viewModels()
+
+    // Reference to the adapter
+    private lateinit var adapter: CourseStatsAdapter
 
     private var _binding: FragmentTeacherProfileStatisticsBinding? = null
     private val binding get() = _binding!!
@@ -32,6 +36,18 @@ class TeacherProfileStatisticsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // Initialize the adapter
+        adapter = CourseStatsAdapter()
+
+        // Attach the adapter to the RecyclerView
+        binding.coursesRecyclerView.adapter = adapter
+
+        // Observe the LiveData
+        viewModel.courseStatistics.observe(viewLifecycleOwner) { courses ->
+            // Update the data in the adapter
+            adapter.submitList(courses.values.toList())
+        }
 
     }
 

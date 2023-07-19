@@ -19,7 +19,7 @@ class EmojiAdapter(
     context: Context,
     resource: Int,
     emojis: List<String>,
-    private val itemClickListener: (String) -> Unit
+    private val itemClickListener: (String, Int) -> Unit
 ) : ArrayAdapter<String>(context, resource, emojis) {
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
@@ -30,7 +30,7 @@ class EmojiAdapter(
         emojiTextView.setOnClickListener {
             it.startAnimation(getBounceAnimation())
             it.postDelayed({
-                itemClickListener.invoke(emoji)
+                itemClickListener.invoke(emoji, position)
             }, getBounceAnimation().duration)
         }
         return view

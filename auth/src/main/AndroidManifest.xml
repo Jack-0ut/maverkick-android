@@ -6,21 +6,19 @@
     <uses-permission android:name="android.permission.AUTOFILL" />
 
     <application>
-
         <activity android:name=".LoginActivity"
-            android:exported="true"
-            tools:replace="android:exported">
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-
                 <data
-                    android:scheme="app"
+                    android:scheme="maverkick"
                     android:host="auth"
                     android:pathPrefix="/login" />
             </intent-filter>
         </activity>
+
 
         <activity
             android:name=".RoleSelectionActivity"
@@ -39,7 +37,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:scheme="app"
+                    android:scheme="maverkick"
                     android:host="auth"
                     android:pathPrefix="/onboarding_student" />
             </intent-filter>
@@ -55,7 +53,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:scheme="app"
+                    android:scheme="maverkick"
                     android:host="auth"
                     android:pathPrefix="/onboarding_teacher" />
             </intent-filter>

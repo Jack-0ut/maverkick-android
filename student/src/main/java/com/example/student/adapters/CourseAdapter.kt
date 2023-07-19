@@ -5,7 +5,6 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.example.data.models.Course
 import com.example.student.databinding.ItemCourseBinding
 
@@ -13,14 +12,26 @@ import com.example.student.databinding.ItemCourseBinding
  * Adapter for displaying the picture of the course
  * and it's title in the Profile -> Courses
  **/
-class CourseAdapter : ListAdapter<Course, CourseAdapter.CourseViewHolder>(CourseDiffCallback()) {
+interface OnCourseInteractionListener {
+    fun onLeaveCourse(courseId: String)
+}
+
+class CourseAdapter(private val interactionListener: OnCourseInteractionListener) :
+    ListAdapter<Course, CourseAdapter.CourseViewHolder>(CourseDiffCallback()) {
 
     inner class CourseViewHolder(private val binding: ItemCourseBinding) : RecyclerView.ViewHolder(binding.root) {
+        init {
+            binding.leaveButton.setOnClickListener {
+                val position = bindingAdapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    val item = getItem(position)
+                    interactionListener.onLeaveCourse(item.courseId)
+                }
+            }
+        }
+
         fun bind(course: Course) {
             binding.courseTitle.text = course.courseName
-            Glide.with(binding.root.context)
-                .load(course.poster)
-                .into(binding.coursePoster)
         }
     }
 
@@ -36,14 +47,10 @@ class CourseAdapter : ListAdapter<Course, CourseAdapter.CourseViewHolder>(Course
 
 class CourseDiffCallback : DiffUtil.ItemCallback<Course>() {
     override fun areItemsTheSame(oldItem: Course, newItem: Course): Boolean {
-        // Here, you should compare item IDs, assuming they are unique.
-        // If Course doesn't have a unique ID, modify this line accordingly.
         return oldItem.courseId == newItem.courseId
     }
 
     override fun areContentsTheSame(oldItem: Course, newItem: Course): Boolean {
-        // Here, you are comparing the full item to check if there are differences.
-        // Adjust this if your Course class needs a more sophisticated comparison.
         return oldItem == newItem
     }
 }

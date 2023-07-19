@@ -1,6 +1,7 @@
 package com.example.teacher.edit_course
 
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -58,18 +59,23 @@ class EditCourseViewModel @Inject constructor(
             onFailure(Exception("The course should have a poster set up for it"))
             return
         }
-
         courseRepository.activateCourse(courseId, onSuccess, onFailure)
     }
+
 
     /** Fetch all of the information related to the course **/
     fun fetchCourse(courseId: String) {
         courseRepository.getCourseById(courseId, { course ->
             _course.value = course
+
+            // Log the course details
+            Log.d("EditCourseViewModel", "Fetched course: $course")
         }, { exception ->
             // Handle error: Show error message to the user
+            Log.e("EditCourseViewModel", "Error fetching course: ${exception.message}")
         })
     }
+
 
     /** Fetch the lessons for a given course **/
     fun fetchLessons(courseId: String) {
@@ -78,5 +84,18 @@ class EditCourseViewModel @Inject constructor(
         }, { exception ->
             // Handle error: Show error message to the user
         })
+    }
+
+    /** Delete the course **/
+    fun deleteCourse(onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
+        courseRepository.removeCourse(
+            course.value!!.courseId,
+            {
+                onSuccess() // Successfully deleted the course
+            },
+            { exception ->
+                onFailure(exception) // There was an error deleting the course
+            }
+        )
     }
 }

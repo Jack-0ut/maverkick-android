@@ -7,7 +7,14 @@
     <fragment
         android:id="@+id/studentHomeFragment"
         android:name="com.example.student.fragments.StudentHomeFragment"
-        android:label="Home" />
+        android:label="Home" >
+        <deepLink
+            android:id="@+id/homeStudentDeepLink"
+            app:uri="maverkick://student/studentHomeFragment" />
+        <action
+            android:id="@+id/action_studentHomeFragment_to_galleryFragment"
+            app:destination="@id/galleryFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/galleryFragment"

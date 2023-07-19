@@ -24,7 +24,7 @@
         android:id="@+id/options_layout"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginBottom="128dp"
+        android:layout_marginBottom="156dp"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -38,6 +38,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
             android:background="@drawable/frame_border">
 
             <ImageView
@@ -62,6 +63,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
             android:background="@drawable/frame_border">
 
             <ImageView

@@ -10,7 +10,8 @@
             android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize"
             android:exported="false" />
 
-        <activity android:name=".StudentMainActivity"
+        <activity
+            android:name=".StudentMainActivity"
             android:exported="true"
             android:windowSoftInputMode="adjustPan">
             <intent-filter>
@@ -19,16 +20,28 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <data android:scheme="app"
+                <data
+                    android:scheme="maverkick"
                     android:host="student"
                     android:path="/main" />
             </intent-filter>
+
+            <!-- Intent filter for deep link -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:scheme="maverkick"
+                    android:host="student"
+                    android:pathPrefix="/studentHomeFragment" />
+            </intent-filter>
         </activity>
 
-        <activity
-            android:name=".fragments.CourseDetailsActivity"
-            android:exported="false" />
 
+        <activity
+            android:name=".course.CourseDetailsActivity"
+            android:exported="false" />
     </application>
 
 </manifest>

@@ -9,10 +9,10 @@ import android.widget.TextView
 /**
  * View for getting user's age and time to learn
  **/
-class CounterView(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
-    private val minusIcon: ImageView
-    private val plusIcon: ImageView
-    private val valueTextView: TextView
+class CounterView(context: Context, attrs: AttributeSet? = null) : LinearLayout(context, attrs) {
+    val minusIcon: ImageView
+    val plusIcon: ImageView
+    val valueTextView: TextView
 
     var minValue = 0
     var maxValue = 100
@@ -34,13 +34,15 @@ class CounterView(context: Context, attrs: AttributeSet) : LinearLayout(context,
         plusIcon = findViewById(R.id.plus_icon)
         valueTextView = findViewById(R.id.value_text_view)
 
-        val attributes = context.obtainStyledAttributes(attrs, R.styleable.CounterView)
-        try {
-            minValue = attributes.getInt(R.styleable.CounterView_min_value, 0)
-            maxValue = attributes.getInt(R.styleable.CounterView_max_value, 100)
-            value = attributes.getInt(R.styleable.CounterView_current_value, 0)
-        } finally {
-            attributes.recycle()
+        attrs?.let {
+            val attributes = context.obtainStyledAttributes(it, R.styleable.CounterView)
+            try {
+                minValue = attributes.getInt(R.styleable.CounterView_min_value, 0)
+                maxValue = attributes.getInt(R.styleable.CounterView_max_value, 100)
+                value = attributes.getInt(R.styleable.CounterView_current_value, 0)
+            } finally {
+                attributes.recycle()
+            }
         }
 
         minusIcon.setOnClickListener {

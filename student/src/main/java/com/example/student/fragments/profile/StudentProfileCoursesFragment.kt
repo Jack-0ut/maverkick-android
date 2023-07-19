@@ -1,4 +1,4 @@
-package com.example.student.fragments.profile_fragments
+package com.example.student.fragments.profile
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.student.adapters.CourseAdapter
+import com.example.student.adapters.OnCourseInteractionListener
 import com.example.student.databinding.FragmentStudentProfileCoursesBinding
 import com.example.student.viewmodels.StudentProfileCoursesViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -36,7 +37,11 @@ class StudentProfileCoursesFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // Create an instance of the adapter
-        val adapter = CourseAdapter()
+        val adapter = CourseAdapter(object : OnCourseInteractionListener {
+            override fun onLeaveCourse(courseId: String) {
+                viewModel.withdrawFromCourse(courseId)
+            }
+        })
 
         // Set the layout manager and adapter for the RecyclerView
         binding.coursesList.layoutManager = LinearLayoutManager(context)

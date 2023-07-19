@@ -1,14 +1,15 @@
-package com.example.student.fragments
+package com.example.student.course
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.example.student.adapters.CourseLessonAdapter
 import com.example.student.databinding.ActivityCourseDetailsBinding
-import com.example.student.viewmodels.CourseDetailsViewModel
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 
 /**
@@ -29,6 +30,7 @@ class CourseDetailsActivity : AppCompatActivity() {
         courseId?.let { id ->
             viewModel.fetchCourseDetails(id)
             viewModel.fetchLessons(id)
+
         }
 
         // Initialize  CourseLessonAdapter
@@ -37,15 +39,23 @@ class CourseDetailsActivity : AppCompatActivity() {
         binding.lessonsRecyclerView.adapter = courseLessonAdapter
 
         // navigate back to the home screen
+        viewModel.enrollmentComplete.observe(this) { enrollmentComplete ->
+            if (enrollmentComplete) {
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("maverkick://student/studentHomeFragment"))
+                startActivity(intent)
+                viewModel.resetEnrollmentCompleteFlag()
+            }
+        }
+
+
         binding.enrollButton.setOnClickListener {
             if (courseId != null) {
                 viewModel.enrollStudent(courseId)
-                // Replace with the appropriate action
-                finish()  // This will take you back to the previous activity
             } else {
-                Toast.makeText(this,"Can't get the id of the course.Try again,please!",Toast.LENGTH_SHORT).show()
+                Snackbar.make(binding.root, "Can't get the id of the course. Try again, please!", Snackbar.LENGTH_SHORT).show()
             }
         }
+
 
         // Observe course details LiveData
         viewModel.course.observe(this) { course ->

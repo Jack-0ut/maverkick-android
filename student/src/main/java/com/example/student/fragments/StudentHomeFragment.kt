@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.data.models.Lesson
 import com.example.student.adapters.LessonAdapter
@@ -44,9 +45,42 @@ class StudentHomeFragment : Fragment(),LessonAdapter.OnLessonClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        // Here you can initialize your RecyclerView and Button. For example:
+        // if student doesn't have courses yet, recommend us go to the Gallery to choose new/first course
+        viewModel.navigateToCourseEnrollment.observe(viewLifecycleOwner) { navigate ->
+            if (navigate) {
+                val action =
+                    StudentHomeFragmentDirections.actionStudentHomeFragmentToGalleryFragment()
+                findNavController().navigate(action)
+                viewModel.onCourseEnrollmentNavigationComplete()
+            }
+        }
+
+        // if it's the last lesson, remove button
+        viewModel.isLastLesson.observe(viewLifecycleOwner) { isLast ->
+            if (isLast) {
+                // Hide the button
+                binding.startLearningButton.visibility = View.GONE
+            } else {
+                // Show the button
+                binding.startLearningButton.visibility = View.VISIBLE
+            }
+        }
+
+        // click on the "Start Learning" button
         binding.startLearningButton.setOnClickListener {
-            // Handle button click
+            // Get the current lesson using the currentLessonIndex
+            val currentLessonIndex = viewModel.currentLessonIndex.value ?: 0
+            val currentLesson = viewModel.dailyLearningPlan.value?.lessons?.get(currentLessonIndex)
+
+            currentLesson?.let { lesson ->
+                val intent = Intent(context, VideoLessonActivity::class.java)
+                intent.putExtra("lessonId", lesson.lessonId)
+                intent.putExtra("videoUri", lesson.videoUrl)
+                intent.putExtra("transcription", lesson.transcription)
+                intent.putExtra("title", lesson.title)
+                intent.putExtra("courseId", lesson.courseId)
+                startActivity(intent)
+            }
         }
 
         // Init RecyclerView and pass the list of lessons that Student should learn today
@@ -55,6 +89,7 @@ class StudentHomeFragment : Fragment(),LessonAdapter.OnLessonClickListener {
         binding.lessonsRecyclerView.adapter = lessonsAdapter
         binding.lessonsRecyclerView.layoutManager = LinearLayoutManager(context)
 
+        // observe the current lesson
         viewModel.currentLessonIndex.observe(viewLifecycleOwner) { newCurrentLessonIndex ->
             lessonsAdapter.updateCurrentLessonIndex(newCurrentLessonIndex)
         }
@@ -65,6 +100,12 @@ class StudentHomeFragment : Fragment(),LessonAdapter.OnLessonClickListener {
             lessonsAdapter.submitList(dailyLearningPlan.lessons)
         }
 
+        // Observe the bricksCollected
+        viewModel.bricksCollected.observe(viewLifecycleOwner) { bricks ->
+            binding.pointsNumber.text = bricks.toString()
+        }
+
+        // when lesson completed broadcast is received
         val lessonCompletedReceiver: BroadcastReceiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context, intent: Intent) {
                 val lessonId = intent.getStringExtra("lessonId")

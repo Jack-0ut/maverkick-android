@@ -54,15 +54,15 @@ class AddCourseFragment : Fragment() {
         // Add new Course button click
         binding.submitButton.setOnClickListener {
             // Ask the ViewModel to handle course submission
-            viewModel.submitCourse { success, courseId ->
+            viewModel.submitCourse { success, message ->
                 if (success) {
                     // If course was added successfully, navigate to the EditCourseActivity
-                    // Use an Intent to navigate and pass the courseId as an extra
                     val intent = Intent(activity, EditCourseActivity::class.java)
-                    intent.putExtra("courseId", courseId)
+                    intent.putExtra("courseId", message)
                     startActivity(intent)
                 } else {
-                    // Handle error case
+                    // Show Snackbar with error message
+                    Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG).show()
                 }
             }
         }

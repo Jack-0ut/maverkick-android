@@ -30,7 +30,7 @@ class CourseAdapter(private val clickListener: OnCourseClickListener) : ListAdap
                 .into(binding.courseImage)
 
             // open the particular course for editing
-            binding.editCourseButton.setOnClickListener {
+            binding.root.setOnClickListener {
                 clickListener.onCourseClick(course.courseId)
             }
         }

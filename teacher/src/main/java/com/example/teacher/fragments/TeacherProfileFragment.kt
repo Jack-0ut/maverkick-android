@@ -41,12 +41,12 @@ class TeacherProfileFragment : BaseProfileFragment() {
 
             if (studentExists) {
                 // Redirect to the StudentMainActivity
-                val intentUri = Uri.parse("app://student/main")
+                val intentUri = Uri.parse("maverkick://student/main")
                 val intent = Intent(Intent.ACTION_VIEW, intentUri)
                 startActivity(intent)
             } else {
                 // Redirect to the onboarding student activity
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("app://auth/onboarding_student"))
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("maverkick://auth/onboarding_student"))
                 startActivity(intent)
             }
         }

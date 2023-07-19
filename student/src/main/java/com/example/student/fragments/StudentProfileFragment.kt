@@ -7,8 +7,8 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.example.profile.BaseProfileFragment
 import com.example.profile.ProfileViewModelInterface
-import com.example.student.fragments.profile_fragments.StudentProfileCoursesFragment
-import com.example.student.fragments.profile_fragments.StudentProfileSettingsFragment
+import com.example.student.fragments.profile.StudentProfileCoursesFragment
+import com.example.student.fragments.profile.StudentProfileSettingsFragment
 import com.example.student.viewmodels.StudentProfileViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -43,12 +43,12 @@ class StudentProfileFragment : BaseProfileFragment() {
             // Assuming the existence of a method to check if the teacher account exists
             if (teacherExists) {
                 // Redirect to the TeacherMainActivity
-                val intentUri = Uri.parse("app://teacher/main")
+                val intentUri = Uri.parse("maverkick://teacher/main")
                 val intent = Intent(Intent.ACTION_VIEW, intentUri)
                 startActivity(intent)
             } else {
                 // Redirect to the onboarding teacher activity
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("app://auth/onboarding_teacher"))
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("maverkick://auth/onboarding_teacher"))
                 startActivity(intent)
             }
         }

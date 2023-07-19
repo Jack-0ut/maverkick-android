@@ -50,7 +50,7 @@ class StudentOnboarding : AppCompatActivity() {
         onboardingViewModel.createStudentResult.observe(this) { result ->
             if (result.isSuccess) {
                 // Navigate to StudentMainActivity
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("app://student/main"))
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("maverkick://student/main"))
                 startActivity(intent)
                 finish()
             } else {

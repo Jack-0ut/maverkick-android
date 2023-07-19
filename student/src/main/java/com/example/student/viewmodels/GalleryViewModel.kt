@@ -37,7 +37,7 @@ class GalleryViewModel @Inject constructor(
         viewModelScope.launch {
             runCatching {
                 // Fetch the list of courses from the repository
-                courseRepository.getAllCourses()
+                courseRepository.getPublishedCourses()
             }.onSuccess { fetchedCourses ->
                 // Update the _courses LiveData with the fetched courses
                 _courses.value = fetchedCourses
