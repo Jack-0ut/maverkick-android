@@ -77,15 +77,23 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-
-    /** Student has at least 1 course, so we won't do the navigation to gallery then **/
-    fun onCourseEnrollmentNavigationComplete() {
-        _navigateToCourseEnrollment.value = false
+    /** Load the daily learning plan for today **/
+    private fun loadDailyLearningPlan() {
+        viewModelScope.launch {
+            val plan = dailyLearningPlanRepository.fetchOrGenerateDailyPlan(studentId, dailyStudyTimeMinutes)
+            _dailyLearningPlan.value = plan
+            _currentLessonIndex.value = plan.progress
+        }
     }
 
     /** Load the initial number of bricks collected **/
     private fun loadBricksCollected() {
         _bricksCollected.value = sharedPrefManager.getStudent()?.bricksCollected
+    }
+
+    /** Student has at least 1 course, so we won't do the navigation to gallery then **/
+    fun onCourseEnrollmentNavigationComplete() {
+        _navigateToCourseEnrollment.value = false
     }
 
     /** Update learning progress for DailyLearningPlan and StudentCourseProgress **/
@@ -96,38 +104,32 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    /** Load the daily learning plan for today **/
-    private fun loadDailyLearningPlan() {
-        viewModelScope.launch {
-            val plan = dailyLearningPlanRepository.fetchOrGenerateDailyPlan(studentId, dailyStudyTimeMinutes)
-            _dailyLearningPlan.value = plan
-            _currentLessonIndex.value = plan.progress
-        }
-    }
-
     /** Update the progress **/
     private fun incrementProgressAndStore(lessonId: String, courseId: String) {
         val dailyPlan = _dailyLearningPlan.value
-        dailyPlan?.incrementProgress()
-        _dailyLearningPlan.value = dailyPlan!!
-        _currentLessonIndex.value = dailyPlan.progress
+        if (dailyPlan != null) {
+            dailyPlan.incrementProgress()
+            _dailyLearningPlan.value = dailyPlan!!
+            _currentLessonIndex.value = dailyPlan.progress
 
-        // Increment the number of bricks collected
-        _bricksCollected.value = (_bricksCollected.value ?: 0) + 1
+            // Increment the number of bricks collected
+            _bricksCollected.value = (_bricksCollected.value ?: 0) + 1
 
-        val dailyPlanId = "${studentId}_${dailyPlan.date}"
-        updateDailyLearningPlanProgress(dailyPlanId,lessonId)
+            val dailyPlanId = "${studentId}_${dailyPlan.date}"
+            updateDailyLearningPlanProgress(dailyPlanId,lessonId)
 
-        val studentCoursesId = "${studentId}_$courseId"
-        updateStudentCourseProgress(studentCoursesId, lessonId)
+            val studentCoursesId = "${studentId}_$courseId"
+            updateStudentCourseProgress(studentCoursesId, lessonId)
 
-        // Update the number of bricks collected in the SharedPreferences
-        updateBricksCollected()
+            // Update the number of bricks collected in the SharedPreferences
+            updateBricksCollected()
 
-        // Update the number of bricks collected in the database
-        updateStudentLessonsFinishedInDatabase()
+            // Update the number of bricks collected in the database
+            updateStudentLessonsFinishedInDatabase()
+        }else{
+            loadDailyLearningPlan()
+        }
     }
-
 
     /** Update the StudentCoursesProgress by adding new lesson to the completed list **/
     private fun updateStudentCourseProgress(studentCourseId:String, lessonId:String){

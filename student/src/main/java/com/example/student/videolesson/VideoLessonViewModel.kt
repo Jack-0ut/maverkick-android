@@ -23,8 +23,7 @@ class VideoLessonViewModel @Inject constructor(
 
     /** Update the rating for the course in the database **/
     fun updateRatings(courseId: String, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
-        val rating = _lessonRating.value ?: return  // get the current rating or return if it's null
-
+        val rating = _lessonRating.value ?: return
         courseStatisticsRepository.updateRatings(courseId, rating, onSuccess, onFailure)
     }
 }

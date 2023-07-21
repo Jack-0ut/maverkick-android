@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -45,7 +46,8 @@ class StudentHomeFragment : Fragment(),LessonAdapter.OnLessonClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        // if student doesn't have courses yet, recommend us go to the Gallery to choose new/first course
+
+        // if student doesn't have courses yet,navigate to the Gallery to choose first course
         viewModel.navigateToCourseEnrollment.observe(viewLifecycleOwner) { navigate ->
             if (navigate) {
                 val action =
@@ -54,6 +56,10 @@ class StudentHomeFragment : Fragment(),LessonAdapter.OnLessonClickListener {
                 viewModel.onCourseEnrollmentNavigationComplete()
             }
         }
+
+        // Set the status bar color
+        requireActivity().window.statusBarColor = ContextCompat.getColor(requireContext(), com.example.common.R.color.top_bar_color)
+
 
         // if it's the last lesson, remove button
         viewModel.isLastLesson.observe(viewLifecycleOwner) { isLast ->
@@ -139,6 +145,7 @@ class StudentHomeFragment : Fragment(),LessonAdapter.OnLessonClickListener {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        requireActivity().window.statusBarColor = ContextCompat.getColor(requireContext(), com.example.common.R.color.main_color)
         _binding = null
     }
 }
