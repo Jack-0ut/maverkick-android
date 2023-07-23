@@ -9,7 +9,7 @@ package com.example.data.models
  **/
 
 data class User(
-    val userId: String,
+    var userId: String,
     val username: String,
     val email: String,
     var profilePicture: String? = null

@@ -3,6 +3,7 @@ package com.example.student.course
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -47,7 +48,18 @@ class CourseDetailsActivity : AppCompatActivity() {
             }
         }
 
+        // Observe isAlreadyEnrolled LiveData
+        viewModel.isAlreadyEnrolled.observe(this) { isAlreadyEnrolled ->
+            if (isAlreadyEnrolled) {
+                // Hide the enroll button if the course is already enrolled.
+                binding.enrollButton.visibility = View.GONE
+            } else {
+                // Otherwise, show the enroll button.
+                binding.enrollButton.visibility = View.VISIBLE
+            }
+        }
 
+        // enroll in the course
         binding.enrollButton.setOnClickListener {
             if (courseId != null) {
                 viewModel.enrollStudent(courseId)
@@ -55,7 +67,6 @@ class CourseDetailsActivity : AppCompatActivity() {
                 Snackbar.make(binding.root, "Can't get the id of the course. Try again, please!", Snackbar.LENGTH_SHORT).show()
             }
         }
-
 
         // Observe course details LiveData
         viewModel.course.observe(this) { course ->

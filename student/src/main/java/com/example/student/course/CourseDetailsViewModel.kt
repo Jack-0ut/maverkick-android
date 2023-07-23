@@ -46,9 +46,12 @@ class CourseDetailsViewModel @Inject constructor(
     private val _enrollmentComplete = MutableLiveData<Boolean>()
     val enrollmentComplete: LiveData<Boolean> get() = _enrollmentComplete
 
+    private val _isAlreadyEnrolled = MutableLiveData<Boolean>()
+    val isAlreadyEnrolled: LiveData<Boolean> get() = _isAlreadyEnrolled
 
     /** Fetch course details **/
     fun fetchCourseDetails(courseId: String) {
+        checkEnrollmentStatus(courseId)
         courseRepository.getCourseById(courseId, { course ->
             _course.value = course
             course?.let { fetchTeacherData(it.teacherId) }
@@ -84,23 +87,27 @@ class CourseDetailsViewModel @Inject constructor(
         }
     }
 
-
     /** Fetch user profile for a given userId **/
     private fun fetchUserProfile(userId: String) {
         viewModelScope.launch {
             try {
-                userRepository.getUserById(userId, { user ->
-                    user?.let {
-                        _user.value = it
-                    }
-                }, {
-                })
+                val fetchedUser = userRepository.getUserById(userId)
+                fetchedUser?.let {
+                    _user.value = it
+                }
             } catch (e: Exception) {
                 // Handle error: Show error message to the user
             }
         }
     }
 
+    /** Check if the student is already enrolled in the course **/
+    private fun checkEnrollmentStatus(courseId: String) {
+        val student = sharedPrefManager.getStudent()
+        student?.let {
+            _isAlreadyEnrolled.value = it.enrolledCourses.contains(courseId)
+        }
+    }
     /** Enroll student in the course **/
     fun enrollStudent(courseId: String) {
         val student = sharedPrefManager.getStudent()
@@ -130,7 +137,7 @@ class CourseDetailsViewModel @Inject constructor(
                             onSuccess = {
                                 _enrollmentComplete.postValue(true)
                             },
-                            onFailure = { e ->
+                            onFailure = {
                                 _enrollmentComplete.postValue(false)
                             }
                         )
@@ -141,8 +148,7 @@ class CourseDetailsViewModel @Inject constructor(
             }
         }
     }
-
-
+    
     fun resetEnrollmentCompleteFlag() {
         _enrollmentComplete.value = false
     }

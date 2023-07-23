@@ -14,27 +14,20 @@ import com.google.android.exoplayer2.util.Util
 
 /** Abstraction of the ExoPlayer with defined auto-rotation and resume playing **/
 abstract class AbstractVideoActivity : AppCompatActivity() {
-    private lateinit var player: ExoPlayer
+    private var player: ExoPlayer? = null
     private var playWhenReady = true
     private var currentWindow = 0
     private var playbackPosition: Long = 0
-
-    // AudioManager and AudioFocusRequest variables
     private lateinit var focusRequest: AudioFocusRequest
     private lateinit var audioManager: AudioManager
 
     protected abstract val videoUrl: String
-
     protected abstract fun onPlayerEnd()
-
     protected abstract fun initializeBinding()
-
     protected abstract fun setPlayerView(player: ExoPlayer)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // Initialize AudioManager and AudioFocusRequest
         audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
         val audioAttributes = AudioAttributes.Builder()
             .setContentType(AudioAttributes.CONTENT_TYPE_MOVIE)
@@ -46,9 +39,9 @@ abstract class AbstractVideoActivity : AppCompatActivity() {
             .setAcceptsDelayedFocusGain(true)
             .setOnAudioFocusChangeListener { focusChange ->
                 when (focusChange) {
-                    AudioManager.AUDIOFOCUS_GAIN -> player.playWhenReady = true
-                    AudioManager.AUDIOFOCUS_LOSS_TRANSIENT -> player.playWhenReady = false
-                    AudioManager.AUDIOFOCUS_LOSS -> player.playWhenReady = false
+                    AudioManager.AUDIOFOCUS_GAIN -> player?.playWhenReady = true
+                    AudioManager.AUDIOFOCUS_LOSS_TRANSIENT -> player?.playWhenReady = false
+                    AudioManager.AUDIOFOCUS_LOSS -> player?.playWhenReady = false
                 }
             }
             .build()
@@ -57,41 +50,43 @@ abstract class AbstractVideoActivity : AppCompatActivity() {
     }
 
     protected open fun initializePlayer() {
-        player = ExoPlayer.Builder(this).build()
-        setPlayerView(player)
-
-        player.addListener(object : Player.Listener {
-            override fun onPlaybackStateChanged(playbackState: Int) {
-                if (playbackState == Player.STATE_ENDED) {
-                    onPlayerEnd()
+        player = ExoPlayer.Builder(this).build().apply {
+            addListener(object : Player.Listener {
+                override fun onPlaybackStateChanged(playbackState: Int) {
+                    if (playbackState == Player.STATE_ENDED) {
+                        onPlayerEnd()
+                    }
                 }
-            }
-        })
+            })
 
-        val videoUri = Uri.parse(videoUrl)
-        val mediaItem = MediaItem.fromUri(videoUri)
+            val videoUri = Uri.parse(videoUrl)
+            val mediaItem = MediaItem.fromUri(videoUri)
 
-        player.setMediaItem(mediaItem)
-        player.seekTo(currentWindow, playbackPosition)
-        player.playWhenReady = playWhenReady
+            setMediaItem(mediaItem)
+            seekTo(currentWindow, playbackPosition)
+            playWhenReady = playWhenReady
+            prepare()
+        }
+
+        setPlayerView(player!!)
 
         val result = audioManager.requestAudioFocus(focusRequest)
         if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-            player.prepare()
+            player!!.prepare()
         }
     }
 
     protected open fun releasePlayer() {
-        if (::player.isInitialized) {
+        player?.let { player ->
             playbackPosition = player.currentPosition
-            currentWindow = player.currentMediaItemIndex
+            currentWindow = player.currentWindowIndex
             playWhenReady = player.playWhenReady
-            audioManager.abandonAudioFocusRequest(focusRequest)
             player.release()
         }
+        player = null
+        audioManager.abandonAudioFocusRequest(focusRequest)
     }
 
-    // Override lifecycle methods
     override fun onStart() {
         super.onStart()
         if (Util.SDK_INT >= 24) {
@@ -101,7 +96,7 @@ abstract class AbstractVideoActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        if ((Util.SDK_INT < 24 || !::player.isInitialized)) {
+        if ((Util.SDK_INT < 24 || player == null)) {
             initializePlayer()
         }
     }
@@ -118,5 +113,19 @@ abstract class AbstractVideoActivity : AppCompatActivity() {
         if (Util.SDK_INT >= 24) {
             releasePlayer()
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt("currentWindow", currentWindow)
+        outState.putLong("playbackPosition", playbackPosition)
+        outState.putBoolean("playWhenReady", playWhenReady)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        currentWindow = savedInstanceState.getInt("currentWindow")
+        playbackPosition = savedInstanceState.getLong("playbackPosition")
+        playWhenReady = savedInstanceState.getBoolean("playWhenReady")
     }
 }

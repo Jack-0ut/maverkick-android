@@ -29,9 +29,19 @@ abstract class ProfileViewModel(
     override val profilePicture: LiveData<Uri> get() = _profilePicture
 
     private var user: User? = null
+        set(value) {
+            field = value
+            value?.let {
+                _username.value = it.username
+                if(it.profilePicture != null) {
+                    _profilePicture.value = Uri.parse(it.profilePicture)
+                }
+                sharedPrefManager.saveUser(it)
+            }
+        }
 
     init {
-        loadUserDataFromSharedPref()
+        loadUserData()
     }
 
     override fun clearPreferences() {
@@ -42,13 +52,23 @@ abstract class ProfileViewModel(
         firebaseAuth.signOut()
     }
 
-    /** Get the user object from the shared preferences */
-    private fun loadUserDataFromSharedPref() {
+    /** Load user data either from Shared Preferences or from Firestore */
+    private fun loadUserData() {
         user = sharedPrefManager.getUser()
-        user?.let {
-            _username.value = it.username
-            if(it.profilePicture != null) {
-                _profilePicture.value = Uri.parse(it.profilePicture)
+        user ?: fetchUserDataFromFirestore()
+    }
+
+    /** Fetch user data from Firestore */
+    private fun fetchUserDataFromFirestore() {
+        firebaseAuth.currentUser?.uid?.let { userId ->
+            viewModelScope.launch {
+                try {
+                    val fetchedUser = userRepository.getUserById(userId)
+                    if (fetchedUser != null) {
+                        user = fetchedUser
+                    }
+                } catch (e: Exception) {
+                }
             }
         }
     }
@@ -59,15 +79,8 @@ abstract class ProfileViewModel(
             viewModelScope.launch {
                 try {
                     userRepository.updateProfilePicture(it.userId, uri)
-                    // Update the LiveData value
-                    _profilePicture.value = uri
-
                     // Create a new User object with the updated image URL
-                    val updatedUser = it.copy(profilePicture = uri.toString())
-                    // Update the User object in shared preferences
-                    sharedPrefManager.saveUser(updatedUser)
-                    // Update the User object in the ViewModel
-                    user = updatedUser
+                    user = it.copy(profilePicture = uri.toString())
                 } catch (e: Exception) {
                     // handle the error
                 }
@@ -75,5 +88,3 @@ abstract class ProfileViewModel(
         }
     }
 }
-
-

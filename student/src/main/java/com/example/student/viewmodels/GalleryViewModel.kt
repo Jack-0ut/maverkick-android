@@ -12,7 +12,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-
 /**
  * ViewModel for the GalleryFragment
  * This viewModel class will be responsible for

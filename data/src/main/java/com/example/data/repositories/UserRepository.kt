@@ -1,11 +1,15 @@
 package com.example.data.repositories
 
 import android.net.Uri
+import android.util.Log
 import com.example.data.IDatabaseService
 import com.example.data.models.User
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
@@ -28,7 +32,9 @@ class UserRepository @Inject constructor(
             databaseService.db.collection("users").document(userId)
                 .get()
                 .addOnSuccessListener { documentSnapshot ->
-                    val user = documentSnapshot.toObject(User::class.java)
+                    val user = documentSnapshot.toObject(User::class.java)?.apply {
+                        this.userId = documentSnapshot.id
+                    }
                     if (user != null) {
                         onSuccess(user)
                     } else {
@@ -43,10 +49,14 @@ class UserRepository @Inject constructor(
         }
     }
 
+
     /** Save new profile picture to the firebase storage under the userId name */
     fun updateProfilePicture(userId: String, uri: Uri) {
+        Log.d("UpdateProfilePicture", "UserId: $userId") // Add this line
         val storageRef = firebaseStorage.reference
-        val profilePictureRef = storageRef.child("profilePictures/$userId")
+        val path = "profilePictures/$userId"
+        Log.d("UpdateProfilePicture", "Path: $path") // Add this line
+        val profilePictureRef = storageRef.child(path)
 
         val uploadTask = profilePictureRef.putFile(uri)
         uploadTask.addOnFailureListener {
@@ -58,6 +68,7 @@ class UserRepository @Inject constructor(
             }
         }
     }
+
 
     /** Update the url of the profile picture inside the firestore users collection **/
     private fun updateFirebaseProfilePicture(userId: String, profilePictureUrl: String) {
@@ -74,17 +85,19 @@ class UserRepository @Inject constructor(
 
 
     /** Getting the object of a User given the userId **/
-    fun getUserById(userId: String, onSuccess: (User?) -> Unit, onFailure: (Exception) -> Unit) {
-        databaseService.db.collection("users").document(userId)
-            .get()
-            .addOnSuccessListener { documentSnapshot ->
-                val user = documentSnapshot.toObject(User::class.java)
-                onSuccess(user)
+    suspend fun getUserById(userId: String): User? {
+        return withContext(Dispatchers.IO) {
+            try {
+                val documentSnapshot = databaseService.db.collection("users").document(userId).get().await()
+                documentSnapshot.toObject(User::class.java)?.apply {
+                    this.userId = documentSnapshot.id
+                }
+            } catch (e: Exception) {
+                null
             }
-            .addOnFailureListener { exception ->
-                onFailure(exception)
-            }
+        }
     }
+
 
     /** Check if teacher account exists for this user**/
     suspend fun checkIfTeacherExists(userId: String): Boolean {

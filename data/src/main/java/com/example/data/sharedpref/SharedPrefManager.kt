@@ -9,7 +9,7 @@ import javax.inject.Inject
 
 /**
  * Class that manages Shared Preferences:
- * userID, studentID,teacherID,role
+ * User,Student,Teacher objects and role User has right now
  **/
 class SharedPrefManager @Inject constructor(private val sharedPreferences: SharedPreferences) {
     private val gson = Gson()

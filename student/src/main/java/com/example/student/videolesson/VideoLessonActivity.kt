@@ -81,6 +81,7 @@ class VideoLessonActivity : AppCompatActivity(), ExerciseDialogFragment.Exercise
 
             val dialogFragment = AskQuestionDialogFragment().apply {
                 arguments = Bundle().apply {
+                    putString("courseId",courseId)
                     putString("transcription", transcription)
                     putString("lessonId", lessonId)
                 }
@@ -96,7 +97,7 @@ class VideoLessonActivity : AppCompatActivity(), ExerciseDialogFragment.Exercise
             dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
             val gridView = dialog.findViewById<GridView>(R.id.grid_view)
-            val adapter = EmojiAdapter(this, R.layout.item_emoji, emojis) { selectedEmoji, position ->
+            val adapter = EmojiAdapter(this, R.layout.item_emoji, emojis) { _, position ->
                 dialog.dismiss()
                 val rating = 5 - position
                 viewModel.setLessonRating(rating)

@@ -6,7 +6,6 @@ import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.text.method.ArrowKeyMovementMethod
 import android.view.*
 import android.view.animation.AnimationUtils
 import android.view.inputmethod.InputMethodManager
@@ -14,10 +13,11 @@ import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import com.example.data.models.AiChatMessage
 import com.example.student.R
+import com.example.student.adapters.ChatMessageAdapter
 import com.example.student.databinding.FragmentAskQuestionDialogBinding
-import com.example.student.databinding.MessageItemBinding
+import com.google.android.material.snackbar.Snackbar
 import com.mmstq.progressbargifdialog.ProgressBarGIFDialog
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -30,9 +30,9 @@ class AskQuestionDialogFragment : DialogFragment() {
     private val chatViewModel: ChatViewModel by activityViewModels()
     private lateinit var binding: FragmentAskQuestionDialogBinding
 
-    // Parameters
-    private lateinit var lessonId:String
-    private lateinit var transcription:String
+    private lateinit var courseId: String
+    private lateinit var lessonId: String
+    private lateinit var transcription: String
     private val maxRequests = 5
     private var progressBarGIFDialogBuilder: ProgressBarGIFDialog.Builder? = null
 
@@ -48,74 +48,132 @@ class AskQuestionDialogFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        lessonId = arguments?.getString("lessonId") ?: ""
-        transcription = arguments?.getString("transcription") ?: ""
+        initVariablesFromArguments()
+        initRecyclerView()
+        observeViewModel()
+        startConversation()
+        handleSendMessage()
+    }
 
-        val adapter = MessageAdapter(mutableListOf())
+    private fun initVariablesFromArguments() {
+        arguments?.let {
+            courseId = it.getString("courseId", "")
+            lessonId = it.getString("lessonId", "")
+            transcription = it.getString("transcription", "")
+            if (courseId.isBlank() || lessonId.isBlank() || transcription.isBlank()) {
+                showSnackbar("Missing argument data!")
+                dismiss()
+            }
+        } ?: run {
+            showSnackbar("No arguments found!")
+            dismiss()
+        }
+    }
+
+    private fun showSnackbar(message: String) {
+        Snackbar.make(requireView(), message, Snackbar.LENGTH_SHORT).show()
+    }
+
+    private fun initRecyclerView() {
+        val adapter = ChatMessageAdapter(mutableListOf())
         binding.recyclerView.adapter = adapter
         binding.recyclerView.layoutManager = LinearLayoutManager(context)
+    }
 
+    private fun observeViewModel() {
         chatViewModel.messages.observe(viewLifecycleOwner) { messages ->
-            adapter.updateMessages(messages)
+            (binding.recyclerView.adapter as ChatMessageAdapter).updateMessages(messages)
             binding.recyclerView.scrollToPosition(messages.size - 1)
         }
 
-        // display the dialog, while we're getting response from the server
+        observeMessageGeneration()
+        observeRequestCount()
+    }
+
+    private fun observeMessageGeneration() {
         chatViewModel.isMessageGenerationInProgress.observe(viewLifecycleOwner) { inProgress ->
-            if (inProgress) {
-                progressBarGIFDialogBuilder = ProgressBarGIFDialog.Builder(requireActivity())
-                    .setCancelable(false)
-                    .setTitleColor(com.example.common.R.color.black) // Set Title Color (int only)
-                    .setLoadingGif(R.drawable.progress)
-                    .setDoneTitle("Here it is!") // Set Done Title
-                    .setLoadingTitle("Wait, I'm working on answer...") // Set Loading Title
-
-                progressBarGIFDialogBuilder?.build()
-            } else {
-                progressBarGIFDialogBuilder?.clear() // Clear the dialog when inProgress is false
-                progressBarGIFDialogBuilder = null
-            }
+            handleProgress(inProgress)
         }
+    }
 
-        // Start the conversation when the dialog is first displayed
-        chatViewModel.startConversation(lessonId,transcription)
+    private fun handleProgress(inProgress: Boolean) {
+        if (inProgress) {
+            showProgress()
+        } else {
+            hideProgress()
+        }
+    }
 
-        // observe the request counter
+    private fun showProgress() {
+        progressBarGIFDialogBuilder = ProgressBarGIFDialog.Builder(requireActivity())
+            .setCancelable(false)
+            .setTitleColor(com.example.common.R.color.black)
+            .setLoadingGif(R.drawable.progress)
+            .setDoneTitle("Here it is!") // Set Done Title
+            .setLoadingTitle("Wait, I'm working on answer...")
+
+        progressBarGIFDialogBuilder?.build()
+    }
+
+    private fun hideProgress() {
+        progressBarGIFDialogBuilder?.clear()
+        progressBarGIFDialogBuilder = null
+    }
+
+    private fun startConversation() {
+        chatViewModel.startConversation(courseId, lessonId, transcription)
+    }
+
+    private fun observeRequestCount() {
         chatViewModel.requestCount.observe(viewLifecycleOwner) { count ->
-            // update counter
-            binding.counter.text = "${maxRequests - count}"
-
-            // adjust the alpha of the icon view
-            val remainingRequests = maxRequests - count
-            val alphaValue = remainingRequests.toFloat() / maxRequests
-            binding.energyIcon.alpha = alphaValue
-
-            // apply the fade in animation
-            val fadeInAnimation = AnimationUtils.loadAnimation(context, R.anim.fade_in)
-            binding.counter.startAnimation(fadeInAnimation)
-            binding.energyIcon.startAnimation(fadeInAnimation)
+            handleRequestCount(count)
         }
+    }
 
-        // when student click on the send icon
+    private fun handleRequestCount(count: Int) {
+        updateCounter(count)
+        adjustIconAlpha(count)
+        applyFadeInAnimation()
+    }
+
+    private fun updateCounter(count: Int) {
+        binding.counter.text = "${maxRequests - count}"
+    }
+
+    private fun adjustIconAlpha(count: Int) {
+        val remainingRequests = maxRequests - count
+        val alphaValue = remainingRequests.toFloat() / maxRequests
+        binding.energyIcon.alpha = alphaValue
+    }
+
+    private fun applyFadeInAnimation() {
+        val fadeInAnimation = AnimationUtils.loadAnimation(context, R.anim.fade_in)
+        binding.counter.startAnimation(fadeInAnimation)
+        binding.energyIcon.startAnimation(fadeInAnimation)
+    }
+
+    private fun handleSendMessage() {
         binding.inputLayout.setEndIconOnClickListener {
             val messageText = binding.promptInput.text.toString()
             if (messageText.isNotBlank() && chatViewModel.requestCount.value!! < maxRequests) {
-                val message = Message(messageText, true)
-                chatViewModel.addMessage(message)
-                binding.promptInput.text?.clear()
-
-                hideKeyboard()
-
-                chatViewModel.sendMessage(lessonId, messageText)
-                chatViewModel.incrementRequestCount()
-
+                processUserMessage(messageText)
             } else if (chatViewModel.requestCount.value!! >= maxRequests) {
                 Toast.makeText(context, "Maximum number of requests reached", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    /** Method that will close the keyboard after student entered the question*/
+    private fun processUserMessage(messageText: String) {
+        val message = AiChatMessage(messageText, true)
+        chatViewModel.addMessage(message)
+        binding.promptInput.text?.clear()
+
+        hideKeyboard()
+
+        chatViewModel.sendMessage(courseId, lessonId, messageText)
+        chatViewModel.incrementRequestCount()
+    }
+
     private fun hideKeyboard() {
         val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
         imm?.hideSoftInputFromWindow(view?.windowToken, 0)
@@ -154,59 +212,3 @@ class AskQuestionDialogFragment : DialogFragment() {
         }
     }
 }
-
-/**
- * Adapter for the Message class, which is responsible for
- * the displaying the chat with AI-powered bot, adding, updating
- * the UI in real time
- **/
-class MessageAdapter(
-    private val messages: MutableList<Message>
-) : RecyclerView.Adapter<MessageAdapter.ViewHolder>() {
-
-    class ViewHolder(val binding: MessageItemBinding) : RecyclerView.ViewHolder(binding.root)
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val inflater = LayoutInflater.from(parent.context)
-        val binding = MessageItemBinding.inflate(inflater, parent, false)
-        binding.textMessage.apply {
-            isFocusable = true
-            isFocusableInTouchMode = true
-            isClickable = true
-            isLongClickable = true
-            movementMethod = ArrowKeyMovementMethod.getInstance()
-            setTextIsSelectable(true)
-        }
-        return ViewHolder(binding)
-    }
-
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val message = messages[position]
-
-        holder.binding.textMessage.text = message.text
-        if (message.isUser) {
-            holder.binding.textMessage.setBackgroundResource(R.drawable.background_user_message)
-        } else {
-            holder.binding.textMessage.setBackgroundResource(R.drawable.background_bot_message)
-
-        }
-    }
-
-    override fun getItemCount() = messages.size
-
-    fun updateMessages(newMessages: List<Message>) {
-        val oldSize = messages.size
-        messages.clear()
-        messages.addAll(newMessages)
-        val newSize = messages.size
-        if (newSize > oldSize) {
-            notifyItemInserted(newSize - 1)
-        }
-    }
-}
-
-
-data class Message(
-    val text: String,
-    val isUser: Boolean
-)

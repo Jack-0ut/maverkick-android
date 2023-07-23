@@ -9,9 +9,6 @@ import com.bumptech.glide.Glide
 import com.example.data.models.Course
 import com.example.student.databinding.ItemSearchCourseBinding
 
-interface OnSearchCourseClickListener {
-    fun onSearchCourseClick(courseId: String)
-}
 
 /**
  * Display the course that fits user search query
@@ -50,6 +47,9 @@ class SearchCourseAdapter(private val onCourseClickListener: OnSearchCourseClick
     }
 }
 
+interface OnSearchCourseClickListener {
+    fun onSearchCourseClick(courseId: String)
+}
 
 class SearchCourseDiffCallback : DiffUtil.ItemCallback<Course>() {
     override fun areItemsTheSame(oldItem: Course, newItem: Course): Boolean {

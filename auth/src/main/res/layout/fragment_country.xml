@@ -3,7 +3,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/main_color">
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline"
@@ -48,7 +49,9 @@
         app:ccp_showPhoneCode="false"
         app:ccp_showFlag="true"
         app:ccp_showFullName="true"
-        app:ccp_arrowColor="@color/black"
+        app:ccp_arrowColor="@color/main_accent_color"
+        app:ccp_contentColor="@color/main_accent_color"
+        app:ccp_textSize="30sp"
         app:layout_constraintTop_toBottomOf="@+id/country_label"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
