@@ -179,6 +179,11 @@ class AskQuestionDialogFragment : DialogFragment() {
         imm?.hideSoftInputFromWindow(view?.windowToken, 0)
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setStyle(STYLE_NORMAL, com.example.common.R.style.FullScreenDialogStyle)
+    }
+
     /** On dialog fragment creation we're setting the gravity,height and width for it*/
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return super.onCreateDialog(savedInstanceState).apply {
@@ -202,12 +207,10 @@ class AskQuestionDialogFragment : DialogFragment() {
         super.onConfigurationChanged(newConfig)
 
         // Update dialog dimensions
-        val width = (resources.displayMetrics.widthPixels)
-        val height = (resources.displayMetrics.heightPixels)
-        dialog?.window?.setLayout(width, WindowManager.LayoutParams.WRAP_CONTENT)
+        dialog?.window?.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT)
         val params = dialog?.window?.attributes
         if (params != null) {
-            params.height = height
+            params.height = WindowManager.LayoutParams.MATCH_PARENT
             dialog?.window?.attributes = params
         }
     }
