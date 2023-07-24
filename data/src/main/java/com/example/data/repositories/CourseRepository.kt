@@ -129,7 +129,7 @@ class CourseRepository @Inject constructor(
 
     suspend fun getPublishedCourses(): List<Course> = suspendCoroutine { continuation ->
         databaseService.db.collection("courses")
-            //.whereEqualTo("isActive", true)
+            .whereEqualTo("published", true)
             .get()
             .addOnSuccessListener { documents ->
                 val courses = documents.mapNotNull { document ->
