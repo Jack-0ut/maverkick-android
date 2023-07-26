@@ -177,8 +177,8 @@ class DailyLearningPlanRepository @Inject constructor(private val databaseServic
             }
             i++
         }
+        todayLessons.sortBy { it.courseId }
         return todayLessons
-
     }
 
     /** For a given course and student, find the number of the lesson student finished in that course **/

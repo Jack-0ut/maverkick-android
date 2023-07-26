@@ -71,11 +71,11 @@ class StudentRepository @Inject constructor(private val databaseService: IDataba
         }
     }
 
-    suspend fun updateCollectedBricks(userId: String, bricksCollected: Int): Result<Boolean> {
-        // Try to update the lessonsFinished field in the database
+    /** Increment the number of bricks collected by 1 every time called **/
+    suspend fun incrementCollectedBricks(userId: String): Result<Boolean> {
         return try {
             databaseService.db.collection("students").document(userId)
-                .update("bricksCollected", bricksCollected)
+                .update("bricksCollected", FieldValue.increment(1))
                 .await()
             Result.success(true)
         } catch (e: Exception) {

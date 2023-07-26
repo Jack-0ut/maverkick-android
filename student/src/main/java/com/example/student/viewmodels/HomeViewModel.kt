@@ -156,7 +156,7 @@ class HomeViewModel @Inject constructor(
     /** Update the number of bricks collected in the database **/
     private fun updateStudentLessonsFinishedInDatabase() {
         viewModelScope.launch {
-            studentRepository.updateCollectedBricks(studentId, _bricksCollected.value ?: 0)
+            studentRepository.incrementCollectedBricks(studentId)
         }
     }
 }

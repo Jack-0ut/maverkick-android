@@ -1,7 +1,6 @@
 package com.example.data.repositories
 
 import android.net.Uri
-import android.util.Log
 import com.algolia.search.client.Index
 import com.algolia.search.helper.deserialize
 import com.algolia.search.model.search.Query
@@ -57,26 +56,13 @@ class CourseRepository @Inject constructor(
                     onFailure(firebaseFirestoreException)
                     return@addSnapshotListener
                 }
-
                 if (documentSnapshot != null && documentSnapshot.exists()) {
-                    // Log DocumentSnapshot object
-                    Log.d("CourseRepository", "Fetched DocumentSnapshot: $documentSnapshot")
-
                     val firebaseCourse = documentSnapshot.toObject(FirebaseCourse::class.java)
-
-                    // Log FirebaseCourse object
-                    Log.d("CourseRepository", "Fetched FirebaseCourse: $firebaseCourse")
-
                     val course = firebaseCourse?.toCourse(documentSnapshot.id)
-
-                    // Log Course object
-                    Log.d("CourseRepository", "Converted to Course: $course")
-
                     onSuccess(course)
                 }
             }
     }
-
 
     /** Get the list of courses for the student with given Id*/
     fun getStudentCourses(studentID: String, onSuccess: (List<Course>) -> Unit, onFailure: (Exception) -> Unit) {
@@ -126,7 +112,7 @@ class CourseRepository @Inject constructor(
                 }
         }
     }
-
+    /** Get the list of published courses, which we use in the Gallery **/
     suspend fun getPublishedCourses(): List<Course> = suspendCoroutine { continuation ->
         databaseService.db.collection("courses")
             .whereEqualTo("published", true)
@@ -141,8 +127,6 @@ class CourseRepository @Inject constructor(
                 continuation.resumeWithException(exception)
             }
     }
-
-
 
     /** Save new poster to the firebase storage under the courseId name */
     fun updatePoster(courseId:String, uri: Uri, onSuccess: (String) -> Unit, onFailure: (Exception) -> Unit) {
