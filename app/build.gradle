@@ -10,7 +10,7 @@ android {
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.example.app"
+        applicationId "com.maverkick.app"
         minSdk 26
         targetSdk 32
         versionCode 1
@@ -88,7 +88,7 @@ kapt {
 configurations.all {
     resolutionStrategy.eachDependency { DependencyResolveDetails details ->
         if (details.requested.group == 'org.jetbrains.kotlin') {
-            details.useVersion '1.8.10' // use your desired Kotlin version here
+            details.useVersion '1.8.10'
         }
     }
 }

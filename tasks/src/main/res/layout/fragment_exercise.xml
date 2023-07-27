@@ -55,7 +55,7 @@
         </ScrollView>
     </androidx.cardview.widget.CardView>
 
-    <com.example.tasks.SnackbarView
+    <com.maverkick.tasks.SnackbarView
         android:id="@+id/customSnackbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

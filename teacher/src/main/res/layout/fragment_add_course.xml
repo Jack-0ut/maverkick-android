@@ -136,7 +136,7 @@
         app:layout_constraintTop_toTopOf="@id/tagsIcon"
         app:layout_constraintBottom_toBottomOf="@id/tagsIcon" />
 
-    <com.example.teacher.TagInputField
+    <com.maverkick.teacher.TagInputField
         android:id="@+id/tag_input_field"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

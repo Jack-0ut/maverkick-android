@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.student">
+    package="com.maverkick.student">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application>
         <activity
-            android:name=".videolesson.VideoLessonActivity"
+            android:name="com.maverkick.student.videolesson.VideoLessonActivity"
             android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize"
             android:exported="false" />
 
         <activity
-            android:name=".StudentMainActivity"
+            android:name="com.maverkick.student.StudentMainActivity"
             android:exported="true"
             android:windowSoftInputMode="adjustPan">
             <intent-filter>
@@ -40,7 +40,7 @@
 
 
         <activity
-            android:name=".course.CourseDetailsActivity"
+            android:name="com.maverkick.student.course.CourseDetailsActivity"
             android:exported="false" />
     </application>
 

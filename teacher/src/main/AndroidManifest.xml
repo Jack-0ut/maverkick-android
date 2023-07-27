@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.example.teacher">
+    package="com.maverkick.teacher">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
@@ -12,21 +12,21 @@
             android:authorities="${applicationId}.androidx-startup"
             tools:node="remove" />
         <activity
-            android:name=".videoplayer.VideoPlayerActivity"
+            android:name="com.maverkick.teacher.videoplayer.VideoPlayerActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:exported="false" />
         <activity
-            android:name=".addlesson.AddLessonActivity"
+            android:name="com.maverkick.teacher.addlesson.AddLessonActivity"
             android:exported="false" />
         <activity
-            android:name=".edit_course.EditCourseActivity"
+            android:name="com.maverkick.teacher.edit_course.EditCourseActivity"
             android:exported="false" />
         <activity
-            android:name=".addlesson.SelectVideoActivity"
+            android:name="com.maverkick.teacher.addlesson.SelectVideoActivity"
             android:exported="false" />
 
         <activity
-            android:name=".TeacherMainActivity"
+            android:name="com.maverkick.teacher.TeacherMainActivity"
             android:exported="true"
             android:windowSoftInputMode="adjustPan">
             <intent-filter>

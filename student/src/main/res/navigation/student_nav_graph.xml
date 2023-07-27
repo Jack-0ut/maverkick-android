@@ -6,7 +6,7 @@
 
     <fragment
         android:id="@+id/studentHomeFragment"
-        android:name="com.example.student.fragments.StudentHomeFragment"
+        android:name="com.maverkick.student.fragments.StudentHomeFragment"
         android:label="Home" >
         <deepLink
             android:id="@+id/homeStudentDeepLink"
@@ -18,13 +18,13 @@
 
     <fragment
         android:id="@+id/galleryFragment"
-        android:name="com.example.student.fragments.GalleryFragment"
+        android:name="com.maverkick.student.fragments.GalleryFragment"
         android:label="GalleryFragment">
     </fragment>
 
     <fragment
         android:id="@+id/studentProfileFragment"
-        android:name="com.example.student.fragments.StudentProfileFragment"
+        android:name="com.maverkick.student.fragments.StudentProfileFragment"
         android:label="Profile" />
 
 </navigation>

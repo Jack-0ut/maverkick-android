@@ -35,7 +35,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <com.example.common.CounterView
+    <com.maverkick.common.CounterView
         android:id="@+id/age_counter_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
