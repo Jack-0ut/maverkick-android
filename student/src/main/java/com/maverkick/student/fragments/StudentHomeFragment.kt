@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -34,6 +35,8 @@ class StudentHomeFragment : Fragment(),LessonAdapter.OnLessonClickListener {
     private val binding get() = _binding!!
 
     private val viewModel: HomeViewModel by viewModels()
+    private var isReceiverRegistered = false
+    private lateinit var lessonCompletedReceiver: BroadcastReceiver
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -112,24 +115,33 @@ class StudentHomeFragment : Fragment(),LessonAdapter.OnLessonClickListener {
         }
 
         // when lesson completed broadcast is received
-        val lessonCompletedReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+        lessonCompletedReceiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context, intent: Intent) {
+                Log.d("BroadcastMaver","Receive the broadcast")
                 val lessonId = intent.getStringExtra("lessonId")
                 val courseId = intent.getStringExtra("courseId")
                 // Call the ViewModel function to update student learning progress
                 if (lessonId != null && courseId != null) {
+                    Log.d("BroadcastMaver","Received valid lessonId: $lessonId and courseId: $courseId")
                     CoroutineScope(Dispatchers.Main).launch {
+                        Log.d("BroadcastMaver","Before calling viewModel.updateStudentLearningProgress")
                         viewModel.updateStudentLearningProgress(lessonId, courseId)
+                        Log.d("BroadcastMaver","After calling viewModel.updateStudentLearningProgress")
                     }
+                } else {
+                    Log.d("BroadcastMaver","Received invalid lessonId or courseId")
                 }
             }
         }
 
         // Register the receiver
-        LocalBroadcastManager.getInstance(requireContext()).registerReceiver(
-            lessonCompletedReceiver,
-            IntentFilter("LESSON_COMPLETED_ACTION")
-        )
+        if (!isReceiverRegistered) {
+            LocalBroadcastManager.getInstance(requireContext()).registerReceiver(
+                lessonCompletedReceiver,
+                IntentFilter("LESSON_COMPLETED_ACTION")
+            )
+            isReceiverRegistered = true
+        }
     }
 
     /** Click on the particular lesson **/
@@ -145,6 +157,11 @@ class StudentHomeFragment : Fragment(),LessonAdapter.OnLessonClickListener {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        // Unregister the receiver
+        if (isReceiverRegistered) {
+            LocalBroadcastManager.getInstance(requireContext()).unregisterReceiver(lessonCompletedReceiver)
+            isReceiverRegistered = false
+        }
         requireActivity().window.statusBarColor = ContextCompat.getColor(requireContext(), com.maverkick.common.R.color.main_color)
         _binding = null
     }

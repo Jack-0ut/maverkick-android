@@ -1,5 +1,6 @@
 package com.maverkick.student.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.*
 import com.maverkick.data.models.DailyLearningPlan
 import com.maverkick.data.repositories.DailyLearningPlanRepository
@@ -100,6 +101,7 @@ class HomeViewModel @Inject constructor(
     suspend fun updateStudentLearningProgress(lessonId: String, courseId: String) {
         val dailyPlanId = "${studentId}_${_dailyLearningPlan.value?.date}"
         if (!dailyLearningPlanRepository.isLessonCompleted(dailyPlanId,lessonId)) {
+            Log.d("UpdateProgress","We're here")
             incrementProgressAndStore(lessonId, courseId)
         }
     }
@@ -123,6 +125,10 @@ class HomeViewModel @Inject constructor(
 
             // Update the number of bricks collected in the SharedPreferences
             updateBricksCollected()
+
+            // Add log statements to check values
+            Log.d("Progress", "Current Progress: ${dailyPlan.progress}")
+            Log.d("BricksCollected", "Current Bricks Collected: ${_bricksCollected.value}")
 
             // Update the number of bricks collected in the database
             updateStudentLessonsFinishedInDatabase()
@@ -156,6 +162,7 @@ class HomeViewModel @Inject constructor(
     /** Update the number of bricks collected in the database **/
     private fun updateStudentLessonsFinishedInDatabase() {
         viewModelScope.launch {
+            Log.d("BricksCollected", "Updating Bricks Collected in Database: ${_bricksCollected.value}")
             studentRepository.incrementCollectedBricks(studentId)
         }
     }
