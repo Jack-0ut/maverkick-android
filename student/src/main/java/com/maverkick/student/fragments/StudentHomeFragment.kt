@@ -117,19 +117,13 @@ class StudentHomeFragment : Fragment(),LessonAdapter.OnLessonClickListener {
         // when lesson completed broadcast is received
         lessonCompletedReceiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context, intent: Intent) {
-                Log.d("BroadcastMaver","Receive the broadcast")
                 val lessonId = intent.getStringExtra("lessonId")
                 val courseId = intent.getStringExtra("courseId")
                 // Call the ViewModel function to update student learning progress
                 if (lessonId != null && courseId != null) {
-                    Log.d("BroadcastMaver","Received valid lessonId: $lessonId and courseId: $courseId")
                     CoroutineScope(Dispatchers.Main).launch {
-                        Log.d("BroadcastMaver","Before calling viewModel.updateStudentLearningProgress")
                         viewModel.updateStudentLearningProgress(lessonId, courseId)
-                        Log.d("BroadcastMaver","After calling viewModel.updateStudentLearningProgress")
                     }
-                } else {
-                    Log.d("BroadcastMaver","Received invalid lessonId or courseId")
                 }
             }
         }
