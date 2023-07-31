@@ -28,6 +28,7 @@
         <activity
             android:name="com.maverkick.teacher.TeacherMainActivity"
             android:exported="true"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />

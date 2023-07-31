@@ -13,7 +13,8 @@
         <activity
             android:name="com.maverkick.student.StudentMainActivity"
             android:exported="true"
-            android:windowSoftInputMode="adjustPan">
+            android:windowSoftInputMode="adjustPan"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -37,7 +38,6 @@
                     android:pathPrefix="/studentHomeFragment" />
             </intent-filter>
         </activity>
-
 
         <activity
             android:name="com.maverkick.student.course.CourseDetailsActivity"

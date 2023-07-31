@@ -88,9 +88,14 @@
         <entry key="..\:/Projects/Android/Maverkick/tasks/src/main/res/drawable/fill_in_box.xml" value="0.146" />
         <entry key="..\:/Projects/Android/Maverkick/tasks/src/main/res/drawable/snackbar_background.xml" value="0.146" />
         <entry key="..\:/Projects/Android/Maverkick/tasks/src/main/res/drawable/snackbar_view.xml" value="0.146" />
+        <entry key="..\:/Projects/Android/Maverkick/tasks/src/main/res/drawable/text_border.xml" value="0.146" />
         <entry key="..\:/Projects/Android/Maverkick/tasks/src/main/res/layout/fill_in_blanks.xml" value="0.25416666666666665" />
         <entry key="..\:/Projects/Android/Maverkick/tasks/src/main/res/layout/fragment_exercise.xml" value="0.25416666666666665" />
         <entry key="..\:/Projects/Android/Maverkick/tasks/src/main/res/layout/fragment_text_quiz_task.xml" value="0.25416666666666665" />
+        <entry key="..\:/Projects/Android/Maverkick/tasks/src/main/res/layout/matching.xml" value="0.20854700854700856" />
+        <entry key="..\:/Projects/Android/Maverkick/tasks/src/main/res/layout/matching_item_definition.xml" value="0.25416666666666665" />
+        <entry key="..\:/Projects/Android/Maverkick/tasks/src/main/res/layout/matching_item_term.xml" value="0.253125" />
+        <entry key="..\:/Projects/Android/Maverkick/tasks/src/main/res/layout/open_answer.xml" value="0.25416666666666665" />
         <entry key="..\:/Projects/Android/Maverkick/tasks/src/main/res/layout/radio_button_item.xml" value="0.25416666666666665" />
         <entry key="..\:/Projects/Android/Maverkick/tasks/src/main/res/layout/snackbar_view.xml" value="0.264" />
         <entry key="..\:/Projects/Android/Maverkick/tasks/src/main/res/layout/text_quiz.xml" value="0.25416666666666665" />
