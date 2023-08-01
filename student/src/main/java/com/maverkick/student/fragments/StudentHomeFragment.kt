@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -62,7 +61,6 @@ class StudentHomeFragment : Fragment(),LessonAdapter.OnLessonClickListener {
 
         // Set the status bar color
         requireActivity().window.statusBarColor = ContextCompat.getColor(requireContext(), com.maverkick.common.R.color.top_bar_color)
-
 
         // if it's the last lesson, remove button
         viewModel.isLastLesson.observe(viewLifecycleOwner) { isLast ->

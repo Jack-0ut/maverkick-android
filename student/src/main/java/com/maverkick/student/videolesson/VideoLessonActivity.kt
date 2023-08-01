@@ -11,21 +11,21 @@ import android.media.AudioFocusRequest
 import android.media.AudioManager
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.widget.GridView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import com.maverkick.student.R
-import com.maverkick.student.adapters.EmojiAdapter
-import com.maverkick.student.databinding.ActivityVideoLessonBinding
-import com.maverkick.tasks.ExerciseDialogFragment
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.util.Util
+import com.maverkick.student.R
+import com.maverkick.student.adapters.EmojiAdapter
+import com.maverkick.student.databinding.ActivityVideoLessonBinding
+import com.maverkick.tasks.ExerciseDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 /**
@@ -59,6 +59,9 @@ class VideoLessonActivity : AppCompatActivity(), ExerciseDialogFragment.Exercise
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Set the status bar color
+        window.statusBarColor = ContextCompat.getColor(this, com.maverkick.common.R.color.main_tone_color)
 
         // Inflate the layout using View Binding
         binding = ActivityVideoLessonBinding.inflate(layoutInflater)
@@ -232,6 +235,12 @@ class VideoLessonActivity : AppCompatActivity(), ExerciseDialogFragment.Exercise
     /** When student completes all of the tasks, just finish the activity **/
     override fun onExercisesCompleted() {
         finish()
+    }
+
+    /** When the activity ends, we change the color of the status bar **/
+    override fun onDestroy() {
+        super.onDestroy()
+        window.statusBarColor = ContextCompat.getColor(this, com.maverkick.common.R.color.main_color)
     }
 }
 
