@@ -33,14 +33,10 @@ class CourseStatsAdapter : ListAdapter<CourseStatistics, CourseStatsAdapter.Cour
 
 class CourseStatsDiffCallback : DiffUtil.ItemCallback<CourseStatistics>() {
     override fun areItemsTheSame(oldItem: CourseStatistics, newItem: CourseStatistics): Boolean {
-        // Here, you should compare item IDs, assuming they are unique.
-        // If CourseStatistics doesn't have a unique ID, modify this line accordingly.
         return oldItem.courseId == newItem.courseId
     }
 
     override fun areContentsTheSame(oldItem: CourseStatistics, newItem: CourseStatistics): Boolean {
-        // Here, you are comparing the full item to check if there are differences.
-        // Adjust this if your CourseStatistics class needs a more sophisticated comparison.
         return oldItem == newItem
     }
 }

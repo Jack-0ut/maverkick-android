@@ -1,61 +1,30 @@
 package com.maverkick.data.models
 
-import java.util.*
-
 /**
- * Class storage for the Lesson objects
- * @param lessonId - id of the lesson
- * @param courseId - id of the course
- * @param title - title of the video-lesson
- * @param duration - length of the video-lesson (in seconds) <= 300
- * @param videoUrl - path to the storage where video is stored
- * @param transcription - text transcription of what is said in the video
- * @param lessonOrder - the order of the lesson in the course (1,2,3,4...)
- * @param creationDate - the date of the video lesson creation
- **/
-data class Lesson(
-    val lessonId: String = "",
-    val courseId: String = "",
-    val title: String = "",
-    val duration: Int = 0,
-    val videoUrl: String = "",
-    val transcription: String = "",
-    val lessonOrder: Int = 0,
-    val creationDate: Date = Date()
+ * ILesson is a common abstract class for different types of lessons within the application.
+ * This abstract class helps unify the handling of various lesson types, such as video and text lessons,
+ * making it easier to create shared functionality around these types.
+ *
+ * @property lessonId - A unique identifier for the lesson.
+ * @property courseId - The identifier of the course to which the lesson belongs.
+ * @property title - The title of the lesson.
+ * @property duration - The duration of the lesson in seconds.
+ *                  For video lessons, it represents the length of the video,
+ *                  while for text lessons, it may represent an estimated reading time.
+ * @property lessonOrder - The order of the lesson within the course (e.g. 1, 2, 3, 4,...).
+ */
+abstract class Lesson(
+    open val lessonId: String,
+    open val courseId: String,
+    open val title: String,
+    open val duration: Int,
+    open val lessonOrder: Int
 ) {
-    fun toFirebaseLesson(): LessonFirebase {
-        return LessonFirebase(
-            title = this.title,
-            duration = this.duration,
-            videoUrl = this.videoUrl,
-            transcription = this.transcription,
-            lessonOrder = this.lessonOrder,
-            creationDate = this.creationDate
-        )
-    }
-}
-
-/**
- * The same Lesson class, but without lessonId and courseId, specifically for interacting with Firebase
- **/
-data class LessonFirebase @JvmOverloads constructor(
-    val title: String = "",
-    val duration: Int = 0,
-    val videoUrl: String? = null,
-    val transcription: String? = null,
-    val lessonOrder: Int = 0,
-    val creationDate: Date = Date()
-) {
-    fun toLesson(courseId:String,lessonId: String): Lesson {
-        return Lesson(
-            lessonId,
-            courseId,
-            title,
-            duration,
-            videoUrl ?: "",  // if videoUrl is null, use empty string
-            transcription ?: "",  // if transcription is null, use empty string
-            lessonOrder,
-            creationDate
-        )
+    fun isContentTheSame(other: Lesson): Boolean {
+        return lessonId == other.lessonId &&
+                courseId == other.courseId &&
+                title == other.title &&
+                duration == other.duration &&
+                lessonOrder == other.lessonOrder
     }
 }

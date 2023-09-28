@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="CounterView">
-        <attr name="min_value" format="integer" />
-        <attr name="max_value" format="integer" />
-        <attr name="current_value" format="integer" />
+        <attr name="min_value" format="integer"/>
+        <attr name="max_value" format="integer"/>
+        <attr name="current_value" format="integer"/>
+        <attr name="icon_color" format="color"/>
     </declare-styleable>
 </resources>

@@ -6,13 +6,15 @@
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/teacher_bottomNavigationView"
+        style="@style/CustomBottomNavigationView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@color/blocks_color"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:menu="@menu/teacher_bottom_navigation_menu" />
+        app:menu="@menu/teacher_bottom_navigation_menu"
+        app:itemIconTint="@color/bottom_navigation_colors"
+        app:labelVisibilityMode="unlabeled"/>
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/teacher_navHostFragment"

@@ -1,6 +1,7 @@
 package com.maverkick.common
 
 import android.content.Context
+import android.graphics.Color
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.ImageView
@@ -40,6 +41,12 @@ class CounterView(context: Context, attrs: AttributeSet? = null) : LinearLayout(
                 minValue = attributes.getInt(R.styleable.CounterView_min_value, 0)
                 maxValue = attributes.getInt(R.styleable.CounterView_max_value, 100)
                 value = attributes.getInt(R.styleable.CounterView_current_value, 0)
+                val iconColor = attributes.getColor(R.styleable.CounterView_icon_color, Color.BLACK)
+
+                minusIcon.setColorFilter(iconColor)
+                plusIcon.setColorFilter(iconColor)
+                valueTextView.setTextColor(iconColor)
+
             } finally {
                 attributes.recycle()
             }

@@ -1,8 +1,8 @@
 package com.maverkick.teacher.viewmodels
 
 import androidx.lifecycle.ViewModel
-import com.maverkick.data.models.Course
-import com.maverkick.data.repositories.CourseRepository
+import com.maverkick.data.models.VideoCourse
+import com.maverkick.data.repositories.VideoCourseRepository
 import com.maverkick.data.repositories.CourseStatisticsRepository
 import com.maverkick.data.sharedpref.SharedPrefManager
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,7 +19,7 @@ import javax.inject.Inject
  **/
 @HiltViewModel
 class AddCourseViewModel @Inject constructor(
-    private val courseRepository: CourseRepository,
+    private val videoCourseRepository: VideoCourseRepository,
     private val statisticsRepository: CourseStatisticsRepository,
     private val sharedPrefManager: SharedPrefManager
 ) : ViewModel() {
@@ -67,7 +67,7 @@ class AddCourseViewModel @Inject constructor(
         if (courseName.isNotBlank() && language.isNotBlank() && tags.isNotEmpty()) {
             val teacher = sharedPrefManager.getTeacher()
             teacher?.let {
-                val newCourse = Course(
+                val newVideoCourse = VideoCourse(
                     "",
                     courseName,
                     it.teacherId,
@@ -78,7 +78,7 @@ class AddCourseViewModel @Inject constructor(
                     Date(),
                     false
                 )
-                courseRepository.addCourse(newCourse, { courseId ->
+                videoCourseRepository.addCourse(newVideoCourse, { courseId ->
                     // Once the course is successfully created, initialize the corresponding CourseStatistics
                     statisticsRepository.addCourseStatistics(courseId,courseName, {
                         // If initializing the CourseStatistics is successful

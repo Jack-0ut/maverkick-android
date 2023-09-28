@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="@color/blocks_color"/>
+    <solid android:color="@color/maverkick_white"/>
 
     <stroke
         android:width="2dp"
-        android:color="@color/secondary_color"/>
+        android:color="@color/maverkick_light_green"/>
 
     <corners android:radius="4dp"/>
 </shape>

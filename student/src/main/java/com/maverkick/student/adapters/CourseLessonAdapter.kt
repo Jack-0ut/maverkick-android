@@ -5,19 +5,18 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.maverkick.data.models.Lesson
-import com.maverkick.student.R
-import com.maverkick.student.databinding.ItemCourseLessonBinding
+import com.maverkick.common.databinding.ItemLessonDescriptionBinding
+import com.maverkick.data.models.VideoLesson
 
 /**
  * Simple adapter for showing the lessons for the given course.
  * It's just number, title and duration
  **/
-class CourseLessonAdapter : ListAdapter<Lesson, CourseLessonAdapter.CourseLessonViewHolder>(LessonDiffCallback()) {
+class CourseLessonAdapter : ListAdapter<VideoLesson, CourseLessonAdapter.CourseLessonViewHolder>(LessonDiffCallback()) {
 
-    inner class CourseLessonViewHolder(private val binding: ItemCourseLessonBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(lesson: Lesson, number: Int) {
-            binding.lessonNumber.text = binding.root.context.getString(R.string.lesson_number_format, number)
+    inner class CourseLessonViewHolder(private val binding: ItemLessonDescriptionBinding) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(lesson: VideoLesson, number: Int) {
+            binding.lessonNumber.text = String.format("%02d", number)
             binding.lessonTitle.text = lesson.title
             binding.lessonDuration.text = secondsToMinutesSeconds(lesson.duration)
         }
@@ -29,18 +28,18 @@ class CourseLessonAdapter : ListAdapter<Lesson, CourseLessonAdapter.CourseLesson
         }
     }
 
-    class LessonDiffCallback : DiffUtil.ItemCallback<Lesson>() {
-        override fun areItemsTheSame(oldItem: Lesson, newItem: Lesson): Boolean {
+    class LessonDiffCallback : DiffUtil.ItemCallback<VideoLesson>() {
+        override fun areItemsTheSame(oldItem: VideoLesson, newItem: VideoLesson): Boolean {
             return oldItem.lessonId == newItem.lessonId
         }
 
-        override fun areContentsTheSame(oldItem: Lesson, newItem: Lesson): Boolean {
+        override fun areContentsTheSame(oldItem: VideoLesson, newItem: VideoLesson): Boolean {
             return oldItem == newItem
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CourseLessonViewHolder {
-        val binding = ItemCourseLessonBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding = ItemLessonDescriptionBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return CourseLessonViewHolder(binding)
     }
 

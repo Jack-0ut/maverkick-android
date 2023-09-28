@@ -1,0 +1,9 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="960"
+    android:viewportHeight="960">
+  <path
+      android:fillColor="@color/maverkick_main"
+      android:pathData="M444,805v-304L177,346v304.98L444,805ZM517,805 L783,650.98L783,346L517,500.86L517,805ZM480,439 L742,286 480,134 217,286 480,439ZM141,715q-18.25,-10.43 -27.63,-27.3Q104,670.83 104,652v-344q0,-18.83 9.38,-35.7T141,245l303,-175q16.9,-10 35.95,-10T517,70l302,175q17.25,10.43 27.13,27.3Q856,289.17 856,308v344q0,18.83 -9.88,35.7T819,715L517,890q-18.33,10 -37.38,10Q460.57,900 444,890L141,715ZM480,480Z"/>
+</vector>

@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="type_your_answer">Type your answer here</string>
+
+    <!-- fragment_exercise.xml -->
+    <string name="exercises_greeting_text">Great, now take the tasks</string>
+    <string name="check_button_text">Check</string>
+    <string name="explain_button_text">Explain</string>
+    <string name="next_button_text">NEXT</string>
 </resources>

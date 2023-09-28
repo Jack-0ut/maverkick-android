@@ -4,7 +4,6 @@ import android.content.Context
 import android.media.AudioAttributes
 import android.media.AudioFocusRequest
 import android.media.AudioManager
-import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.exoplayer2.ExoPlayer
@@ -12,12 +11,12 @@ import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.util.Util
 
-/** Abstraction of the ExoPlayer with defined auto-rotation and resume playing **/
 abstract class AbstractVideoActivity : AppCompatActivity() {
+
     private var player: ExoPlayer? = null
     private var playWhenReady = true
     private var currentWindow = 0
-    private var playbackPosition: Long = 0
+    private var playbackPosition = 0L
     private lateinit var focusRequest: AudioFocusRequest
     private lateinit var audioManager: AudioManager
 
@@ -26,27 +25,41 @@ abstract class AbstractVideoActivity : AppCompatActivity() {
     protected abstract fun initializeBinding()
     protected abstract fun setPlayerView(player: ExoPlayer)
 
+    companion object {
+        private const val KEY_WINDOW = "key_window"
+        private const val KEY_POSITION = "key_position"
+        private const val KEY_PLAY_WHEN_READY = "key_play_when_ready"
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
-        val audioAttributes = AudioAttributes.Builder()
-            .setContentType(AudioAttributes.CONTENT_TYPE_MOVIE)
-            .setUsage(AudioAttributes.USAGE_MEDIA)
-            .build()
 
-        focusRequest = AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN)
-            .setAudioAttributes(audioAttributes)
-            .setAcceptsDelayedFocusGain(true)
-            .setOnAudioFocusChangeListener { focusChange ->
-                when (focusChange) {
-                    AudioManager.AUDIOFOCUS_GAIN -> player?.playWhenReady = true
-                    AudioManager.AUDIOFOCUS_LOSS_TRANSIENT -> player?.playWhenReady = false
-                    AudioManager.AUDIOFOCUS_LOSS -> player?.playWhenReady = false
-                }
+        focusRequest = AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN).apply {
+            setAudioAttributes(AudioAttributes.Builder()
+                .setContentType(AudioAttributes.CONTENT_TYPE_MOVIE)
+                .setUsage(AudioAttributes.USAGE_MEDIA)
+                .build())
+            setAcceptsDelayedFocusGain(true)
+            setOnAudioFocusChangeListener { focusChange ->
+                handleAudioFocusChange(focusChange)
             }
-            .build()
+        }.build()
 
         initializeBinding()
+
+        savedInstanceState?.let {
+            currentWindow = it.getInt(KEY_WINDOW)
+            playbackPosition = it.getLong(KEY_POSITION)
+            playWhenReady = it.getBoolean(KEY_PLAY_WHEN_READY)
+        }
+    }
+
+    private fun handleAudioFocusChange(focusChange: Int) {
+        when (focusChange) {
+            AudioManager.AUDIOFOCUS_GAIN -> player?.playWhenReady = true
+            AudioManager.AUDIOFOCUS_LOSS_TRANSIENT, AudioManager.AUDIOFOCUS_LOSS -> player?.playWhenReady = false
+        }
     }
 
     protected open fun initializePlayer() {
@@ -58,17 +71,13 @@ abstract class AbstractVideoActivity : AppCompatActivity() {
                     }
                 }
             })
-
-            val videoUri = Uri.parse(videoUrl)
-            val mediaItem = MediaItem.fromUri(videoUri)
-
-            setMediaItem(mediaItem)
+            setMediaItem(MediaItem.fromUri(videoUrl))
             seekTo(currentWindow, playbackPosition)
-            playWhenReady = playWhenReady
             prepare()
         }
 
         setPlayerView(player!!)
+        player!!.playWhenReady = playWhenReady
 
         val result = audioManager.requestAudioFocus(focusRequest)
         if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
@@ -77,15 +86,15 @@ abstract class AbstractVideoActivity : AppCompatActivity() {
     }
 
     protected open fun releasePlayer() {
-        player?.let { player ->
-            playbackPosition = player.currentPosition
-            currentWindow = player.currentWindowIndex
-            playWhenReady = player.playWhenReady
-            player.release()
+        player?.apply {
+            playbackPosition = currentPosition
+            playWhenReady = playWhenReady
+            release()
         }
         player = null
         audioManager.abandonAudioFocusRequest(focusRequest)
     }
+
 
     override fun onStart() {
         super.onStart()
@@ -96,7 +105,7 @@ abstract class AbstractVideoActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        if ((Util.SDK_INT < 24 || player == null)) {
+        if (Util.SDK_INT < 24 || player == null) {
             initializePlayer()
         }
     }
@@ -117,15 +126,8 @@ abstract class AbstractVideoActivity : AppCompatActivity() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putInt("currentWindow", currentWindow)
-        outState.putLong("playbackPosition", playbackPosition)
-        outState.putBoolean("playWhenReady", playWhenReady)
-    }
-
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        currentWindow = savedInstanceState.getInt("currentWindow")
-        playbackPosition = savedInstanceState.getLong("playbackPosition")
-        playWhenReady = savedInstanceState.getBoolean("playWhenReady")
+        outState.putInt(KEY_WINDOW, currentWindow)
+        outState.putLong(KEY_POSITION, playbackPosition)
+        outState.putBoolean(KEY_PLAY_WHEN_READY, playWhenReady)
     }
 }

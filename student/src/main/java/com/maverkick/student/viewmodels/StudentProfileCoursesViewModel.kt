@@ -1,15 +1,14 @@
 package com.maverkick.student.viewmodels
 
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
+import com.maverkick.data.event_bus.CourseWithdrawnEvent
+import com.maverkick.data.event_bus.EventBus
 import com.maverkick.data.models.Course
-import com.maverkick.data.repositories.CourseRepository
-import com.maverkick.data.repositories.CourseStatisticsRepository
-import com.maverkick.data.repositories.StudentCourseRepository
-import com.maverkick.data.repositories.StudentRepository
+import com.maverkick.data.models.CourseType
+import com.maverkick.data.models.TextCourse
+import com.maverkick.data.models.VideoCourse
+import com.maverkick.data.repositories.*
 import com.maverkick.data.sharedpref.SharedPrefManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -23,75 +22,120 @@ import javax.inject.Inject
 @HiltViewModel
 class StudentProfileCoursesViewModel @Inject constructor(
     private val sharedPrefManager: SharedPrefManager,
-    private val courseRepository: CourseRepository,
+    private val videoCourseRepository: VideoCourseRepository,
+    private val textCourseRepository: TextCourseRepository,
     private val studentRepository: StudentRepository,
     private val studentCourseRepository: StudentCourseRepository,
-    private val courseStatisticsRepository: CourseStatisticsRepository
+    private val courseStatisticsRepository: CourseStatisticsRepository,
+    private val dailyLearningPlanRepository: DailyLearningPlanRepository
 ) : ViewModel() {
 
-    private val _currentCourses = MutableLiveData<List<Course>>()
+    private val _currentVideoCourses = MutableLiveData<List<VideoCourse>>()
+    private val _currentTextCourses = MutableLiveData<List<TextCourse>>()
+    private val _currentCourses = MediatorLiveData<List<Course>>()
+
     val currentCourses: LiveData<List<Course>> = _currentCourses
 
     init {
-        fetchCourses()
+        fetchVideoCourses()
+        fetchTextCourses()
+
+        // Add the sources to merge the video and text courses
+        _currentCourses.addSource(_currentVideoCourses) { mergeCourses() }
+        _currentCourses.addSource(_currentTextCourses) { mergeCourses() }
     }
 
-    /** A coroutine method that fetches the list of the courses that student is taking */
-    private fun fetchCourses() {
+    private fun mergeCourses() {
+        val videoCourses = _currentVideoCourses.value ?: emptyList()
+        val textCourses = _currentTextCourses.value ?: emptyList()
+        _currentCourses.value = videoCourses + textCourses
+    }
+
+    private fun fetchVideoCourses() {
         viewModelScope.launch {
-            // Get the current user from shared preferences
             val student = sharedPrefManager.getStudent()
             student?.let {
-                courseRepository.getStudentCourses(
-                    it.studentId,
-                    onSuccess = { courses ->
-                        // Update the _courses LiveData with the fetched courses
-                        _currentCourses.value = courses
-                    },
-                    onFailure = { error ->
+                studentRepository.getVideoCourses(it.studentId).let { result ->
+                    if (result.isSuccess) {
+                        val courseIds = result.getOrNull() ?: emptyList()
+
+                        // Pass those courseIds to fetch the courses
+                        videoCourseRepository.getVideoCoursesByIds(courseIds,
+                            onSuccess = { videoCourses ->
+                                _currentVideoCourses.value = videoCourses
+                            },
+                            onFailure = {}
+                        )
                     }
-                )
+                }
             } ?: run {
+                // Handle the case where the student is null
             }
         }
     }
 
-    /** A coroutine method that withdraws the student from a course */
-    fun withdrawFromCourse(courseId: String) {
+    private fun fetchTextCourses() {
         viewModelScope.launch {
             val student = sharedPrefManager.getStudent()
-            student?.let { student ->
-                try {
-                    // Call the StudentCourseRepository to withdraw the student from the course
-                    studentCourseRepository.withdrawStudent(student.studentId, courseId)
-                    studentRepository.removeCourseFromEnrolled(student.studentId, courseId)
+            student?.let {
+                studentRepository.getTextCourses(it.studentId).let { result ->
+                    if (result.isSuccess) {
+                        val courseIds = result.getOrNull() ?: emptyList()
 
-                    // Create a new list without the course ID
-                    val newEnrolledCourses = student.enrolledCourses.filterNot { it == courseId }
-
-                    // Update the Student object and save it back to shared preferences
-                    val updatedStudent = student.copy(enrolledCourses = newEnrolledCourses)
-                    sharedPrefManager.saveStudent(updatedStudent)
-
-                    // Remove the course from the current LiveData
-                    _currentCourses.value = _currentCourses.value?.filterNot { it.courseId == courseId }
-
-                    // Update courseStatistics for the withdrawn course
-                    courseStatisticsRepository.incrementDropouts(courseId,
-                        onSuccess = {
-                            // Log success or handle it
-                            Log.d("Withdrawal", "Successfully incremented dropouts.")
-                        },
-                        onFailure = { e ->
-                            // Log the error or handle it
-                            Log.e("Withdrawal", "Failed to increment dropouts: ", e)
-                        }
-                    )
-                } catch (e: Exception) {
-                    // Log the error or handle it
-                    Log.e("Withdrawal", "Failed to withdraw from course: ", e)
+                        // Pass those courseIds to fetch the courses
+                        textCourseRepository.getTextCoursesByIds(courseIds,
+                            onSuccess = { textCourses ->
+                                _currentTextCourses.value = textCourses
+                            },
+                            onFailure = {}
+                        )
+                    }
                 }
+            } ?: run {
+                // Handle the case where the student is null
             }
         }
     }
+
+    fun withdrawFromCourse(courseId: String, courseType: CourseType) {
+        viewModelScope.launch {
+            val savedStudent = sharedPrefManager.getStudent() ?: return@launch
+            try {
+                studentCourseRepository.withdrawStudent(savedStudent.studentId, courseId)
+                studentRepository.removeCourseFromEnrolled(savedStudent.studentId, courseId, courseType)
+                dailyLearningPlanRepository.updateOnCourseDrop(savedStudent.studentId, courseId, savedStudent.dailyStudyTimeMinutes * 60)
+
+                val newEnrolledCourses = when (courseType) {
+                    CourseType.VIDEO -> savedStudent.enrolledVideoCourses.filterNot { it == courseId }
+                    CourseType.TEXT -> savedStudent.enrolledTextCourses.filterNot { it == courseId }
+                }
+
+                val updatedStudent = savedStudent.copy(
+                    enrolledVideoCourses = if (courseType == CourseType.VIDEO) newEnrolledCourses else savedStudent.enrolledVideoCourses,
+                    enrolledTextCourses = if (courseType == CourseType.TEXT) newEnrolledCourses else savedStudent.enrolledTextCourses
+                )
+
+                sharedPrefManager.saveStudent(updatedStudent)
+
+                when (courseType) {
+                    CourseType.VIDEO -> _currentVideoCourses.value = _currentVideoCourses.value?.filterNot { it.courseId == courseId }
+                    CourseType.TEXT -> _currentTextCourses.value = _currentTextCourses.value?.filterNot { it.courseId == courseId }
+                }
+
+                if (courseType == CourseType.VIDEO) {
+                    courseStatisticsRepository.incrementDropouts(
+                        courseId,
+                        onSuccess = { Log.d("Withdrawal", "Successfully incremented dropouts.") },
+                        onFailure = { e -> Log.e("Withdrawal", "Failed to increment dropouts: ", e) }
+                    )
+                }
+                // Emit the event after withdrawing
+                EventBus.courseWithdrawnEvent.emit(CourseWithdrawnEvent(savedStudent.studentId, courseId, courseType))
+
+            } catch (e: Exception) {
+                Log.e("Withdrawal", "Failed to withdraw from course: ", e)
+            }
+        }
+    }
+
 }

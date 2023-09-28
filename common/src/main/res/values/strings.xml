@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">common</string>
+    <string name="enroll_text">Enroll</string>
+    <string name="lessons_text">Lessons</string>
 </resources>

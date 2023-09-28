@@ -1,8 +1,9 @@
 package com.maverkick.data.repositories
 
-import com.maverkick.data.IDatabaseService
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FieldValue
+import com.maverkick.data.IDatabaseService
+import com.maverkick.data.models.CourseType
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
@@ -20,20 +21,20 @@ class StudentCourseRepository @Inject constructor(private val databaseService: I
             transaction.update(studentCourseRef, "lastCompletedLesson", FieldValue.increment(1))
         }
     }
-    /** Add new document to the studentCourses collection **/
-    suspend fun enrollStudent(studentId: String, courseId: String): Boolean {
+
+    suspend fun enrollStudent(studentId: String, courseId: String, courseType: CourseType): Boolean {
         val studentCoursesCollection = databaseService.db.collection("studentCourses")
-        val studentCourseDocumentId = "${studentId}_$courseId"
+        val studentCourseDocumentId = "${studentId}_${courseId}"
         val studentCourseDocument = studentCoursesCollection.document(studentCourseDocumentId).get().await()
 
         return if (!studentCourseDocument.exists()) {
             val newStudentCourse = hashMapOf(
                 "studentId" to studentId,
                 "courseId" to courseId,
+                "courseType" to courseType.name,
                 "enrollmentDate" to Timestamp.now(),
                 "active" to true
             )
-
             studentCoursesCollection.document(studentCourseDocumentId).set(newStudentCourse).await()
             true
         } else {
@@ -41,17 +42,17 @@ class StudentCourseRepository @Inject constructor(private val databaseService: I
         }
     }
 
-    /** Add new document to the studentCourseProgress collection **/
-    suspend fun initStudentCourseProgress(studentId: String, courseId: String): Boolean {
+    suspend fun initStudentCourseProgress(studentId: String, courseId: String, courseType: CourseType): Boolean {
         val studentCourseProgressCollection = databaseService.db.collection("studentCourseProgress")
 
-        val studentCourseDocumentId = "${studentId}_$courseId"
+        val studentCourseDocumentId = "${studentId}_${courseId}"
         val studentCourseProgressDocument = studentCourseProgressCollection.document(studentCourseDocumentId).get().await()
 
         return if (!studentCourseProgressDocument.exists()) {
             val newStudentCourseProgress = hashMapOf(
                 "studentId" to studentId,
                 "courseId" to courseId,
+                "courseType" to courseType.name,
                 "lastCompletedLesson" to 0,
                 "progressDate" to Timestamp.now()
             )
@@ -60,23 +61,6 @@ class StudentCourseRepository @Inject constructor(private val databaseService: I
             true
         } else {
             false
-        }
-    }
-
-
-    /** Fetches the student course progress **/
-    suspend fun getStudentCourseProgress(studentId: String, courseId: String): Int {
-        val studentCourseProgressCollection = databaseService.db.collection("studentCourseProgress")
-
-        val studentCourseDocumentId = "${studentId}_$courseId"
-        val studentCourseProgressDocument = studentCourseProgressCollection.document(studentCourseDocumentId).get().await()
-
-        return if (studentCourseProgressDocument.exists()) {
-            // If the document exists, return the lastCompletedLesson field
-            studentCourseProgressDocument.get("lastCompletedLesson") as Int
-        } else {
-            // If the document does not exist, return 0 as the default value
-            0
         }
     }
 
@@ -117,6 +101,4 @@ class StudentCourseRepository @Inject constructor(private val databaseService: I
         // Update the 'active' field to true to re-enroll the student
         studentCourseDocument.update("active", true).await()
     }
-
-
 }

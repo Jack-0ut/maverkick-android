@@ -2,6 +2,7 @@ package com.maverkick.tasks.task
 
 import android.util.SparseArray
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
 
 /**
@@ -9,7 +10,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
  * tasks to the user, also choosing which tasks are gonna be displayed and
  * how many of them we should display
  **/
-class TaskPagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
+class TaskPagerAdapter(fragmentActivity: FragmentActivity) : FragmentStateAdapter(fragmentActivity) {
     private var tasks: List<Task> = emptyList()
 
     // SparseArray to keep track of the fragments in the ViewPager

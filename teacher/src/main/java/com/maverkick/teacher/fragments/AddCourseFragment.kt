@@ -122,7 +122,6 @@ class AddCourseFragment : Fragment() {
 
     }
 
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
@@ -131,12 +130,12 @@ class AddCourseFragment : Fragment() {
     private fun initializeTagInputField(){
         binding.tagInputField.tagInputEditText.hint = "Enter the tag and hit on space"
         binding.tagInputField.tagInputEditText.setBackgroundResource(R.drawable.tag_input_rounded_corners)
-        binding.tagInputField.tagInputEditText.setBackgroundColor(ContextCompat.getColor(requireContext(), com.maverkick.common.R.color.accent_color))
+        binding.tagInputField.tagInputEditText.setBackgroundColor(ContextCompat.getColor(requireContext(), com.maverkick.common.R.color.maverkick_white))
     }
 
     private fun initializeDropdown() {
         val languages = resources.getStringArray(R.array.languages)
-        val adapter = ArrayAdapter(requireContext(), R.layout.language_list_item, languages)
+        val adapter = ArrayAdapter(requireContext(), com.maverkick.common.R.layout.language_list_item, languages)
         (binding.courseLanguage.editText as? AutoCompleteTextView)?.setAdapter(adapter)
     }
 }

@@ -1,9 +1,10 @@
 package com.maverkick.teacher.videoplayer
 
 import android.os.Bundle
+import androidx.core.content.ContextCompat
+import com.google.android.exoplayer2.ExoPlayer
 import com.maverkick.videoplayer.AbstractVideoActivity
 import com.maverkick.videoplayer.databinding.ActivityVideoAbstractBinding
-import com.google.android.exoplayer2.ExoPlayer
 
 /**Video Player that plays the particular lesson in the course.
  * Called from the EditCourseFragment
@@ -19,6 +20,8 @@ class VideoPlayerActivity : AbstractVideoActivity() {
         super.onCreate(savedInstanceState)
         _binding = ActivityVideoAbstractBinding.inflate(layoutInflater)
         setContentView(_binding.root)
+
+        window.statusBarColor = ContextCompat.getColor(this, com.maverkick.common.R.color.black)
     }
 
 
@@ -36,6 +39,11 @@ class VideoPlayerActivity : AbstractVideoActivity() {
     // Implement setPlayerView in your subclass
     override fun setPlayerView(player: ExoPlayer) {
         _binding.playerView.player = player
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        window.statusBarColor = ContextCompat.getColor(this, com.maverkick.common.R.color.maverkick_main)
     }
 
     companion object {

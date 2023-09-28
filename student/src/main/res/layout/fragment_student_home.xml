@@ -2,71 +2,90 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/main_arc_background">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/top_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/top_bar_color"
         android:elevation="4dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <LinearLayout
+            android:id="@+id/course_generation_tries"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:background="@color/maverkick_topbar"
+            android:orientation="horizontal"
+            android:padding="10dp"
+            android:gravity="center_vertical"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/learn_today_text"
+            app:layout_constraintBottom_toBottomOf="@id/learn_today_text">
+
+            <ImageView
+                android:id="@+id/course_gen_icon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_course_gen_tries"/>
+
+            <TextView
+                android:id="@+id/course_gen_number"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:text="@string/initial_course_gen"
+                android:textSize="20sp"
+                android:textColor="@color/main_color" />
+        </LinearLayout>
+
         <TextView
             android:id="@+id/learn_today_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Learn it today"
-            android:textColor="@color/main_accent_color"
+            android:text="@string/learn_it_today"
+            android:textColor="@color/maverkick_white"
             android:textSize="24sp"
-            android:textStyle="bold"
             android:gravity="center"
             android:layout_margin="10dp"
-            android:fontFamily="@font/itim"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <com.google.android.material.card.MaterialCardView
+        <LinearLayout
             android:id="@+id/points_container"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="15dp"
-            app:cardElevation="0dp"
-            app:strokeWidth="0dp"
             android:layout_marginEnd="10dp"
+            android:background="@color/maverkick_topbar"
+            android:orientation="horizontal"
+            android:padding="10dp"
+            android:gravity="center_vertical"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/learn_today_text"
-            app:layout_constraintBottom_toBottomOf="@id/learn_today_text"
-            app:cardBackgroundColor="@color/top_bar_color">
+            app:layout_constraintBottom_toBottomOf="@id/learn_today_text">
 
+            <ImageView
+                android:id="@+id/points_icon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_cube"
+                android:contentDescription="@string/points_icon_description" />
 
-            <LinearLayout
+            <TextView
+                android:id="@+id/points_number"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="10dp"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
+                android:layout_marginStart="5dp"
+                android:text="@string/initial_points"
+                android:textSize="20sp"
+                android:textColor="@color/main_color" />
+        </LinearLayout>
 
-                <ImageView
-                    android:id="@+id/points_icon"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/ic_block" />
-
-                <TextView
-                    android:id="@+id/points_number"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
-                    android:text="0"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/main_accent_color" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.recyclerview.widget.RecyclerView
@@ -79,14 +98,14 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/top_bar"
-        tools:listitem="@layout/item_lesson" />
+        tools:listitem="@layout/item_video_lesson" />
 
     <Button
         android:id="@+id/startLearningButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
-        android:text="Start Learning"
+        android:text="@string/start_learning"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

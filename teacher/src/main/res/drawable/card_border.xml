@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="@color/main_color_semi_transparent" />
-    <corners android:radius="8dp" />
-    <stroke android:color="@color/secondary_color" android:width="2dp"/>
+    <corners android:radius="25dp" />
+    <stroke android:color="@color/maverkick_light_green" android:width="1dp"/>
 </shape>

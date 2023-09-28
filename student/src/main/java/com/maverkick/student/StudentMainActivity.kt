@@ -4,20 +4,19 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
-import com.maverkick.student.databinding.ActivityMainStudentBinding
+import com.maverkick.student.databinding.ActivityStudentMainBinding
 import dagger.hilt.android.AndroidEntryPoint
-
 /**
  * Main Activity Class for the Student
  * Here we initialize Menu and other things
  **/
 @AndroidEntryPoint
 class StudentMainActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityMainStudentBinding
+    private lateinit var binding: ActivityStudentMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityMainStudentBinding.inflate(layoutInflater)
+        binding = ActivityStudentMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         val navHostFragment = supportFragmentManager.findFragmentById(binding.studentNavHostFragment.id) as NavHostFragment

@@ -6,34 +6,35 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.maverkick.data.models.Course
+import com.maverkick.data.models.VideoCourse
 import com.maverkick.student.databinding.ItemSearchCourseBinding
 
 
 /**
- * Display the course that fits user search query
+ * Adapter to display the courses that fit a user's search query.
+ * Takes a list of video courses and provides a way to interact with them through clicks.
+ *
+ * @param onCourseClickListener Listener for handling click events on the course items.
  **/
-class SearchCourseAdapter(private val onCourseClickListener: OnSearchCourseClickListener) :
-    ListAdapter<Course, SearchCourseAdapter.CourseViewHolder>(SearchCourseDiffCallback()) {
+class SearchCourseAdapter(private val onCourseClickListener: (VideoCourse) -> Unit) :
+    ListAdapter<VideoCourse, SearchCourseAdapter.CourseViewHolder>(SearchCourseDiffCallback) {
 
     inner class CourseViewHolder(private val binding: ItemSearchCourseBinding) : RecyclerView.ViewHolder(binding.root) {
         init {
             binding.root.setOnClickListener {
-                val position = bindingAdapterPosition
-                if (position != RecyclerView.NO_POSITION) {
-                    val item = getItem(position)
-                    onCourseClickListener.onSearchCourseClick(item.courseId)
-                }
+                val position = bindingAdapterPosition.takeIf { it != RecyclerView.NO_POSITION } ?: return@setOnClickListener
+                val item = getItem(position)
+                onCourseClickListener(item) // Using lambda for concise onClick handling
             }
         }
 
-        fun bind(course: Course) {
-            binding.courseTitle.text = course.courseName
-
-            // Loading the image from the URL
-            Glide.with(binding.root.context)
-                .load(course.poster)
-                .into(binding.courseImage)
+        fun bind(videoCourse: VideoCourse) {
+            with(binding) {
+                courseTitle.text = videoCourse.courseName
+                Glide.with(root.context)
+                    .load(videoCourse.poster)
+                    .into(courseImage)
+            }
         }
     }
 
@@ -47,16 +48,12 @@ class SearchCourseAdapter(private val onCourseClickListener: OnSearchCourseClick
     }
 }
 
-interface OnSearchCourseClickListener {
-    fun onSearchCourseClick(courseId: String)
-}
-
-class SearchCourseDiffCallback : DiffUtil.ItemCallback<Course>() {
-    override fun areItemsTheSame(oldItem: Course, newItem: Course): Boolean {
+object SearchCourseDiffCallback : DiffUtil.ItemCallback<VideoCourse>() {
+    override fun areItemsTheSame(oldItem: VideoCourse, newItem: VideoCourse): Boolean {
         return oldItem.courseId == newItem.courseId
     }
 
-    override fun areContentsTheSame(oldItem: Course, newItem: Course): Boolean {
+    override fun areContentsTheSame(oldItem: VideoCourse, newItem: VideoCourse): Boolean {
         return oldItem == newItem
     }
 }

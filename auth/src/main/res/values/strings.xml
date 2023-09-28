@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="choose_your_role">Choose your role</string>
+    <string name="student">Student</string>
+    <string name="teacher">Teacher</string>
+    <string name="student_image_description">The picture of Student</string>
+    <string name="teacher_image_description">The Picture of Teacher</string>
+</resources>

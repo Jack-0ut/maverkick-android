@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- fragment_ask_question_dialog.xml -->
+    <string name="greeting_text">Hey, I\'m El Bricko!</string>
+    <string name="prompt_input_hint">Ask me whatever you want</string>
+    <string name="el_bricko_counter">5</string>
+
+</resources>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="finish">Finish</string>
+
+    <!-- activity_personalized_course_creation.xml -->
+    <string name="default_lessons">10 Lessons</string>
+    <string name="create_course">Create Course</string>
+    <string name="select_number_of_lessons">Select Number of Lessons </string>
+    <string name="heading_text">Create your own course</string>
+    <string name="course_description_hint">Describe your dream course</string>
+    <string name="language_text">Choose the language of the course</string>
+
+    <!-- List of languages available for the text course generation -->
+    <string-array name="text_course_languages">
+        <item>English</item>
+    </string-array>
+
+    <!-- activity_text_course_overview.xml -->
+    <string name="enroll_text">Enroll</string>
+
+    <!-- activity_text_lesson.xml-->
+    <string name="ask">Ask</string>
+</resources>

@@ -5,6 +5,41 @@
         <item>Ukrainian</item>
         <item>Spanish</item>
         <item>French</item>
-        <!-- Add more languages as needed -->
+
     </string-array>
+
+    <!-- item_course_stats.xml -->
+    <string name="enrollments_label">Enrollments: </string>
+    <string name="completion_rate_label">Completion Rate: </string>
+    <string name="dropout_rate_label">Dropout Rate: </string>
+    <string name="average_rating_label">Average Rating: </string>
+
+    <!-- fragment_teacher_profile_settings.xml -->
+    <string name="courses_statistics">Courses Statistics</string>
+
+    <!-- fragment_teacher_profile_statistics.xml -->
+    <string name="your_expertise">Your Expertise</string>
+
+    <!-- activity_add_lesson.xml -->
+    <string name="add_course_here">You could add course here</string>
+    <string name="add_course_name">Course Name</string>
+    <string name="course_language">Course Language</string>
+    <string name="tags">Tags</string>
+    <string name="course_name_hint">For example, “Marketing for the kids”</string>
+    <string name="done">Done</string>
+
+    <!-- fragment_teacher_home.xml -->
+    <string name="teacher_greeting_headline">Your Courses</string>
+
+    <!-- activity_video_selection.xml -->
+    <string name="add_video_lesson">Add Video Lesson</string>
+    <string name="select_video_description">Here you should select the video material and that’s all - we automatically process it and create the full lesson from that</string>
+    <string name="video_language_warning">!!! Please, make sure that the language of the video is the same as the language of the course</string>
+    <string name="select_button">Select</string>
+
+    <!-- activity_course_edit.xml -->
+    <string name="remove_course_description">Remove Course</string>
+    <string name="add_lesson_description">Add Lesson</string>
+    <string name="publish_button">Publish</string>
+
 </resources>

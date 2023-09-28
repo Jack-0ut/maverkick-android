@@ -1,10 +1,10 @@
 package com.maverkick.data.sharedpref
 
 import android.content.SharedPreferences
+import com.google.gson.Gson
 import com.maverkick.data.models.Student
 import com.maverkick.data.models.Teacher
 import com.maverkick.data.models.User
-import com.google.gson.Gson
 import javax.inject.Inject
 
 /**
@@ -56,4 +56,27 @@ class SharedPrefManager @Inject constructor(private val sharedPreferences: Share
     fun clearPreferences() {
         sharedPreferences.edit().clear().apply()
     }
+
+    fun setNeedsRefresh(value: Boolean) {
+        sharedPreferences.edit().putBoolean(NEEDS_REFRESH_KEY, value).apply()
+    }
+
+    fun needsRefresh(): Boolean {
+        return sharedPreferences.getBoolean(NEEDS_REFRESH_KEY, false)
+    }
+
+    fun decrementCourseGenerationTries() {
+        getStudent()?.let { student ->
+            if (student.courseGenerationTries > 0) {
+                student.courseGenerationTries -= 1
+                saveStudent(student)
+            }
+        }
+    }
+
+
+    companion object {
+        private const val NEEDS_REFRESH_KEY = "NEEDS_REFRESH"
+    }
+
 }

@@ -1,0 +1,58 @@
+plugins {
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
+    id 'kotlin-kapt' // for hilt
+    id 'dagger.hilt.android.plugin' // for hilt
+}
+
+android {
+    compileSdk 33
+
+    defaultConfig {
+        minSdk 26
+        targetSdk 33
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+    buildFeatures {
+        viewBinding true
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+}
+
+dependencies {
+    implementation project(':common')
+    implementation project(':data')
+
+    // For Hilt DI
+    implementation "com.google.dagger:hilt-android:$rootProject.hilt_version"
+    kapt "com.google.dagger:hilt-android-compiler:$rootProject.hilt_version"
+
+    // For dotted progress bar
+    implementation 'com.github.mmstq:Moving-Dots-ProgressBar-Android:1.2.0'
+
+    // For ViewModels
+    implementation "androidx.fragment:fragment-ktx:${rootProject.ext.fragment_ktx_version}"
+
+    // For Retrofit (send the request to the api service)
+    implementation "com.squareup.retrofit2:retrofit:$rootProject.retrofit"
+
+    implementation 'androidx.core:core-ktx:1.7.0'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'com.google.android.material:material:1.9.0'
+
+
+}

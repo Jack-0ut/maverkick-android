@@ -11,12 +11,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
-import com.maverkick.teacher.adapters.LessonAdapter
-import com.maverkick.teacher.addlesson.SelectVideoActivity
-import com.maverkick.teacher.databinding.ActivityCourseEditBinding
 import com.google.android.material.chip.Chip
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
+import com.maverkick.teacher.adapters.LessonDescriptionAdapter
+import com.maverkick.teacher.addlesson.SelectVideoActivity
+import com.maverkick.teacher.databinding.ActivityCourseEditBinding
 import dagger.hilt.android.AndroidEntryPoint
 
 /**
@@ -24,13 +24,13 @@ import dagger.hilt.android.AndroidEntryPoint
  * updating some things, uploading new videos and so on
  **/
 @AndroidEntryPoint
-class EditCourseActivity : AppCompatActivity(),LessonAdapter.OnLessonClickListener {
+class EditCourseActivity : AppCompatActivity(),LessonDescriptionAdapter.OnLessonClickListener {
     private lateinit var binding: ActivityCourseEditBinding
 
     private val viewModel: EditCourseViewModel by viewModels()
 
     private lateinit var courseId: String
-    private val lessonAdapter = LessonAdapter()
+    private val lessonDescriptionAdapter = LessonDescriptionAdapter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,10 +45,10 @@ class EditCourseActivity : AppCompatActivity(),LessonAdapter.OnLessonClickListen
 
         // Set up RecyclerView
         binding.lessonList.layoutManager = LinearLayoutManager(this)
-        binding.lessonList.adapter = lessonAdapter
-        lessonAdapter.setOnLessonClickListener(this)
+        binding.lessonList.adapter = lessonDescriptionAdapter
+        lessonDescriptionAdapter.setOnLessonClickListener(this)
 
-        viewModel.course.observe(this) { course ->
+        viewModel.videoCourse.observe(this) { course ->
             // Update course related UI
             binding.courseName.text = course.courseName
 
@@ -74,7 +74,7 @@ class EditCourseActivity : AppCompatActivity(),LessonAdapter.OnLessonClickListen
         }
 
         viewModel.lessons.observe(this) { lessons ->
-            lessonAdapter.submitList(lessons)
+            lessonDescriptionAdapter.submitList(lessons)
         }
 
         binding.publishButton.setOnClickListener {
@@ -85,7 +85,7 @@ class EditCourseActivity : AppCompatActivity(),LessonAdapter.OnLessonClickListen
             showRemoveCourseDialog()
         }
 
-        viewModel.course.observe(this) { course ->
+        viewModel.videoCourse.observe(this) { course ->
             binding.publishSwitch.isChecked = course.published
 
             // Update the color of the switch based on the course's publication status
@@ -107,7 +107,7 @@ class EditCourseActivity : AppCompatActivity(),LessonAdapter.OnLessonClickListen
 
         // add new lesson button
         binding.addLessonButton.setOnClickListener {
-            viewModel.course.value?.let { course ->
+            viewModel.videoCourse.value?.let { course ->
                 val intent = Intent(this, SelectVideoActivity::class.java)
                 intent.putExtra("courseId", courseId)
                 intent.putExtra("language", course.language)
@@ -150,7 +150,7 @@ class EditCourseActivity : AppCompatActivity(),LessonAdapter.OnLessonClickListen
 
     /** When click on the particular lesson toggle icon **/
     override fun onLessonClick(lessonId: String, position: Int) {
-        lessonAdapter.onLessonClick(lessonId, position)
+        lessonDescriptionAdapter.onLessonClick(lessonId, position)
     }
     /** Dialog to ensure that teacher really want to remove course */
     private fun showRemoveCourseDialog() {

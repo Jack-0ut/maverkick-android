@@ -16,8 +16,17 @@
     <color name="secondary_color">#009BF9</color>
     <color name="accent_color">#EEFBFF</color>
     <color name="blocks_color">#D9D9D9</color>
-    <color name="accent_tone_color">#F9F871</color>
     <color name="main_tone_color">#11181f</color>
     <color name="green">#A4DA65</color>
     <color name="red">#F8675D</color>
+
+
+    <color name="maverkick_main">#2C3E50</color>
+    <color name="maverkick_white">#FDFCFC</color>
+    <color name="maverkick_black">#000000</color>
+    <color name="maverkick_accent">#B3A9D0</color>
+    <color name="maverkick_accent_light">#EFE1EF</color>
+    <color name="maverkick_light_green">#A9D0A9</color>
+    <color name="maverkick_topbar">#D16F34</color>
+
 </resources>

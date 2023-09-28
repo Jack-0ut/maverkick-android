@@ -4,10 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.maverkick.data.models.Course
-import com.maverkick.data.models.Lesson
-import com.maverkick.data.models.Teacher
-import com.maverkick.data.models.User
+import com.maverkick.data.models.*
 import com.maverkick.data.repositories.*
 import com.maverkick.data.sharedpref.SharedPrefManager
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,21 +18,22 @@ import javax.inject.Inject
  **/
 @HiltViewModel
 class CourseDetailsViewModel @Inject constructor(
-    private val courseRepository: CourseRepository,
-    private val lessonRepository: LessonRepository,
+    private val videoCourseRepository: VideoCourseRepository,
+    private val videoLessonRepository: VideoLessonRepository,
     private val teacherRepository: TeacherRepository,
     private val userRepository: UserRepository,
     private val sharedPrefManager: SharedPrefManager,
     private val studentCourseRepository: StudentCourseRepository,
     private val studentRepository:StudentRepository,
-    private val courseStatisticsRepository: CourseStatisticsRepository
+    private val courseStatisticsRepository: CourseStatisticsRepository,
+    private val dailyLearningPlanRepository: DailyLearningPlanRepository
 ) : ViewModel() {
 
-    private val _course = MutableLiveData<Course>()
-    val course: LiveData<Course> = _course
+    private val _course = MutableLiveData<VideoCourse>()
+    val videoCourse: LiveData<VideoCourse> = _course
 
-    private val _lessons = MutableLiveData<List<Lesson>>()
-    val lessons: LiveData<List<Lesson>> = _lessons
+    private val _lessons = MutableLiveData<List<VideoLesson>>()
+    val lessons: LiveData<List<VideoLesson>> = _lessons
 
     private val _teacher = MutableLiveData<Teacher>()
     val teacher: LiveData<Teacher> = _teacher
@@ -52,7 +50,7 @@ class CourseDetailsViewModel @Inject constructor(
     /** Fetch course details **/
     fun fetchCourseDetails(courseId: String) {
         checkEnrollmentStatus(courseId)
-        courseRepository.getCourseById(courseId, { course ->
+        videoCourseRepository.getCourseById(courseId, { course ->
             _course.value = course
             course?.let { fetchTeacherData(it.teacherId) }
         }, {
@@ -62,7 +60,7 @@ class CourseDetailsViewModel @Inject constructor(
 
     /** Fetch lessons for a given course **/
     fun fetchLessons(courseId: String) {
-        lessonRepository.getCourseLessons(courseId, { lessons ->
+        videoLessonRepository.getCourseLessons(courseId, { lessons ->
             _lessons.value= lessons
         }, {
 
@@ -105,50 +103,55 @@ class CourseDetailsViewModel @Inject constructor(
     private fun checkEnrollmentStatus(courseId: String) {
         val student = sharedPrefManager.getStudent()
         student?.let {
-            _isAlreadyEnrolled.value = it.enrolledCourses.contains(courseId)
+            _isAlreadyEnrolled.value = it.enrolledVideoCourses.contains(courseId)
         }
     }
     /** Enroll student in the course **/
     fun enrollStudent(courseId: String) {
-        val student = sharedPrefManager.getStudent()
-        student?.let {
-            // check if the course is already enrolled
-            if (!it.enrolledCourses.contains(courseId)) {
-                viewModelScope.launch {
-                    try {
-                        studentRepository.addCourseToEnrolled(it.studentId, courseId)
+        val student = sharedPrefManager.getStudent() ?: return // Early exit if no student
 
-                        val isStudentEverBeenEnrolled = studentCourseRepository.isStudentEverBeenEnrolled(it.studentId, courseId)
-                        if (!isStudentEverBeenEnrolled) {
-                            studentCourseRepository.enrollStudent(it.studentId, courseId)
-                            studentCourseRepository.initStudentCourseProgress(it.studentId, courseId)
-                        } else {
-                            studentCourseRepository.reEnrollStudent(it.studentId, courseId)
-                        }
+        if (student.enrolledVideoCourses.contains(courseId)) return // Early exit if already enrolled
 
-                        // Add the newly enrolled course to the Student object and save it back to SharedPreferences
-                        val updatedCourses = it.enrolledCourses.toMutableSet()
-                        updatedCourses.add(courseId)
-                        it.enrolledCourses = updatedCourses.toList()
-                        sharedPrefManager.saveStudent(it)
-
-                        // Update courseStatistics for the enrolled course
-                        courseStatisticsRepository.incrementEnrollments(courseId,
-                            onSuccess = {
-                                _enrollmentComplete.postValue(true)
-                            },
-                            onFailure = {
-                                _enrollmentComplete.postValue(false)
-                            }
-                        )
-                    } catch (e: Exception) {
-                        _enrollmentComplete.postValue(false)
-                    }
-                }
+        viewModelScope.launch {
+            try {
+                enrollInCourse(student, courseId)
+                updateDailyLearningPlan(student, courseId)
+                updateSharedPreferencesAndStatistics(student, courseId)
+                _enrollmentComplete.postValue(true)
+            } catch (e: Exception) {
+                _enrollmentComplete.postValue(false)
             }
         }
     }
-    
+
+    private suspend fun enrollInCourse(student: Student, courseId: String) {
+        studentRepository.addCourseToEnrolled(student.studentId, courseId, CourseType.VIDEO)
+
+        if (studentCourseRepository.isStudentEverBeenEnrolled(student.studentId, courseId)) {
+            studentCourseRepository.reEnrollStudent(student.studentId, courseId)
+        } else {
+            studentCourseRepository.enrollStudent(student.studentId, courseId, CourseType.VIDEO)
+            studentCourseRepository.initStudentCourseProgress(student.studentId, courseId, CourseType.VIDEO)
+        }
+    }
+
+    private suspend fun updateDailyLearningPlan(student: Student, courseId: String) {
+        dailyLearningPlanRepository.updateOnCourseEnrollment(student.studentId, courseId, CourseType.VIDEO, student.dailyStudyTimeMinutes)
+    }
+
+    private fun updateSharedPreferencesAndStatistics(student: Student, courseId: String) {
+        val updatedCourses = student.enrolledVideoCourses.toMutableSet().apply { add(courseId) }
+        student.enrolledVideoCourses = updatedCourses.toList()
+        sharedPrefManager.saveStudent(student)
+
+        courseStatisticsRepository.incrementEnrollments(courseId,
+            onSuccess = {},
+            onFailure = {
+                _enrollmentComplete.postValue(false) // Notify if there's a failure in updating statistics
+            }
+        )
+    }
+
     fun resetEnrollmentCompleteFlag() {
         _enrollmentComplete.value = false
     }

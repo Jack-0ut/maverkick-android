@@ -17,7 +17,7 @@ import com.google.android.material.chip.ChipGroup
 class TagInputField(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
 
     val tagInputEditText: AutoCompleteTextView
-    val chipGroup: ChipGroup
+    private val chipGroup: ChipGroup
 
     var onTagAdded: ((String) -> Unit)? = null
     var onTagRemoved: ((String) -> Unit)? = null
@@ -35,7 +35,7 @@ class TagInputField(context: Context, attrs: AttributeSet) : LinearLayout(contex
         tagInputEditText = AutoCompleteTextView(context).apply {
             layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
             hint = "Add a tag"
-            setBackgroundColor(Color.WHITE)
+            setBackgroundColor(Color.BLACK)
             setTextColor(Color.BLACK)
             textSize = 16f
             setPadding(8, 8, 8, 8)
@@ -53,7 +53,6 @@ class TagInputField(context: Context, attrs: AttributeSet) : LinearLayout(contex
                     }
                 }
             }
-
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
@@ -63,9 +62,9 @@ class TagInputField(context: Context, attrs: AttributeSet) : LinearLayout(contex
         return Chip(context).apply {
             text = tag
             isCloseIconVisible = true
-            setChipBackgroundColorResource(com.maverkick.common.R.color.secondary_color)
-            setTextColor(Color.WHITE)
-            setCloseIconTintResource(com.maverkick.common.R.color.main_accent_color)
+            setChipBackgroundColorResource(com.maverkick.common.R.color.maverkick_white)
+            setTextColor(Color.BLACK)
+            setCloseIconTintResource(com.maverkick.common.R.color.maverkick_light_green)
             setOnCloseIconClickListener {
                 // When a chip is removed, we remove it from the UI and notify about removal
                 chipGroup.removeView(this)
@@ -73,7 +72,6 @@ class TagInputField(context: Context, attrs: AttributeSet) : LinearLayout(contex
             }
         }
     }
-
 
     fun setTags(tags: List<String>) {
         chipGroup.removeAllViews()

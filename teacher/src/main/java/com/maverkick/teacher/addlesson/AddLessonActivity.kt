@@ -2,19 +2,20 @@ package com.maverkick.teacher.addlesson
 
 import android.net.Uri
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.workDataOf
-import com.maverkick.teacher.databinding.ActivityAddLessonBinding
-import com.maverkick.teacher.workers.UploadWorker
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
+import com.google.android.material.snackbar.Snackbar
+import com.maverkick.teacher.databinding.ActivityAddLessonBinding
+import com.maverkick.teacher.workers.UploadWorker
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -35,25 +36,20 @@ class AddLessonActivity : AppCompatActivity() {
         binding = ActivityAddLessonBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        window.statusBarColor = ContextCompat.getColor(this, com.maverkick.common.R.color.main_tone_color)
+
         // initialize the video player
-        player = ExoPlayer.Builder(this).build()
-        binding.videoPreview.player = player
-
-        // put the values into the viewModel
-        intent.getStringExtra("COURSE_ID")?.let { courseId ->
-            viewModel.setCourseId(courseId)
+        player = ExoPlayer.Builder(this).build().apply {
+            binding.videoPreview.player = this
+            playWhenReady = true // auto play
         }
 
-        intent.getStringExtra("VIDEO_URI")?.let { uriString ->
-            viewModel.selectVideo(Uri.parse(uriString))
-        }
-
-        intent.getIntExtra("VIDEO_DURATION", 0).let { duration ->
-            viewModel.setVideoDuration(duration)
-        }
-
-        intent.getStringExtra("LANGUAGE_CODE")?.let{ languageCode ->
-            viewModel.setCourseLanguage(languageCode)
+        // set the values in the viewModel
+        intent.apply {
+            getStringExtra("COURSE_ID")?.let(viewModel::setCourseId)
+            getStringExtra("VIDEO_URI")?.let { viewModel.selectVideo(Uri.parse(it)) }
+            getIntExtra("VIDEO_DURATION", 0).let(viewModel::setVideoDuration)
+            getStringExtra("LANGUAGE_CODE")?.let(viewModel::setCourseLanguage)
         }
 
         lifecycleScope.launch {
@@ -61,10 +57,8 @@ class AddLessonActivity : AppCompatActivity() {
                 launch {
                     viewModel.videoUri.collect { videoUri ->
                         videoUri?.let {
-                            val mediaItem = MediaItem.fromUri(videoUri)
-                            player?.setMediaItem(mediaItem)
+                            player?.setMediaItem(MediaItem.fromUri(it))
                             player?.prepare()
-                            player?.playWhenReady = true // auto play
                         }
                     }
                 }
@@ -85,12 +79,14 @@ class AddLessonActivity : AppCompatActivity() {
 
             WorkManager.getInstance(applicationContext).enqueue(uploadWorkRequest)
 
-            Toast.makeText(this, "Upload started", Toast.LENGTH_SHORT).show()
+            Snackbar.make(binding.root, "Start Video Uploading", Snackbar.LENGTH_SHORT).show()
         }
+
     }
 
     override fun onDestroy() {
         super.onDestroy()
         player?.release()
+        window.statusBarColor = ContextCompat.getColor(this, com.maverkick.common.R.color.maverkick_main)
     }
 }

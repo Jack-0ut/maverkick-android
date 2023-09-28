@@ -18,4 +18,42 @@
         <item name="android:windowBackground">@color/main_color</item>
         <item name="android:navigationBarColor">@color/black</item>
     </style>
+
+    <!-- New style -->
+    <style name="Theme.MaverkickStyle" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/maverkick_main</item>
+        <item name="colorPrimaryVariant">@color/maverkick_main</item>
+        <item name="colorOnPrimary">@color/maverkick_white</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/maverkick_accent</item>
+        <item name="colorSecondaryVariant">@color/maverkick_accent</item>
+        <item name="colorOnSecondary">@color/maverkick_white</item>
+
+        <item name="colorOnBackground">@color/maverkick_accent</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor" >@color/maverkick_main</item>
+        <!-- Background color. -->
+        <item name="android:windowBackground">@color/maverkick_main</item>
+        <item name="android:navigationBarColor">@color/maverkick_black</item>
+        <!-- Button style. -->
+        <item name="materialButtonStyle">@style/Maverkick.ButtonStyle</item>
+        <!-- Default font family -->
+        <item name="android:fontFamily">@font/font_family</item>
+        <item name="fontFamily">@font/font_family</item>
+
+        <!-- Style for the Tag Box, which display interests for the Teacher and Student -->
+        <item name="chipStyle">@style/CustomChipStyle</item>
+
+    </style>
+
+    <!-- Button style -->
+    <style name="Maverkick.ButtonStyle" parent="Widget.MaterialComponents.Button">
+        <item name="backgroundTint">@color/maverkick_white</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:layout_height">50dp</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="cornerRadius">10dp</item>
+        <item name="android:textSize">20sp</item>
+    </style>
 </resources>

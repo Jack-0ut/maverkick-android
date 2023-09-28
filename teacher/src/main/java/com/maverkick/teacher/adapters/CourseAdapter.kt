@@ -6,38 +6,35 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.maverkick.data.models.Course
-import com.maverkick.teacher.databinding.TeacherItemCourseBinding
+import com.example.shared_ui.OnItemClickListener
+import com.maverkick.data.models.VideoCourse
+import com.maverkick.teacher.databinding.ItemTeacherCourseBinding
 
 /**
- * Adapter for displaying the picture of the course, title and the edit button
- * in the Home Teacher, basically listing all of the course for a Teacher
+ * Adapter for displaying the picture of the course, title, and the edit button
+ * in the Home Teacher, basically listing all of the courses for a Teacher
  * @param clickListener the action that happens on the course click
  **/
-class CourseAdapter(private val clickListener: OnCourseClickListener) : ListAdapter<Course, CourseAdapter.CourseViewHolder>(CourseDiffCallback()) {
+class CourseAdapter(private val clickListener: OnItemClickListener<VideoCourse>) : ListAdapter<VideoCourse, CourseAdapter.CourseViewHolder>(CourseDiffCallback()) {
 
-    interface OnCourseClickListener {
-        fun onCourseClick(courseId: String)
-    }
-
-    inner class CourseViewHolder(private val binding: TeacherItemCourseBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(course: Course) {
-            binding.courseTitle.text = course.courseName
+    inner class CourseViewHolder(private val binding: ItemTeacherCourseBinding) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(videoCourse: VideoCourse) {
+            binding.courseTitle.text = videoCourse.courseName
 
             // Loading the image from the URL
             Glide.with(binding.root.context)
-                .load(course.poster)
+                .load(videoCourse.poster)
                 .into(binding.courseImage)
 
-            // open the particular course for editing
+            // Open the particular course for editing
             binding.root.setOnClickListener {
-                clickListener.onCourseClick(course.courseId)
+                clickListener.onItemClick(videoCourse) // Using the generic interface here
             }
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CourseViewHolder {
-        val binding = TeacherItemCourseBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding = ItemTeacherCourseBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return CourseViewHolder(binding)
     }
 
@@ -46,16 +43,11 @@ class CourseAdapter(private val clickListener: OnCourseClickListener) : ListAdap
     }
 }
 
-class CourseDiffCallback : DiffUtil.ItemCallback<Course>() {
-    override fun areItemsTheSame(oldItem: Course, newItem: Course): Boolean {
-        // Here, you should compare item IDs, assuming they are unique.
-        // If Course doesn't have a unique ID, modify this line accordingly.
+class CourseDiffCallback : DiffUtil.ItemCallback<VideoCourse>() {
+    override fun areItemsTheSame(oldItem: VideoCourse, newItem: VideoCourse): Boolean {
         return oldItem.courseId == newItem.courseId
     }
-
-    override fun areContentsTheSame(oldItem: Course, newItem: Course): Boolean {
-        // Here, you are comparing the full item to check if there are differences.
-        // Adjust this if your Course class needs a more sophisticated comparison.
+    override fun areContentsTheSame(oldItem: VideoCourse, newItem: VideoCourse): Boolean {
         return oldItem == newItem
     }
 }

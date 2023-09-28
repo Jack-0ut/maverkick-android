@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@color/maverkick_accent_light" />
+        </shape>
+    </item>
+    <item
+        android:bottom="-100dp"
+        android:right="-500dp"
+        android:left="-500dp"
+        android:top="10dp">
+        <shape android:shape="oval">
+            <solid android:color="@color/maverkick_accent" />
+        </shape>
+    </item>
+</layer-list>

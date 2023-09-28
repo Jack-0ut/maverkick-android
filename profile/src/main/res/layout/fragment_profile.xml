@@ -8,12 +8,11 @@
         android:id="@+id/profile_picture"
         android:layout_width="80dp"
         android:layout_height="80dp"
-        android:src="@drawable/ic_default_user_profile"
+        android:src="@drawable/ic_profile"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@+id/username" />
-
 
     <ImageView
         android:id="@+id/edit_profile_picture"
@@ -65,9 +64,9 @@
         android:layout_marginTop="16dp"
         android:background="@android:color/transparent"
         app:layout_constraintTop_toBottomOf="@+id/username"
-        app:tabIndicatorColor="@color/secondary_color"
-        app:tabSelectedTextColor="@color/secondary_color"
-        app:tabTextColor="@color/blocks_color"
+        app:tabIndicatorColor="@color/maverkick_light_green"
+        app:tabSelectedTextColor="@color/maverkick_light_green"
+        app:tabTextColor="@color/maverkick_white"
         app:tabMode="fixed"
         app:tabGravity="fill">
     </com.google.android.material.tabs.TabLayout>

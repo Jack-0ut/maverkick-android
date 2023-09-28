@@ -2,8 +2,8 @@ package com.maverkick.teacher.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.maverkick.data.models.Course
-import com.maverkick.data.repositories.CourseRepository
+import com.maverkick.data.models.VideoCourse
+import com.maverkick.data.repositories.VideoCourseRepository
 import com.maverkick.data.sharedpref.SharedPrefManager
 import com.google.firebase.firestore.ListenerRegistration
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,11 +21,11 @@ import javax.inject.Inject
  **/
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val courseRepository: CourseRepository,
+    private val videoCourseRepository: VideoCourseRepository,
     private val sharedPrefManager: SharedPrefManager
 ): ViewModel() {
-    private val _courses = MutableStateFlow<List<Course>>(emptyList())
-    val courses: StateFlow<List<Course>> get() = _courses
+    private val _courses = MutableStateFlow<List<VideoCourse>>(emptyList())
+    val courses: StateFlow<List<VideoCourse>> get() = _courses
 
     private var listenerRegistrations = mutableListOf<ListenerRegistration>()
 
@@ -42,14 +42,14 @@ class HomeViewModel @Inject constructor(
         val teacherId = sharedPrefManager.getTeacher()?.teacherId
         teacherId?.let {
             try {
-                val courses = courseRepository.getTeacherCourses(it)
+                val courses = videoCourseRepository.getTeacherCourses(it)
                 // Clear any previous listeners
                 listenerRegistrations.forEach { it.remove() }
                 listenerRegistrations.clear()
 
                 // Start listening for changes to each course
                 courses.forEach { course ->
-                    val registration = courseRepository.getCourseById(course.courseId, { updatedCourse ->
+                    val registration = videoCourseRepository.getCourseById(course.courseId, { updatedCourse ->
                         // Replace the updated course in the _courses list
                         val updatedCourses = _courses.value.toMutableList()
                         val index = updatedCourses.indexOfFirst { it.courseId == updatedCourse?.courseId }

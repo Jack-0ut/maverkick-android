@@ -1,81 +1,52 @@
 package com.maverkick.data.models
 
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
 import java.util.*
 
-/**
- * Class storage for the Course objects
- * @param courseId - unique id for the course
- * @param courseName- name that defines the course, shouldn't be uniques
- * @param teacherId - id of the creator of that course
- * @param language - the language of the course
- * @param poster - image/poster for the course to make it appealing and clear
- * @param tags - tags describing 5 things on which course is concentrating
- * @param creationDate - date of the course creation
- * @param published - is this course available for the students
- **/
-
-data class Course(
-    val courseId: String,
-    val courseName: String,
-    val teacherId: String,
-    val language: String,
-    var poster: String?,
-    var lessonCount: Int,
-    val tags: List<String>,
-    val creationDate: Date,
-    val published: Boolean
-) {
-    fun toFirebaseCourse(): FirebaseCourse {
-        return FirebaseCourse(
-            courseName = this.courseName,
-            teacherId = this.teacherId,
-            language = this.language,
-            poster = this.poster ?: "",
-            lessonCount = this.lessonCount,
-            tags = this.tags,
-            creationDate = this.creationDate,
-            published = this.published
-        )
-    }
+enum class CourseType {
+    TEXT, VIDEO
 }
 
 /**
- * The same Course class, but without courseId, specifically for adding to Firebase
+ * Abstract class representing a course.
+ *
+ * @property courseId       Unique identifier for the course.
+ * @property courseName     Name of the course.
+ * @property language       Language of the course content.
+ * @property numberLessons  Total number of lessons in the course.
+ * @property creationDate   Date of course creation.
+ * @property type           Type of the course (text or video).
  */
-data class FirebaseCourse @JvmOverloads constructor(
-    val courseName: String = "",
-    val teacherId: String = "",
-    val language: String = "",
-    val poster: String? = null,
-    val lessonCount: Int = 0,
-    val tags: List<String> = listOf(),
-    val creationDate: Date = Date(),
-    val published: Boolean = false
+abstract class Course(
+    open val courseId: String,
+    open val courseName: String,
+    open val language: String,
+    open val numberLessons: Int,
+    open val creationDate: Date,
+    open val type: CourseType
 ) {
-    fun toCourse(courseId: String): Course {
-        return Course(
-            courseId,
-            courseName,
-            teacherId,
-            language,
-            poster,
-            lessonCount,
-            tags,
-            creationDate,
-            published
-        )
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other == null || this::class != other::class) return false
+
+        other as Course
+
+        if (courseId != other.courseId) return false
+        if (courseName != other.courseName) return false
+        if (language != other.language) return false
+        if (numberLessons != other.numberLessons) return false
+        if (creationDate != other.creationDate) return false
+        if (type != other.type) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = courseId.hashCode()
+        result = 31 * result + courseName.hashCode()
+        result = 31 * result + language.hashCode()
+        result = 31 * result + numberLessons
+        result = 31 * result + creationDate.hashCode()
+        result = 31 * result + type.hashCode()
+        return result
     }
 }
-
-/** Course class representation in the algolia index, used for the courses search*/
-@Serializable
-data class SearchCourseHit(
-    @SerialName("objectID")
-    val objectId: String, // this is the Algolia objectID, which is courseId
-    val courseName: String,
-    val language: String,
-    val poster: String?,
-    val tags: List<String>
-    )

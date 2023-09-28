@@ -25,8 +25,11 @@
         <entry key="..\:/Projects/Android/Maverkick/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.133" />
         <entry key="..\:/Projects/Android/Maverkick/app/user/src/main/res/layout/registeration.xml" value="0.21784420289855072" />
         <entry key="..\:/Projects/Android/Maverkick/auth/src/main/res/drawable/frame_border.xml" value="0.146" />
+        <entry key="..\:/Projects/Android/Maverkick/auth/src/main/res/drawable/ic_student.xml" value="0.1455" />
+        <entry key="..\:/Projects/Android/Maverkick/auth/src/main/res/drawable/ic_teacher.xml" value="0.1455" />
         <entry key="..\:/Projects/Android/Maverkick/auth/src/main/res/drawable/input_field_background.xml" value="0.146" />
         <entry key="..\:/Projects/Android/Maverkick/auth/src/main/res/layout/activity_login.xml" value="0.264" />
+        <entry key="..\:/Projects/Android/Maverkick/auth/src/main/res/layout/activity_onboarding.xml" value="0.25226449275362317" />
         <entry key="..\:/Projects/Android/Maverkick/auth/src/main/res/layout/activity_registration.xml" value="0.264" />
         <entry key="..\:/Projects/Android/Maverkick/auth/src/main/res/layout/activity_role_selection.xml" value="0.25416666666666665" />
         <entry key="..\:/Projects/Android/Maverkick/auth/src/main/res/layout/activity_student_onboarding.xml" value="0.152" />
@@ -36,72 +39,125 @@
         <entry key="..\:/Projects/Android/Maverkick/auth/src/main/res/layout/fragment_expertise.xml" value="0.253125" />
         <entry key="..\:/Projects/Android/Maverkick/auth/src/main/res/layout/fragment_full_name.xml" value="0.264" />
         <entry key="..\:/Projects/Android/Maverkick/auth/src/main/res/layout/fragment_interests.xml" value="0.25416666666666665" />
+        <entry key="..\:/Projects/Android/Maverkick/chat-helper/src/main/res/drawable/bot_text_input.xml" value="0.1455" />
+        <entry key="..\:/Projects/Android/Maverkick/chat-helper/src/main/res/drawable/ic_energy.xml" value="0.1455" />
+        <entry key="..\:/Projects/Android/Maverkick/chat-helper/src/main/res/layout/fragment_ask_question_dialog.xml" value="0.25226449275362317" />
+        <entry key="..\:/Projects/Android/Maverkick/chat-helper/src/main/res/layout/message_item.xml" value="0.25226449275362317" />
+        <entry key="..\:/Projects/Android/Maverkick/common/src/main/res/drawable-v24/ic_ask.xml" value="0.1455" />
+        <entry key="..\:/Projects/Android/Maverkick/common/src/main/res/drawable/arc_background.xml" value="0.1455" />
+        <entry key="..\:/Projects/Android/Maverkick/common/src/main/res/drawable/bottom_navigation_colors.xml" value="0.1455" />
+        <entry key="..\:/Projects/Android/Maverkick/common/src/main/res/drawable/circle_background.xml" value="0.1455" />
+        <entry key="..\:/Projects/Android/Maverkick/common/src/main/res/drawable/ic_add_course.xml" value="0.1455" />
         <entry key="..\:/Projects/Android/Maverkick/common/src/main/res/drawable/ic_baseline_keyboard_arrow_down_24.xml" value="0.146" />
+        <entry key="..\:/Projects/Android/Maverkick/common/src/main/res/drawable/ic_book.xml" value="0.1455" />
         <entry key="..\:/Projects/Android/Maverkick/common/src/main/res/drawable/ic_change_role.xml" value="0.146" />
+        <entry key="..\:/Projects/Android/Maverkick/common/src/main/res/drawable/ic_chat.xml" value="0.1455" />
+        <entry key="..\:/Projects/Android/Maverkick/common/src/main/res/drawable/ic_default_user_profile.xml" value="0.1455" />
+        <entry key="..\:/Projects/Android/Maverkick/common/src/main/res/drawable/ic_edit.xml" value="0.1455" />
+        <entry key="..\:/Projects/Android/Maverkick/common/src/main/res/drawable/ic_gallery.xml" value="0.1455" />
+        <entry key="..\:/Projects/Android/Maverkick/common/src/main/res/drawable/ic_home.xml" value="0.1455" />
         <entry key="..\:/Projects/Android/Maverkick/common/src/main/res/drawable/ic_log_out.xml" value="0.146" />
+        <entry key="..\:/Projects/Android/Maverkick/common/src/main/res/drawable/ic_play.xml" value="0.1455" />
+        <entry key="..\:/Projects/Android/Maverkick/common/src/main/res/drawable/ic_profile.xml" value="0.1455" />
+        <entry key="..\:/Projects/Android/Maverkick/common/src/main/res/drawable/ic_search.xml" value="0.1455" />
+        <entry key="..\:/Projects/Android/Maverkick/common/src/main/res/drawable/ic_video.xml" value="0.1455" />
+        <entry key="..\:/Projects/Android/Maverkick/common/src/main/res/drawable/maverkick_button_background.xml" value="0.1455" />
+        <entry key="..\:/Projects/Android/Maverkick/common/src/main/res/drawable/play_button_background.xml" value="0.1215" />
+        <entry key="..\:/Projects/Android/Maverkick/common/src/main/res/drawable/pretty_edit_text_background.xml" value="0.1455" />
+        <entry key="..\:/Projects/Android/Maverkick/common/src/main/res/drawable/rounded_view.xml" value="0.1455" />
+        <entry key="..\:/Projects/Android/Maverkick/common/src/main/res/drawable/rounded_view_50.xml" value="0.1455" />
+        <entry key="..\:/Projects/Android/Maverkick/common/src/main/res/drawable/rounded_view_with_border.xml" value="0.1455" />
+        <entry key="..\:/Projects/Android/Maverkick/common/src/main/res/font/font_family.xml" value="0.26461538461538464" />
         <entry key="..\:/Projects/Android/Maverkick/common/src/main/res/layout/counter_view.xml" value="0.25416666666666665" />
+        <entry key="..\:/Projects/Android/Maverkick/common/src/main/res/layout/item_lesson_description.xml" value="0.25226449275362317" />
+        <entry key="..\:/Projects/Android/Maverkick/common/src/main/res/layout/item_text_lesson.xml" value="0.25226449275362317" />
+        <entry key="..\:/Projects/Android/Maverkick/common/src/main/res/layout/item_video_lesson.xml" value="0.2" />
+        <entry key="..\:/Projects/Android/Maverkick/common/src/main/res/layout/language_list_item.xml" value="0.25226449275362317" />
+        <entry key="..\:/Projects/Android/Maverkick/common/src/main/res/layout/lesson_description_item.xml" value="0.264" />
         <entry key="..\:/Projects/Android/Maverkick/profile/src/main/res/layout/fragment_home.xml" value="0.25416666666666665" />
         <entry key="..\:/Projects/Android/Maverkick/profile/src/main/res/layout/fragment_profile.xml" value="0.25416666666666665" />
         <entry key="..\:/Projects/Android/Maverkick/student/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.146" />
         <entry key="..\:/Projects/Android/Maverkick/student/src/main/res/drawable/background_bot_message.xml" value="0.146" />
         <entry key="..\:/Projects/Android/Maverkick/student/src/main/res/drawable/background_user_message.xml" value="0.146" />
+        <entry key="..\:/Projects/Android/Maverkick/student/src/main/res/drawable/bot_text_input.xml" value="0.1205" />
         <entry key="..\:/Projects/Android/Maverkick/student/src/main/res/drawable/counter_background.xml" value="0.146" />
         <entry key="..\:/Projects/Android/Maverkick/student/src/main/res/drawable/course_background.xml" value="0.146" />
         <entry key="..\:/Projects/Android/Maverkick/student/src/main/res/drawable/custom_search_field.xml" value="0.133" />
         <entry key="..\:/Projects/Android/Maverkick/student/src/main/res/drawable/dialog_rounded.xml" value="0.146" />
+        <entry key="..\:/Projects/Android/Maverkick/student/src/main/res/drawable/ic_ask.xml" value="0.1455" />
+        <entry key="..\:/Projects/Android/Maverkick/student/src/main/res/drawable/ic_brick.xml" value="0.1455" />
+        <entry key="..\:/Projects/Android/Maverkick/student/src/main/res/drawable/ic_course_gen_tries.xml" value="0.1455" />
+        <entry key="..\:/Projects/Android/Maverkick/student/src/main/res/drawable/ic_cube.xml" value="0.1455" />
+        <entry key="..\:/Projects/Android/Maverkick/student/src/main/res/drawable/ic_energy.xml" value="0.1455" />
+        <entry key="..\:/Projects/Android/Maverkick/student/src/main/res/drawable/ic_heart.xml" value="0.1455" />
         <entry key="..\:/Projects/Android/Maverkick/student/src/main/res/drawable/ic_launcher_background.xml" value="0.146" />
+        <entry key="..\:/Projects/Android/Maverkick/student/src/main/res/drawable/ic_lesson_reaction.xml" value="0.1455" />
         <entry key="..\:/Projects/Android/Maverkick/student/src/main/res/drawable/ic_next.xml" value="0.124" />
         <entry key="..\:/Projects/Android/Maverkick/student/src/main/res/drawable/input_text_border.xml" value="0.146" />
+        <entry key="..\:/Projects/Android/Maverkick/student/src/main/res/drawable/main_arc_background.xml" value="0.1455" />
         <entry key="..\:/Projects/Android/Maverkick/student/src/main/res/drawable/profile_menu_item_background.xml" value="0.133" />
         <entry key="..\:/Projects/Android/Maverkick/student/src/main/res/drawable/progress_dots.xml" value="0.146" />
         <entry key="..\:/Projects/Android/Maverkick/student/src/main/res/drawable/round_background.xml" value="0.133" />
+        <entry key="..\:/Projects/Android/Maverkick/student/src/main/res/drawable/rounded_square.xml" value="0.1455" />
         <entry key="..\:/Projects/Android/Maverkick/student/src/main/res/drawable/semi_transparent_background.xml" value="0.146" />
         <entry key="..\:/Projects/Android/Maverkick/student/src/main/res/drawable/task_viewpager_border.xml" value="0.146" />
         <entry key="..\:/Projects/Android/Maverkick/student/src/main/res/layout-land/activity_video_lesson.xml" value="0.21516754850088182" />
-        <entry key="..\:/Projects/Android/Maverkick/student/src/main/res/layout/activity_course_details.xml" value="0.25416666666666665" />
+        <entry key="..\:/Projects/Android/Maverkick/student/src/main/res/layout/activity_course_details.xml" value="0.264" />
         <entry key="..\:/Projects/Android/Maverkick/student/src/main/res/layout/activity_lesson_completed.xml" value="0.25416666666666665" />
         <entry key="..\:/Projects/Android/Maverkick/student/src/main/res/layout/activity_main_student.xml" value="0.264" />
         <entry key="..\:/Projects/Android/Maverkick/student/src/main/res/layout/activity_video_lesson.xml" value="0.25416666666666665" />
         <entry key="..\:/Projects/Android/Maverkick/student/src/main/res/layout/activity_video_player.xml" value="0.21784420289855072" />
         <entry key="..\:/Projects/Android/Maverkick/student/src/main/res/layout/custom_video_view.xml" value="0.176" />
         <entry key="..\:/Projects/Android/Maverkick/student/src/main/res/layout/emoji_picker.xml" value="0.25416666666666665" />
-        <entry key="..\:/Projects/Android/Maverkick/student/src/main/res/layout/fragment_ask_question_dialog.xml" value="0.264" />
+        <entry key="..\:/Projects/Android/Maverkick/student/src/main/res/layout/fragment_ask_question_dialog.xml" value="0.2" />
         <entry key="..\:/Projects/Android/Maverkick/student/src/main/res/layout/fragment_course_details.xml" value="0.25416666666666665" />
         <entry key="..\:/Projects/Android/Maverkick/student/src/main/res/layout/fragment_exercise.xml" value="0.253125" />
-        <entry key="..\:/Projects/Android/Maverkick/student/src/main/res/layout/fragment_gallery.xml" value="0.264" />
+        <entry key="..\:/Projects/Android/Maverkick/student/src/main/res/layout/fragment_gallery.xml" value="0.2" />
         <entry key="..\:/Projects/Android/Maverkick/student/src/main/res/layout/fragment_home.xml" value="0.21784420289855072" />
         <entry key="..\:/Projects/Android/Maverkick/student/src/main/res/layout/fragment_profile.xml" value="0.264" />
         <entry key="..\:/Projects/Android/Maverkick/student/src/main/res/layout/fragment_profile_courses.xml" value="0.21784420289855072" />
         <entry key="..\:/Projects/Android/Maverkick/student/src/main/res/layout/fragment_profile_settings.xml" value="0.2" />
         <entry key="..\:/Projects/Android/Maverkick/student/src/main/res/layout/fragment_settings.xml" value="0.21784420289855072" />
-        <entry key="..\:/Projects/Android/Maverkick/student/src/main/res/layout/fragment_student_home.xml" value="0.25416666666666665" />
-        <entry key="..\:/Projects/Android/Maverkick/student/src/main/res/layout/fragment_student_profile_courses.xml" value="0.11302083333333333" />
+        <entry key="..\:/Projects/Android/Maverkick/student/src/main/res/layout/fragment_student_home.xml" value="0.2" />
+        <entry key="..\:/Projects/Android/Maverkick/student/src/main/res/layout/fragment_student_profile_courses.xml" value="0.2" />
         <entry key="..\:/Projects/Android/Maverkick/student/src/main/res/layout/fragment_student_profile_settings.xml" value="0.25416666666666665" />
         <entry key="..\:/Projects/Android/Maverkick/student/src/main/res/layout/fragment_text_quiz_task.xml" value="0.253125" />
         <entry key="..\:/Projects/Android/Maverkick/student/src/main/res/layout/item_course.xml" value="0.21784420289855072" />
         <entry key="..\:/Projects/Android/Maverkick/student/src/main/res/layout/item_course_lesson.xml" value="0.264" />
+        <entry key="..\:/Projects/Android/Maverkick/student/src/main/res/layout/item_course_overview.xml" value="0.264" />
         <entry key="..\:/Projects/Android/Maverkick/student/src/main/res/layout/item_emoji.xml" value="0.25416666666666665" />
         <entry key="..\:/Projects/Android/Maverkick/student/src/main/res/layout/item_lesson.xml" value="0.264" />
         <entry key="..\:/Projects/Android/Maverkick/student/src/main/res/layout/item_search_course.xml" value="0.25416666666666665" />
         <entry key="..\:/Projects/Android/Maverkick/student/src/main/res/layout/message_item.xml" value="0.25416666666666665" />
+        <entry key="..\:/Projects/Android/Maverkick/student/src/main/res/layout/popup_info.xml" value="0.25226449275362317" />
         <entry key="..\:/Projects/Android/Maverkick/student/src/main/res/menu/bottom_navigation_menu.xml" value="0.25416666666666665" />
+        <entry key="..\:/Projects/Android/Maverkick/tasks/src/main/res/drawable/border_square.xml" value="0.1455" />
         <entry key="..\:/Projects/Android/Maverkick/tasks/src/main/res/drawable/fill_in_box.xml" value="0.146" />
+        <entry key="..\:/Projects/Android/Maverkick/tasks/src/main/res/drawable/ic_explain.xml" value="0.1455" />
+        <entry key="..\:/Projects/Android/Maverkick/tasks/src/main/res/drawable/ic_skip.xml" value="0.1455" />
         <entry key="..\:/Projects/Android/Maverkick/tasks/src/main/res/drawable/matching_item_border.xml" value="0.125" />
         <entry key="..\:/Projects/Android/Maverkick/tasks/src/main/res/drawable/snackbar_background.xml" value="0.146" />
         <entry key="..\:/Projects/Android/Maverkick/tasks/src/main/res/drawable/snackbar_view.xml" value="0.146" />
         <entry key="..\:/Projects/Android/Maverkick/tasks/src/main/res/drawable/text_border.xml" value="0.146" />
+        <entry key="..\:/Projects/Android/Maverkick/tasks/src/main/res/layout/custom_spinner_item.xml" value="0.25226449275362317" />
         <entry key="..\:/Projects/Android/Maverkick/tasks/src/main/res/layout/fill_in_blanks.xml" value="0.25416666666666665" />
         <entry key="..\:/Projects/Android/Maverkick/tasks/src/main/res/layout/fragment_exercise.xml" value="0.25416666666666665" />
         <entry key="..\:/Projects/Android/Maverkick/tasks/src/main/res/layout/fragment_text_quiz_task.xml" value="0.25416666666666665" />
+        <entry key="..\:/Projects/Android/Maverkick/tasks/src/main/res/layout/gap_dropdown_item.xml" value="0.25226449275362317" />
         <entry key="..\:/Projects/Android/Maverkick/tasks/src/main/res/layout/matching.xml" value="0.20854700854700856" />
+        <entry key="..\:/Projects/Android/Maverkick/tasks/src/main/res/layout/matching_item.xml" value="0.25226449275362317" />
         <entry key="..\:/Projects/Android/Maverkick/tasks/src/main/res/layout/matching_item_definition.xml" value="0.25416666666666665" />
         <entry key="..\:/Projects/Android/Maverkick/tasks/src/main/res/layout/matching_item_term.xml" value="0.253125" />
         <entry key="..\:/Projects/Android/Maverkick/tasks/src/main/res/layout/open_answer.xml" value="0.25416666666666665" />
-        <entry key="..\:/Projects/Android/Maverkick/tasks/src/main/res/layout/radio_button_item.xml" value="0.25416666666666665" />
+        <entry key="..\:/Projects/Android/Maverkick/tasks/src/main/res/layout/radio_button_item.xml" value="0.8" />
         <entry key="..\:/Projects/Android/Maverkick/tasks/src/main/res/layout/snackbar_view.xml" value="0.264" />
         <entry key="..\:/Projects/Android/Maverkick/tasks/src/main/res/layout/text_quiz.xml" value="0.25416666666666665" />
+        <entry key="..\:/Projects/Android/Maverkick/tasks/src/main/res/layout/true_or_false.xml" value="0.264" />
         <entry key="..\:/Projects/Android/Maverkick/teacher/src/main/res/drawable/card_border.xml" value="0.146" />
         <entry key="..\:/Projects/Android/Maverkick/teacher/src/main/res/drawable/custom_button_background.xml" value="0.146" />
+        <entry key="..\:/Projects/Android/Maverkick/teacher/src/main/res/drawable/ic_rating.xml" value="0.1455" />
+        <entry key="..\:/Projects/Android/Maverkick/teacher/src/main/res/drawable/ic_storage.xml" value="0.1455" />
+        <entry key="..\:/Projects/Android/Maverkick/teacher/src/main/res/drawable/ic_upload.xml" value="0.1455" />
         <entry key="..\:/Projects/Android/Maverkick/teacher/src/main/res/drawable/resized_ic_done.xml" value="0.146" />
         <entry key="..\:/Projects/Android/Maverkick/teacher/src/main/res/drawable/rounded_corner_background.xml" value="0.146" />
         <entry key="..\:/Projects/Android/Maverkick/teacher/src/main/res/drawable/spinner_bg.xml" value="0.146" />
@@ -128,6 +184,15 @@
         <entry key="..\:/Projects/Android/Maverkick/teacher/src/main/res/layout/storage_option_item.xml" value="0.253125" />
         <entry key="..\:/Projects/Android/Maverkick/teacher/src/main/res/layout/teacher_item_course.xml" value="0.25416666666666665" />
         <entry key="..\:/Projects/Android/Maverkick/teacher/src/main/res/menu/bottom_navigation_menu.xml" value="0.25416666666666665" />
+        <entry key="..\:/Projects/Android/Maverkick/text-lesson/src/main/res/drawable/arc_background.xml" value="0.1455" />
+        <entry key="..\:/Projects/Android/Maverkick/text-lesson/src/main/res/drawable/artistic_background.xml" value="0.1455" />
+        <entry key="..\:/Projects/Android/Maverkick/text-lesson/src/main/res/drawable/custom_progress_drawable.xml" value="0.1455" />
+        <entry key="..\:/Projects/Android/Maverkick/text-lesson/src/main/res/drawable/custom_thumb.xml" value="0.1455" />
+        <entry key="..\:/Projects/Android/Maverkick/text-lesson/src/main/res/drawable/text_input_rounded_background.xml" value="0.1455" />
+        <entry key="..\:/Projects/Android/Maverkick/text-lesson/src/main/res/layout/activity_personalized_course_creation.xml" value="0.264" />
+        <entry key="..\:/Projects/Android/Maverkick/text-lesson/src/main/res/layout/activity_text_course_overview.xml" value="0.2" />
+        <entry key="..\:/Projects/Android/Maverkick/text-lesson/src/main/res/layout/activity_text_lesson.xml" value="0.264" />
+        <entry key="..\:/Projects/Android/Maverkick/text-lesson/src/main/res/layout/item_paragraph.xml" value="0.25226449275362317" />
         <entry key="..\:/Projects/Android/Maverkick/user/src/main/res/drawable/input_field_background.xml" value="0.133" />
         <entry key="..\:/Projects/Android/Maverkick/user/src/main/res/layout/activity_login.xml" value="0.21784420289855072" />
         <entry key="..\:/Projects/Android/Maverkick/user/src/main/res/layout/activity_registration.xml" value="0.2" />

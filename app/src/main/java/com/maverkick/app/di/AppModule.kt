@@ -10,13 +10,14 @@ import com.algolia.search.client.Index
 import com.algolia.search.model.APIKey
 import com.algolia.search.model.ApplicationID
 import com.algolia.search.model.IndexName
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.storage.FirebaseStorage
 import com.maverkick.data.FirebaseService
 import com.maverkick.data.IDatabaseService
 import com.maverkick.data.api.ChatApi
+import com.maverkick.data.api.CourseCreationApi
 import com.maverkick.data.api.LessonApi
 import com.maverkick.data.sharedpref.SharedPrefManager
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.storage.FirebaseStorage
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -86,8 +87,8 @@ object NetworkModule {
     @Singleton
     fun provideOkHttpClient(): OkHttpClient {
         return OkHttpClient.Builder()
-            .readTimeout(5, TimeUnit.MINUTES)
-            .writeTimeout(5, TimeUnit.MINUTES)
+            .readTimeout(20, TimeUnit.MINUTES)
+            .writeTimeout(20, TimeUnit.MINUTES)
             .build()
     }
 
@@ -107,11 +108,23 @@ object NetworkModule {
     @Named("ChatApiRetrofit")
     fun provideRetrofitForChatApi(okHttpClient: OkHttpClient): Retrofit {
         return Retrofit.Builder()
-            .baseUrl("https://chat-api-mkqizzjwda-ue.a.run.app/")
+            .baseUrl("https://chat-api-mkqizzjwda-uc.a.run.app/")
             .addConverterFactory(GsonConverterFactory.create())
             .client(okHttpClient)
             .build()
     }
+
+    @Provides
+    @Singleton
+    @Named("CourseCreationApiRetrofit")
+    fun provideRetrofitForCourseCreationApi(okHttpClient: OkHttpClient): Retrofit {
+        return Retrofit.Builder()
+            .baseUrl("https://course-generation-api-mkqizzjwda-uc.a.run.app/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(okHttpClient)
+            .build()
+    }
+
 
     @Provides
     @Singleton
@@ -124,6 +137,13 @@ object NetworkModule {
     fun provideChatApi(@Named("ChatApiRetrofit") retrofitForChatApi: Retrofit): ChatApi {
         return retrofitForChatApi.create(ChatApi::class.java)
     }
+
+    @Provides
+    @Singleton
+    fun provideCourseCreationApi(@Named("CourseCreationApiRetrofit") retrofitForCourseCreationApi: Retrofit): CourseCreationApi {
+        return retrofitForCourseCreationApi.create(CourseCreationApi::class.java)
+    }
+
 }
 
 /** Module for Algolia Search */

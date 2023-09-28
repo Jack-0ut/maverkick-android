@@ -14,7 +14,7 @@ abstract class Task(
  **/
 enum class TaskType {
     TEXT_QUIZ,
-    FILL_IN_BLANKS,
-    OPEN_ANSWER,
-    MATCHING
+    FILL_IN_GAPS,
+    MATCHING,
+    TRUE_OR_FALSE
 }

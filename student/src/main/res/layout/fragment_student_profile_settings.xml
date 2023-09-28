@@ -11,8 +11,7 @@
         android:id="@+id/interests_headline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Your interests"
-        android:textStyle="bold"
+        android:text="@string/your_interests"
         android:textColor="@color/white"
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
@@ -33,9 +32,8 @@
         android:id="@+id/daily_learning_time_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Daily Learning Time:"
+        android:text="@string/daily_learning_time"
         android:textColor="@color/white"
-        android:textStyle="bold"
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/interestsChipGroup"
@@ -52,6 +50,5 @@
         app:layout_constraintStart_toEndOf="@+id/daily_learning_time_label"
         app:layout_constraintBaseline_toBaselineOf="@id/daily_learning_time_label"
         android:layout_marginStart="8dp"/>
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

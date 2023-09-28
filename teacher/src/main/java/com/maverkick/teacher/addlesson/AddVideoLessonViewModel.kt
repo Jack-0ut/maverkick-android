@@ -2,7 +2,6 @@ package com.maverkick.teacher.addlesson
 
 import android.net.Uri
 import androidx.lifecycle.ViewModel
-import com.maverkick.data.repositories.LessonRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -12,9 +11,7 @@ import javax.inject.Inject
  * ViewModel that's responsible for the video selection and uploading
  **/
 @HiltViewModel
-class AddVideoLessonViewModel @Inject constructor(
-    private val lessonRepository: LessonRepository
-) : ViewModel() {
+class AddVideoLessonViewModel @Inject constructor() : ViewModel() {
 
     private val _courseId = MutableStateFlow<String?>(null)
     val courseId: StateFlow<String?> = _courseId
@@ -28,11 +25,6 @@ class AddVideoLessonViewModel @Inject constructor(
     private val _language = MutableStateFlow<String?>(null)
     val language: StateFlow<String?> = _language
 
-    private val _uploadProgress = MutableStateFlow(0)
-    val uploadProgress: StateFlow<Int> = _uploadProgress
-
-    private val _uploadStatus = MutableStateFlow<UploadStatus>(UploadStatus.InProgress(0))
-    val uploadStatus: StateFlow<UploadStatus> = _uploadStatus
 
     /** Store selected video **/
     fun selectVideo(uri: Uri) {
@@ -63,11 +55,4 @@ class AddVideoLessonViewModel @Inject constructor(
             else -> "en-US"
         }
     }
-}
-
-/** Track the uploading of the video to the cloud storage **/
-sealed class UploadStatus {
-    object Success : UploadStatus()
-    data class Failure(val exception: Exception) : UploadStatus()
-    data class InProgress(val progress: Int) : UploadStatus()
 }

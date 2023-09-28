@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Comment: Background for the custom button -->
+    <solid android:color="@color/maverkick_white"/> <!-- Comment: Solid color for the button background -->
+    <corners android:radius="10dp"/> <!-- Comment: Rounded corners with a radius of 10dp -->
+</shape>

@@ -6,11 +6,12 @@ import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
+import com.google.android.material.snackbar.Snackbar
 import com.maverkick.student.adapters.CourseLessonAdapter
 import com.maverkick.student.databinding.ActivityCourseDetailsBinding
-import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 
 /**
@@ -27,11 +28,13 @@ class CourseDetailsActivity : AppCompatActivity() {
         binding = ActivityCourseDetailsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Set the status bar color
+        window.statusBarColor = ContextCompat.getColor(this, com.maverkick.common.R.color.maverkick_accent_light)
+
         val courseId = intent.getStringExtra("courseId")
         courseId?.let { id ->
             viewModel.fetchCourseDetails(id)
             viewModel.fetchLessons(id)
-
         }
 
         // Initialize  CourseLessonAdapter
@@ -69,9 +72,10 @@ class CourseDetailsActivity : AppCompatActivity() {
         }
 
         // Observe course details LiveData
-        viewModel.course.observe(this) { course ->
+        viewModel.videoCourse.observe(this) { course ->
             // Update UI with course details
             binding.courseTitle.text = course.courseName
+            binding.lessonCount.text = course.numberLessons.toString()
         }
 
         // Observe lessons LiveData
@@ -90,5 +94,10 @@ class CourseDetailsActivity : AppCompatActivity() {
             // Update UI with teacher profile picture
             Glide.with(this).load(user?.profilePicture).into(binding.teacherImage)
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        window.statusBarColor = ContextCompat.getColor(this, com.maverkick.common.R.color.main_color)
     }
 }

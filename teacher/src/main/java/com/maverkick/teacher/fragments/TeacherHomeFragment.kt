@@ -11,6 +11,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.shared_ui.OnItemClickListener
+import com.maverkick.data.models.VideoCourse
 import com.maverkick.teacher.adapters.CourseAdapter
 import com.maverkick.teacher.databinding.FragmentTeacherHomeBinding
 import com.maverkick.teacher.edit_course.EditCourseActivity
@@ -24,7 +26,7 @@ import kotlinx.coroutines.launch
  * with ability to edit/expand the course
  **/
 @AndroidEntryPoint
-class TeacherHomeFragment : Fragment(), CourseAdapter.OnCourseClickListener{
+class TeacherHomeFragment : Fragment() {
     private var _binding: FragmentTeacherHomeBinding? = null
     private val binding get() = _binding!!
 
@@ -43,7 +45,14 @@ class TeacherHomeFragment : Fragment(), CourseAdapter.OnCourseClickListener{
         super.onViewCreated(view, savedInstanceState)
 
         // Initialize your CourseAdapter
-        val courseAdapter = CourseAdapter(this)
+        val courseAdapter = CourseAdapter(object : OnItemClickListener<VideoCourse> {
+            override fun onItemClick(item: VideoCourse) {
+                // Redirect to EditCourseFragment for the clicked course
+                val intent = Intent(activity, EditCourseActivity::class.java)
+                intent.putExtra("courseId", item.courseId)
+                startActivity(intent)
+            }
+        })
 
         // Set the LayoutManager of your RecyclerView
         binding.teacherCourses.layoutManager = LinearLayoutManager(context)
@@ -64,12 +73,5 @@ class TeacherHomeFragment : Fragment(), CourseAdapter.OnCourseClickListener{
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    /** When click on the particular course edit icon, redirect to the EditCourseFragment for that course**/
-    override fun onCourseClick(courseId: String) {
-        val intent = Intent(activity, EditCourseActivity::class.java)
-        intent.putExtra("courseId", courseId)
-        startActivity(intent)
     }
 }

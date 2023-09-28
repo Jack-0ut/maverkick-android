@@ -1,0 +1,65 @@
+plugins {
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
+    id 'kotlin-kapt' // for hilt
+    id 'dagger.hilt.android.plugin' // for hilt
+    id 'androidx.navigation.safeargs.kotlin' // for argument passing between the fragments
+}
+
+android {
+    compileSdk 33
+
+    defaultConfig {
+        minSdk 26
+        targetSdk 33
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+    buildFeatures {
+        viewBinding true
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+}
+
+dependencies {
+    implementation project(':common')
+    implementation project(':data')
+    implementation project(':chat-helper')
+    implementation project(':tasks')
+
+    implementation "androidx.core:core-ktx:$rootProject.coreKtx"
+    implementation "androidx.appcompat:appcompat:$rootProject.appcompat"
+    implementation "com.google.android.material:material:$rootProject.material"
+    implementation 'com.google.android.gms:play-services-tasks:18.0.2'
+    testImplementation "junit:junit:$rootProject.junit"
+
+    implementation "androidx.navigation:navigation-fragment-ktx:$rootProject.navigation"
+
+    // Retrofit for api requests
+    implementation "com.squareup.retrofit2:retrofit:$rootProject.retrofit"
+
+    // Worker dependencies
+    implementation "com.google.dagger:hilt-android:$rootProject.hilt_version"
+    kapt "com.google.dagger:hilt-compiler:$rootProject.hilt_version"
+
+    // Worker dependencies
+    implementation "androidx.work:work-runtime-ktx:$rootProject.work_version"
+    implementation "androidx.hilt:hilt-work:$rootProject.hilt_work_version"
+    kapt "androidx.hilt:hilt-compiler:$rootProject.hilt_work_version"
+
+    // Fix the error with workers
+    implementation "com.google.guava:guava:31.0.1-android"
+}

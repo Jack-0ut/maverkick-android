@@ -5,17 +5,23 @@ package com.maverkick.data.models
  **/
 data class DailyLearningPlan(
     val studentId: String,
-    val date: String, // Date represented in a format like "yyyy-mm-dd"
-    val lessons: List<Lesson>,
+    val date: String?,
+    val lessons: List<Lesson>, // Interface or abstract class for different lesson types
     val totalDuration: Int,
-    var progress: Int = 0 // Number of lessons completed
+    var progress: Int = 0,
+    var status: DailyLearningPlanStatus = DailyLearningPlanStatus.PLANNED, // Enum or class for status
+    var completedLessons: List<String> = emptyList() // List of completed lesson IDs or objects
 ) {
-    // No-argument constructor for Firestore
-    constructor() : this("", "", emptyList(), 0, 0)
-
-    fun incrementProgress() {
-        if (progress <= lessons.size) {
+    fun incrementProgress(lessonId: String) {
+        if (progress < lessons.size) {
             progress++
+            completedLessons = completedLessons + lessonId
         }
     }
+}
+
+enum class DailyLearningPlanStatus {
+    PLANNED,
+    IN_PROGRESS,
+    COMPLETED
 }
