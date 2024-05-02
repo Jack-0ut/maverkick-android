@@ -19,23 +19,23 @@
             android:id="@+id/course_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Course Name"
             android:textSize="20sp"
             android:gravity="center"
-            android:textColor="@color/maverkick_white"
+            android:textColor="@color/maverkick_black"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageView
+        <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/course_image"
             android:layout_width="0dp"
             android:layout_height="200dp"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
+            android:layout_marginTop="8dp"
+            android:scaleType="centerCrop"
             app:layout_constraintTop_toBottomOf="@id/course_title"
-            android:scaleType="fitXY"
-            android:adjustViewBounds="true"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:shapeAppearanceOverlay="@style/roundedCornersImage" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

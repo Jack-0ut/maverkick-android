@@ -17,6 +17,8 @@ import com.maverkick.data.IDatabaseService
 import com.maverkick.data.api.ChatApi
 import com.maverkick.data.api.CourseCreationApi
 import com.maverkick.data.api.LessonApi
+import com.maverkick.data.auth.AuthenticationService
+import com.maverkick.data.auth.FirebaseAuthenticationService
 import com.maverkick.data.sharedpref.SharedPrefManager
 import dagger.Module
 import dagger.Provides
@@ -27,6 +29,7 @@ import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
+import javax.crypto.AEADBadTagException
 import javax.inject.Named
 import javax.inject.Singleton
 
@@ -50,6 +53,11 @@ object AppModule {
     @Provides
     fun provideFirebaseStorage(): FirebaseStorage = FirebaseStorage.getInstance()
 
+    @Singleton
+    @Provides
+    fun provideAuthenticationService(firebaseAuth: FirebaseAuth): AuthenticationService {
+        return FirebaseAuthenticationService(firebaseAuth)
+    }
 
     @Singleton
     @Provides
@@ -62,13 +70,23 @@ object AppModule {
     @Singleton
     @Provides
     fun provideEncryptedSharedPreferences(@ApplicationContext context: Context, masterKey: MasterKey): SharedPreferences {
-        return EncryptedSharedPreferences.create(
-            context,
-            "encrypted_prefs",
-            masterKey,
-            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-        )
+        // Try to create EncryptedSharedPreferences and catch any cryptographic exceptions.
+        return try {
+            EncryptedSharedPreferences.create(
+                context,
+                "encrypted_prefs",
+                masterKey,
+                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+            )
+        } catch (e: AEADBadTagException) {
+            // Clear the default SharedPreferences or handle according to your needs.
+            context.getSharedPreferences("default_prefs", Context.MODE_PRIVATE).edit().clear().apply()
+
+            // Optionally, re-throw the exception or create a new instance of SharedPreferences
+            // that does not use encryption, depending on how critical the encrypted preferences are to your app.
+            context.getSharedPreferences("default_prefs", Context.MODE_PRIVATE)
+        }
     }
 
     @Singleton

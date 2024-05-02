@@ -40,7 +40,6 @@ dependencies {
 
     // For Hilt DI
     implementation "com.google.dagger:hilt-android:${rootProject.ext.hilt_version}"
-    implementation "com.google.firebase:firebase-auth-ktx:${rootProject.ext.firebaseAuth}"
     kapt "com.google.dagger:hilt-android-compiler:${rootProject.ext.hilt_version}"
 
     // Glide for the image downloading and displaying
@@ -56,5 +55,4 @@ dependencies {
     implementation "androidx.core:core-ktx:${rootProject.ext.coreKtx}"
     implementation "androidx.appcompat:appcompat:${rootProject.ext.appcompat}"
     implementation "com.google.android.material:material:${rootProject.ext.material}"
-    testImplementation "junit:junit:${rootProject.ext.junit}"
 }

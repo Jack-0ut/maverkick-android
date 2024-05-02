@@ -45,7 +45,6 @@
         android:layout_height="wrap_content"
         android:textColor="@color/main_accent_color"
         android:textSize="24sp"
-        android:clickable="true"
         android:focusable="true"
         app:layout_constraintStart_toEndOf="@+id/daily_learning_time_label"
         app:layout_constraintBaseline_toBaselineOf="@id/daily_learning_time_label"

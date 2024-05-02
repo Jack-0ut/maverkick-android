@@ -46,12 +46,8 @@ class MatchingFragment : Fragment(), TaskActionsListener {
 
         // Randomize and separate the pairs into two lists
         val randomizedPairs = task.pairs.shuffled()
-        val terms = randomizedPairs.map { it.key }.shuffled() // Updated
+        val terms = randomizedPairs.map { it.key }.shuffled()
         val definitions = randomizedPairs.map { it.value }
-
-        // Log terms and definitions
-        Log.d("TermsAndDefinitions", "Terms: $terms")
-        Log.d("TermsAndDefinitions", "Definitions: $definitions")
 
         // Initialize the adapters
         termsAdapter = TermsAdapter(terms) { term ->
@@ -80,9 +76,6 @@ class MatchingFragment : Fragment(), TaskActionsListener {
             // Add pair to chosen pairs
             chosenPairs.add(MatchingPair(selectedTerm!!, selectedDefinition!!))
 
-            // Log the chosen pair
-            Log.d("CheckPair", "Chosen Pair: $selectedTerm, $selectedDefinition")
-
             // Colorize the pair
             termsAdapter.colorizeSelectedTerm(colors[colorIndex])
             definitionsAdapter.colorizeSelectedDefinition(colors[colorIndex])
@@ -105,10 +98,6 @@ class MatchingFragment : Fragment(), TaskActionsListener {
         val originalPairs = task.pairs.sortedBy { it.key }
         val userPairs = chosenPairs.sortedBy { it.key }
 
-        // Log the original and user pairs
-        Log.d("CheckAnswer", "Original Pairs: $originalPairs")
-        Log.d("CheckAnswer", "User Pairs: $userPairs")
-
         val result = if (originalPairs == userPairs) {
             // The user has correctly matched all pairs
             Pair(true, "You're the perfect matcher!")
@@ -116,11 +105,11 @@ class MatchingFragment : Fragment(), TaskActionsListener {
             // The user has not correctly matched all pairs
             Pair(false, "Hey, not exactly right. Good luck next time!")
         }
-
-        // Log the result
-        Log.d("CheckAnswer", "Result: ${result.first}")
-
         onResult(result)
+    }
+
+    override fun onOptionSelected(isSelected: Boolean) {
+        TODO("Not yet implemented")
     }
 
     override fun onDestroyView() {

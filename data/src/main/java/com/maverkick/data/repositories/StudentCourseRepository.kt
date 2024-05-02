@@ -13,13 +13,32 @@ import javax.inject.Inject
  **/
 class StudentCourseRepository @Inject constructor(private val databaseService: IDatabaseService){
 
-    /** Add the lesson to the list of completed for a given student's course**/
-    fun addLessonToCompleted(studentCourseId: String, lessonId: String) {
+    /** Add the lesson to the list of completed for a given student's course and return current lesson number**/
+    suspend fun addLessonToCompleted(studentCourseId: String, lessonId: String): Int {
         val studentCourseRef = databaseService.db.collection("studentCourseProgress").document(studentCourseId)
-        databaseService.db.runTransaction { transaction ->
+
+        val updatedCount = databaseService.db.runTransaction { transaction ->
+            val currentDocument = transaction.get(studentCourseRef)
+
+            val currentCount = currentDocument.getLong("lastCompletedLesson") ?: 0L
             transaction.update(studentCourseRef, "completedLessons", FieldValue.arrayUnion(lessonId))
             transaction.update(studentCourseRef, "lastCompletedLesson", FieldValue.increment(1))
-        }
+
+            return@runTransaction currentCount + 1
+        }.await().toInt()
+
+        return updatedCount
+    }
+
+    /** Mark a student's course as finished **/
+    suspend fun finishCourse(studentId: String, courseId: String) {
+        val studentCourseId = "${studentId}_$courseId"
+        val studentCourseRef = databaseService.db.collection("studentCourses").document(studentCourseId)
+
+        databaseService.db.runTransaction { transaction ->
+            transaction.update(studentCourseRef, "active", false)
+            transaction.update(studentCourseRef, "finished", true)
+        }.await()
     }
 
     suspend fun enrollStudent(studentId: String, courseId: String, courseType: CourseType): Boolean {
@@ -73,7 +92,6 @@ class StudentCourseRepository @Inject constructor(private val databaseService: I
         val studentCourseDocument = studentCoursesCollection.document(studentCourseDocumentId).get().await()
 
         if (studentCourseDocument.exists()) {
-            // If the document exists, withdraw the student from the course by setting "active" to false
             studentCoursesCollection.document(studentCourseDocumentId).update("active", false).await()
         } else {
             throw Exception("Student is not enrolled in the course")

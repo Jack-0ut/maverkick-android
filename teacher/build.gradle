@@ -39,14 +39,14 @@ dependencies {
     implementation project(':common')
     implementation project(':shared-ui')
     implementation project(':profile')
-    implementation project(':videoplayer')
+    implementation project(':text-lesson')
+    implementation project(':video-lesson')
 
     // For Menu Navigation
     implementation "androidx.navigation:navigation-fragment-ktx:$rootProject.navigation"
     implementation "androidx.navigation:navigation-ui-ktx:$rootProject.navigation"
 
     // Firebase
-    implementation "com.google.firebase:firebase-auth-ktx:$rootProject.firebaseAuth"
     implementation "com.google.firebase:firebase-firestore-ktx:$rootProject.firebaseFirestore"
 
     // For Hilt DI
@@ -65,14 +65,10 @@ dependencies {
     // For exoplayer
     implementation "com.google.android.exoplayer:exoplayer:$rootProject.exoplayer"
 
-    // For Retrofit (send the request to the api service)
-    implementation "com.squareup.retrofit2:retrofit:$rootProject.retrofit"
-
     implementation "com.google.guava:guava:31.0.1-android"
 
     implementation "androidx.core:core-ktx:$rootProject.coreKtx"
     implementation "androidx.appcompat:appcompat:$rootProject.appcompat"
     implementation "com.google.android.material:material:$rootProject.material"
     implementation "androidx.constraintlayout:constraintlayout:$rootProject.constraintlayout"
-    testImplementation "junit:junit:$rootProject.junit"
 }

@@ -2,11 +2,20 @@
 <resources>
     <!-- Your custom Chip style -->
     <style name="CustomChipStyle" parent="Widget.MaterialComponents.Chip.Entry">
-        <item name="chipBackgroundColor">@color/main_color</item>
+        <item name="chipBackgroundColor">@color/maverkick_main</item>
         <item name="chipStrokeWidth">1dp</item>
         <item name="chipStrokeColor">@color/maverkick_light_green</item>
         <item name="chipCornerRadius">8dp</item>
         <item name="android:textColor">@color/maverkick_white</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="InterestChipStyle" parent="Widget.MaterialComponents.Chip.Entry">
+        <item name="chipBackgroundColor">@color/maverkick_light_gray</item>
+        <item name="chipStrokeWidth">1dp</item>
+        <item name="chipStrokeColor">@color/maverkick_light_green</item>
+        <item name="chipCornerRadius">8dp</item>
+        <item name="android:textColor">@color/maverkick_black</item>
         <item name="android:textSize">16sp</item>
     </style>
 
@@ -69,10 +78,18 @@
     </style>
 
     <style name="CustomBottomNavigationView" parent="Widget.MaterialComponents.BottomNavigationView.Colored">
-        <item name="itemIconTint">@color/black</item>
-        <item name="android:background">@color/maverkick_accent_light</item>
+        <item name="itemIconTint">@color/bottom_navigation_colors</item>
+        <item name="android:background">@drawable/bottom_nav_background</item>
         <item name="itemIconSize">32dp</item>
-        <item name="itemRippleColor">@color/maverkick_light_green</item>
+        <item name="itemRippleColor">@android:color/transparent</item>
+    </style>
+
+    <style name="roundedCornersImage">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopRight">25dp</item>
+        <item name="cornerSizeTopLeft">25dp</item>
+        <item name="cornerSizeBottomRight">25dp</item>
+        <item name="cornerSizeBottomLeft">25dp</item>
     </style>
 
 </resources>

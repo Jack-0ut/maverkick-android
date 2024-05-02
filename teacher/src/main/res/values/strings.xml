@@ -5,7 +5,6 @@
         <item>Ukrainian</item>
         <item>Spanish</item>
         <item>French</item>
-
     </string-array>
 
     <!-- item_course_stats.xml -->
@@ -15,13 +14,17 @@
     <string name="average_rating_label">Average Rating: </string>
 
     <!-- fragment_teacher_profile_settings.xml -->
-    <string name="courses_statistics">Courses Statistics</string>
+    <string name="your_expertise">Your Expertise</string>
+    <string name="course_stats_enrollments">Enrollments: %1$d</string>
+    <string name="course_stats_completion_rate">Completion Rate: %1$d</string>
+    <string name="course_stats_dropouts">Dropouts: %1$d</string>
+    <string name="course_stats_avg_rating">Average Rating: %1$.2f</string>
 
     <!-- fragment_teacher_profile_statistics.xml -->
-    <string name="your_expertise">Your Expertise</string>
+    <string name="courses_statistics">Courses Statistics</string>
 
     <!-- activity_add_lesson.xml -->
-    <string name="add_course_here">You could add course here</string>
+    <string name="add_course_here">Describe your course</string>
     <string name="add_course_name">Course Name</string>
     <string name="course_language">Course Language</string>
     <string name="tags">Tags</string>
@@ -41,5 +44,12 @@
     <string name="remove_course_description">Remove Course</string>
     <string name="add_lesson_description">Add Lesson</string>
     <string name="publish_button">Publish</string>
+
+    <string name="dialog_remove_course_title">Remove Course</string>
+    <string name="dialog_remove_course_message">Do you want to remove your course? It will no longer be recommended for new students, but those who are enrolled will have an opportunity to finish it.</string>
+    <string name="dialog_positive_button">Go ahead</string>
+    <string name="dialog_negative_button">No</string>
+    <string name="course_deleted_message">The course has been deleted!</string>
+    <string name="course_delete_error_message">Can\'t delete the Course, try again!</string>
 
 </resources>

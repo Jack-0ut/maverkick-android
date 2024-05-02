@@ -3,7 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/main_color"
     android:padding="16dp">
 
     <TextView
@@ -11,7 +10,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="36dp"
-        android:text="Login"
+        android:text="@string/label_login"
         android:textColor="@color/main_accent_color"
         android:textSize="24sp"
         android:textStyle="bold"
@@ -24,7 +23,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="48dp"
-        android:text="Email Address"
+        android:text="@string/label_email_address"
         android:textSize="20sp"
         android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
@@ -48,13 +47,12 @@
         android:autofillHints="emailAddress"
         android:importantForAutofill="yes" />
 
-
     <TextView
         android:id="@+id/password_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="48dp"
-        android:text="Password"
+        android:text="@string/label_password"
         android:textSize="20sp"
         android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
@@ -86,8 +84,6 @@
             android:importantForAutofill="yes" />
     </com.google.android.material.textfield.TextInputLayout>
 
-
-
     <Button
         android:id="@+id/login_button"
         android:layout_width="0dp"
@@ -95,21 +91,21 @@
         android:layout_marginTop="200dp"
         android:layout_marginStart="64dp"
         android:layout_marginEnd="64dp"
-        android:text="Login"
+        android:text="@string/label_login"
         android:textColor="@color/main_color"
         android:textSize="20sp"
         app:backgroundTint="@color/main_accent_color"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/password_layout"
-        app:cornerRadius="15dp" />
+        app:cornerRadius="16dp" />
 
     <TextView
         android:id="@+id/already_used_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="New to our app?"
+        android:text="@string/label_have_not_registered_yet"
         android:textColor="@color/white"
         android:textSize="14sp"
         app:layout_constraintEnd_toStartOf="@+id/register_text"
@@ -121,7 +117,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
-        android:text="Register, can't miss IT"
+        android:text="@string/action_register"
         android:textColor="@color/main_accent_color"
         android:textSize="16sp"
         android:textStyle="bold"

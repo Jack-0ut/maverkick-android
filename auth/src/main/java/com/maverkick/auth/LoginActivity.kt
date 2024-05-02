@@ -3,10 +3,10 @@ package com.maverkick.auth
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.snackbar.Snackbar
 import com.maverkick.auth.databinding.ActivityLoginBinding
 import com.maverkick.data.repositories.AuthRepository
 import com.maverkick.data.repositories.StudentRepository
@@ -37,23 +37,20 @@ class LoginActivity : AppCompatActivity() {
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // user clicks on the login button
         binding.loginButton.setOnClickListener {
             val email = binding.emailInput.text.toString()
             val password = binding.passwordInput.text.toString()
 
-            // Check if email or password is empty
             if (email.isEmpty()) {
-                Toast.makeText(this, "Please enter email", Toast.LENGTH_SHORT).show()
+                showSnackBar("Please enter email")
                 return@setOnClickListener
             }
 
             if (password.isEmpty()) {
-                Toast.makeText(this, "Please enter password", Toast.LENGTH_SHORT).show()
+                showSnackBar("Please enter password")
                 return@setOnClickListener
             }
 
-            // call the login function
             authRepository.login(email, password,
                 onSuccess = { userId ->
                     userRepository.getCurrentUser(
@@ -62,24 +59,23 @@ class LoginActivity : AppCompatActivity() {
                             checkUserTypeAndNavigate(userId)
                         },
                         onFailure = { e ->
-                            Toast.makeText(this, "Failed to fetch user: ${e.message}", Toast.LENGTH_SHORT).show()
+                            showSnackBar("Failed to fetch user: ${e.message}")
                         }
                     )
                 },
                 onFailure = { e ->
-                    Toast.makeText(this, "Login failed: ${e.message}", Toast.LENGTH_SHORT).show()
+                    showSnackBar("Login failed: ${e.message}")
                 }
             )
         }
 
-        // navigate to the registration page
         binding.registerText.setOnClickListener {
             val intent = Intent(this, RegistrationActivity::class.java)
             startActivity(intent)
         }
     }
 
-    /**Checking on who's the user (Student or Teacher or both) **/
+    /** Checking on who's the user (Student or Teacher or both) **/
     private fun checkUserTypeAndNavigate(userId: String) {
         var isStudent = false
         var isTeacher = false
@@ -94,7 +90,9 @@ class LoginActivity : AppCompatActivity() {
                     isStudent = true
                     sharedPrefManager.saveStudent(it)
                 },
-                onFailure = { println("Error fetching student: ${it.message}") }
+                onFailure = {
+                    showSnackBar(getString(R.string.error_fetching_data))
+                }
             )
 
             teacherResult.await().fold(
@@ -102,15 +100,18 @@ class LoginActivity : AppCompatActivity() {
                     isTeacher = true
                     sharedPrefManager.saveTeacher(it)
                 },
-                onFailure = { println("Error fetching teacher: ${it.message}") }
+                onFailure = {
+                    showSnackBar(getString(R.string.error_fetching_data))
+                }
             )
-            // check for the different cases when we have role == student | teacher or both
+
+            // Check for the different cases when we have role == student | teacher or both
             when {
                 isStudent && isTeacher -> showRoleSelectionDialog()
                 isStudent -> navigateToMainActivity("student")
                 isTeacher -> navigateToMainActivity("teacher")
                 else -> {
-                    Toast.makeText(this@LoginActivity, "No role found for user: $userId", Toast.LENGTH_LONG).show()
+                    showSnackBar(getString(R.string.no_role_found, userId))
                 }
             }
         }
@@ -119,15 +120,11 @@ class LoginActivity : AppCompatActivity() {
     /** If we have user, who's Student and Teacher at the same time, let user to choose as whom login **/
     private fun showRoleSelectionDialog() {
         val builder = AlertDialog.Builder(this)
-        builder.setTitle("You've got two accounts: Choose the one ")
-        builder.setItems(arrayOf("Student", "Teacher")) { _, which ->
+        builder.setTitle(getString(R.string.choose_account_type))
+        builder.setItems(arrayOf(getString(R.string.student), getString(R.string.teacher))) { _, which ->
             when(which) {
-                0 -> {
-                    navigateToMainActivity("student")
-                }
-                1 -> {
-                    navigateToMainActivity("teacher")
-                }
+                0 -> navigateToMainActivity("student")
+                1 -> navigateToMainActivity("teacher")
             }
         }
         builder.show()
@@ -146,5 +143,9 @@ class LoginActivity : AppCompatActivity() {
         val intent = Intent(Intent.ACTION_VIEW, intentUri)
         startActivity(intent)
         finish()
+    }
+
+    private fun showSnackBar(message: String) {
+        Snackbar.make(binding.root, message, Snackbar.LENGTH_SHORT).show()
     }
 }

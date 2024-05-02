@@ -1,14 +1,17 @@
 package com.maverkick.student.adapters
 
+import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.maverkick.data.models.Course
+import com.maverkick.data.models.TextCourse
 import com.maverkick.data.models.VideoCourse
 import com.maverkick.student.databinding.ItemSearchCourseBinding
-
 
 /**
  * Adapter to display the courses that fit a user's search query.
@@ -16,8 +19,8 @@ import com.maverkick.student.databinding.ItemSearchCourseBinding
  *
  * @param onCourseClickListener Listener for handling click events on the course items.
  **/
-class SearchCourseAdapter(private val onCourseClickListener: (VideoCourse) -> Unit) :
-    ListAdapter<VideoCourse, SearchCourseAdapter.CourseViewHolder>(SearchCourseDiffCallback) {
+class SearchCourseAdapter(private val onCourseClickListener: (Course) -> Unit) :
+    ListAdapter<Course, SearchCourseAdapter.CourseViewHolder>(SearchCourseDiffCallback) {
 
     inner class CourseViewHolder(private val binding: ItemSearchCourseBinding) : RecyclerView.ViewHolder(binding.root) {
         init {
@@ -28,14 +31,35 @@ class SearchCourseAdapter(private val onCourseClickListener: (VideoCourse) -> Un
             }
         }
 
-        fun bind(videoCourse: VideoCourse) {
+        fun bind(course: Course) {
             with(binding) {
-                courseTitle.text = videoCourse.courseName
-                Glide.with(root.context)
-                    .load(videoCourse.poster)
-                    .into(courseImage)
+                courseTitle.text = course.courseName
+                when (course) {
+                    is VideoCourse -> {
+                        // Load poster for VideoCourse
+                        Glide.with(root.context)
+                            .load(course.poster)
+                            .into(courseImage)
+                    }
+                    is TextCourse -> {
+                        // Load poster for TextCourse
+                        Glide.with(root.context)
+                            .load(course.poster)
+                            .into(courseImage)
+                    }
+                    else -> {
+                        // Set a gradient background to courseImage
+                        val gradientDrawable = GradientDrawable(
+                            GradientDrawable.Orientation.TOP_BOTTOM,
+                            intArrayOf(Color.BLUE, Color.RED)
+                        )
+                        courseImage.background = gradientDrawable
+                        courseImage.setImageDrawable(null)
+                    }
+                }
             }
         }
+
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CourseViewHolder {
@@ -48,12 +72,13 @@ class SearchCourseAdapter(private val onCourseClickListener: (VideoCourse) -> Un
     }
 }
 
-object SearchCourseDiffCallback : DiffUtil.ItemCallback<VideoCourse>() {
-    override fun areItemsTheSame(oldItem: VideoCourse, newItem: VideoCourse): Boolean {
+object SearchCourseDiffCallback : DiffUtil.ItemCallback<Course>() {
+    override fun areItemsTheSame(oldItem: Course, newItem: Course): Boolean {
         return oldItem.courseId == newItem.courseId
     }
 
-    override fun areContentsTheSame(oldItem: VideoCourse, newItem: VideoCourse): Boolean {
+    override fun areContentsTheSame(oldItem: Course, newItem: Course): Boolean {
         return oldItem == newItem
     }
 }
+

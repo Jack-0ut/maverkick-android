@@ -47,3 +47,4 @@ data class CourseGenerationRequest(
 data class CourseGenerationResponse(
     @SerializedName("courseId") val courseId: String
 )
+

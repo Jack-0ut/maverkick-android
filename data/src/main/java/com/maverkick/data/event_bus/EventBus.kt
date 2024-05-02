@@ -17,6 +17,7 @@ data class CourseWithdrawnEvent(val studentId: String, val courseId: String, val
 
 data class CourseGenerationCompletedEvent(val courseId: String)
 
+
 /**
  * Singleton object serving as an Event Bus to facilitate communication between different components.
  * Specifically, it is used within the 'tasks' module to publish an event when a lesson is completed,

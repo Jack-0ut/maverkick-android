@@ -1,7 +1,6 @@
 package com.maverkick.tasks.data
 
 
-import android.util.Log
 import com.google.firebase.firestore.DocumentSnapshot
 import com.maverkick.data.IDatabaseService
 import com.maverkick.data.models.CourseType
@@ -25,8 +24,8 @@ class TaskRepository @Inject constructor(private val databaseService: IDatabaseS
     /** Get the list of tasks for the given lesson **/
     suspend fun fetchTasks(courseId: String, lessonId: String, courseType: CourseType): List<Task> {
         val collectionName = when (courseType) {
-            CourseType.TEXT -> "textCourses"
-            CourseType.VIDEO -> "courses"
+            CourseType.TEXT_PERSONALIZED -> "generatedCourses"
+            CourseType.VIDEO, CourseType.TEXT -> "courses"
         }
         val tasksCollection = databaseService.db
             .collection(collectionName)
@@ -42,12 +41,8 @@ class TaskRepository @Inject constructor(private val databaseService: IDatabaseS
                 .get()
                 .await()
 
-            Log.d("TaskRepository", "Fetched ${documents.size()} tasks documents for courseId: $courseId, lessonId: $lessonId")
-
             for (document in documents) {
                 try {
-                    Log.d("TaskRepository", "Document before conversion: ${document.data}")
-
                     val taskTypeString = document.getString("type")?.uppercase(Locale.ROOT)
                     if (taskTypeString != null) {
                         val task = when (TaskType.valueOf(taskTypeString)) {
@@ -57,23 +52,20 @@ class TaskRepository @Inject constructor(private val databaseService: IDatabaseS
                             TaskType.MATCHING -> documentToMatchingTask(document)
                         }
                         if (task != null) {
-                            Log.d("TaskRepository",task.toString())
                             taskList.add(task)
                         }
                     }
                 } catch (e: Exception) {
-                    Log.e("TaskRepository", "Failed to convert task: ${document.id}", e)
                 }
             }
             taskList
         } catch (e: Exception) {
-            Log.e("TaskRepository", "Failed to fetch tasks", e)
             emptyList()
         }
     }
 
     /** Convert Firestore Document to the Matching Task Object **/
-    fun documentToMatchingTask(document: DocumentSnapshot): Matching? {
+    private fun documentToMatchingTask(document: DocumentSnapshot): Matching? {
         val question = document.getString("question") ?: return null
         val type = TaskType.valueOf(document.getString("type") ?: return null)
         val pairsList = document.get("pairs") as? List<Map<String, String>> ?: return null

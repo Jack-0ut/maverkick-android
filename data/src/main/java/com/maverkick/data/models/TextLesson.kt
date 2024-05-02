@@ -1,7 +1,8 @@
 package com.maverkick.data.models
 
 /**
- * Class storage for the TextLesson objects
+ * Class storage for the TextLesson objects.
+ * It's a piece of content, which is read by user to learn.
  * @param lessonId - id of the lesson
  * @param courseId - id of the course
  * @param title - title of the text-lesson

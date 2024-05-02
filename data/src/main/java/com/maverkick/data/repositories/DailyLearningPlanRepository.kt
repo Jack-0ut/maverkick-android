@@ -1,6 +1,5 @@
 package com.maverkick.data.repositories
 
-import android.util.Log
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.QuerySnapshot
@@ -36,10 +35,7 @@ class DailyLearningPlanRepository @Inject constructor(private val databaseServic
             return newPlan
         }
 
-        // If all else fails, log an error and throw an exception
-        val errorMessage = "Failed to generate a daily learning plan for $studentId"
-        Log.e("DailyPlan", errorMessage)
-        throw Exception(errorMessage)
+        throw Exception("Failed to generate a daily learning plan")
     }
 
     /** Create the daily learning plan object **/
@@ -109,19 +105,13 @@ class DailyLearningPlanRepository @Inject constructor(private val databaseServic
     suspend fun updateOnCourseDrop(studentId: String, courseId: String, dailyLearningTimeSeconds: Int) {
 
         val todayPlan = getDailyLearningPlan(studentId) ?: return
-        if (todayPlan.status == DailyLearningPlanStatus.COMPLETED || todayPlan.lessons.none { it.courseId == courseId }) {
-            Log.d("UpdateLeaveCourse", "Plan is completed or course not found in plan. Exiting early.")
-            return
-        }
+        if (todayPlan.status == DailyLearningPlanStatus.COMPLETED || todayPlan.lessons.none { it.courseId == courseId }) { return }
 
         val lessonsToRemove = todayPlan.lessons.filter { it.courseId == courseId }
         val removedDuration = lessonsToRemove.sumOf { it.duration }
         val remainingTimeSeconds = dailyLearningTimeSeconds - (todayPlan.totalDuration - removedDuration)
 
-        if (remainingTimeSeconds <= 120) {
-            Log.d("UpdateLeaveCourse", "No remaining time or minimal gap. Exiting early.")
-            return
-        }
+        if (remainingTimeSeconds <= 120) { return }
 
         val additionalLessons = fillRemainingTimeWithLessons(studentId, remainingTimeSeconds)
 
@@ -155,7 +145,6 @@ class DailyLearningPlanRepository @Inject constructor(private val databaseServic
         val completedLessons = doc.get("completedLessons") as? List<*>
         return completedLessons?.contains(lessonId) ?: false
     }
-
 
     /** A function that adds a lesson to the list of completed lessons and increment progress by 1**/
     suspend fun completeLessonAndUpdateProgress(dailyPlanId: String, lessonId: String) {
@@ -219,13 +208,6 @@ class DailyLearningPlanRepository @Inject constructor(private val databaseServic
         return progressDoc.getLong("lastCompletedLesson")?.toInt() ?: 0
     }
 
-    private suspend fun fetchLessonsThatFitsTime(courseId: String, studentId: String, courseType: CourseType, remainingStudyTimeSeconds: Int): List<Lesson> {
-        return when (courseType) {
-            CourseType.TEXT -> getNewTextCourseLessons(courseId, studentId, remainingStudyTimeSeconds)
-            CourseType.VIDEO -> getNewVideoCourseLessons(courseId, studentId, remainingStudyTimeSeconds)
-        }
-    }
-
     /** This function fetches lessons for each active course and fills the remaining time with those lessons in a round-robin manner **/
     private suspend fun fillRemainingTimeWithLessons(studentId: String, remainingTimeSeconds: Int): List<Lesson> {
         val lessonQueues = mutableListOf<Queue<Lesson>>()
@@ -267,12 +249,22 @@ class DailyLearningPlanRepository @Inject constructor(private val databaseServic
         return filledLessons
     }
 
-    private suspend fun getNewTextCourseLessons(courseId: String, studentId: String, remainingStudyTimeSeconds: Int): List<TextLesson> {
-        return getNewCourseLessonsTemplate(courseId, studentId, remainingStudyTimeSeconds, "textCourses", TextLessonFirebase::class.java)
+    private suspend fun fetchLessonsThatFitsTime(courseId: String, studentId: String, courseType: CourseType, remainingStudyTimeSeconds: Int): List<Lesson> {
+        return when (courseType) {
+            CourseType.TEXT_PERSONALIZED -> getNewTextCourseLessons(courseId, studentId, remainingStudyTimeSeconds, "generatedCourses")
+            CourseType.TEXT -> getNewTextCourseLessons(courseId, studentId, remainingStudyTimeSeconds, "courses")
+            CourseType.VIDEO -> getNewVideoCourseLessons(courseId, studentId, remainingStudyTimeSeconds, "courses")
+        }
     }
 
-    private suspend fun getNewVideoCourseLessons(courseId: String, studentId: String, remainingStudyTimeSeconds: Int): List<VideoLesson> {
-        return getNewCourseLessonsTemplate(courseId, studentId, remainingStudyTimeSeconds, "courses", VideoLessonFirebase::class.java)
+    private suspend fun getNewTextCourseLessons(courseId: String, studentId: String, remainingStudyTimeSeconds: Int, collectionName: String): List<TextLesson> {
+        // Adjust your getNewCourseLessonsTemplate function to accept collectionName as a parameter and use it in the query
+        return getNewCourseLessonsTemplate(courseId, studentId, remainingStudyTimeSeconds, collectionName, TextLessonFirebase::class.java)
+    }
+
+    private suspend fun getNewVideoCourseLessons(courseId: String, studentId: String, remainingStudyTimeSeconds: Int, collectionName: String): List<VideoLesson> {
+        // Adjust your getNewCourseLessonsTemplate function to accept collectionName as a parameter and use it in the query
+        return getNewCourseLessonsTemplate(courseId, studentId, remainingStudyTimeSeconds, collectionName, VideoLessonFirebase::class.java)
     }
 
     private suspend fun <T : Lesson, F : LessonFirebase> getNewCourseLessonsTemplate(
@@ -337,7 +329,7 @@ class DailyLearningPlanRepository @Inject constructor(private val databaseServic
         val lessonMaps = doc.get("lessons") as? List<Map<String, Any>> ?: emptyList()
         val lessons = lessonMaps.mapNotNull { convertToLesson(it) }
 
-        return DailyLearningPlan(studentId, date, lessons, totalDuration, progress, status, completedLessons) // Make sure to add completedLessons in the data class constructor
+        return DailyLearningPlan(studentId, date, lessons, totalDuration, progress, status, completedLessons)
     }
 
     /** Convert lesson map to the particular Lesson object **/
@@ -365,5 +357,4 @@ class DailyLearningPlanRepository @Inject constructor(private val databaseServic
     fun getCurrentDate(): String {
         return LocalDate.now().toString()
     }
-
 }

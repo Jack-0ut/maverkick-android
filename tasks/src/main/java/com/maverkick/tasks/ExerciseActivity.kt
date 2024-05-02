@@ -5,7 +5,6 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
-import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -13,37 +12,50 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.viewpager2.widget.ViewPager2
-import com.google.android.material.snackbar.Snackbar
 import com.maverkick.data.models.CourseType
-import com.maverkick.tasks.databinding.FragmentExerciseBinding
+import com.maverkick.tasks.databinding.ActivityExerciseBinding
+import com.maverkick.tasks.quiz_summary.PostLessonSummaryActivity
 import com.maverkick.tasks.task.TaskPagerAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
+
 @AndroidEntryPoint
-class ExerciseActivity : AppCompatActivity() {
-    private lateinit var binding: FragmentExerciseBinding
+class ExerciseActivity : AppCompatActivity(), OptionSelectionListener {
+    private lateinit var binding: ActivityExerciseBinding
     private val viewModel: ExerciseViewModel by viewModels()
     private lateinit var adapter: TaskPagerAdapter
+
+    private var correctAnswersCount = 0
+    private val finishedItems = mutableSetOf<Int>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initializeViews()
-        initializeSnackbar()
         observeViewModel()
         handleIntents()
     }
 
     private fun initializeViews() {
-        binding = FragmentExerciseBinding.inflate(layoutInflater)
+        binding = ActivityExerciseBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        window.statusBarColor = ContextCompat.getColor(this, com.maverkick.common.R.color.maverkick_accent_light)
+        window.statusBarColor = ContextCompat.getColor(this, com.maverkick.common.R.color.maverkick_main)
+
+        // disable check button, because initially it's not clicked on
+        binding.checkButton.isEnabled = false
+
         adapter = TaskPagerAdapter(this)
         binding.viewPager.adapter = adapter
         binding.viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
                 updateProgress(position)
+
+                if(finishedItems.contains(position)) {
+                    binding.skipButton.visibility = View.GONE
+                } else {
+                    binding.skipButton.visibility = View.VISIBLE
+                }
             }
         })
 
@@ -51,46 +63,44 @@ class ExerciseActivity : AppCompatActivity() {
             val nextItem = binding.viewPager.currentItem + 1
             if (nextItem < adapter.itemCount) {
                 binding.viewPager.currentItem = nextItem
-                updateProgress(nextItem) // Update progress using the helper function
-                setDefaultState() // Revert to the default state
+                updateProgress(nextItem)
+                setDefaultState()
             } else {
-                finishExercises()
+                navigateToQuizSummary()
             }
         }
 
         binding.checkButton.setOnClickListener {
-            if (binding.checkButton.text == getString(R.string.check_button_text)) {
-                val currentFragment = adapter.getFragment(binding.viewPager.currentItem)
-                currentFragment?.let { fragment ->
-                    if (fragment is TaskActionsListener) {
-                        fragment.checkAnswer { result ->
-                            viewModel.onCheckClicked(result.first, result.second)
-                        }
-                    }
-                }
-                binding.checkButton.text = getString(R.string.next_button_text)
-                binding.skipButton.visibility = View.GONE // Hide the Skip button
-            } else {
-                val nextItem = binding.viewPager.currentItem + 1
-                if (nextItem < adapter.itemCount) {
-                    binding.viewPager.currentItem = nextItem
-                    updateProgress(nextItem) // Update progress using the helper function
-                } else {
-                    finishExercises()
-                }
+            if (!binding.checkButton.isEnabled) return@setOnClickListener
+
+            when (binding.checkButton.text) {
+                getString(R.string.check_button_text) -> handleCheckButtonState()
+                getString(R.string.next_button_text) -> handleNextButtonState()
             }
         }
     }
 
-    private fun initializeSnackbar(): Snackbar {
-        return Snackbar.make(binding.coordinatorLayout, "", Snackbar.LENGTH_SHORT).apply {
-            val snackbarView = view
-            val snackbarText = snackbarView.findViewById<TextView>(R.id.snackbar_text)
-            snackbarText.textAlignment = View.TEXT_ALIGNMENT_CENTER
-            snackbarText.maxLines = 5
+    private fun navigateToQuizSummary() {
+        val courseId = intent.getStringExtra("courseId") ?: return
+        val lessonId = intent.getStringExtra("lessonId") ?: return
+
+        val totalQuestions = adapter.itemCount
+
+        viewModel.finishLesson(courseId, lessonId)
+
+        val redirectIntent = Intent(this, PostLessonSummaryActivity::class.java).apply {
+            putExtra("CORRECT_ANSWERS", correctAnswersCount)
+            putExtra("TOTAL_QUESTIONS", totalQuestions)
         }
+        startActivity(redirectIntent)
+        finish()
     }
 
+    override fun onOptionSelected(isSelected: Boolean) {
+        binding.checkButton.isEnabled = isSelected
+    }
+
+    /** Init the tasks when the activity is loaded first time **/
     private fun observeViewModel() {
         lifecycleScope.launch {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -108,8 +118,46 @@ class ExerciseActivity : AppCompatActivity() {
 
         viewModel.checkAnswerEvent.observe(this) { event ->
             event.getContentIfNotHandled()?.let { result ->
-                showFeedback(result)
+                if (result.first) {
+                    correctAnswersCount++
+                }
             }
+        }
+    }
+
+    private fun handleCheckButtonState() {
+        checkAnswerForCurrentFragment()
+        updateUIAfterCheckingAnswer()
+    }
+
+    private fun handleNextButtonState() {
+        navigateToNextQuestionOrSummary()
+    }
+
+    private fun checkAnswerForCurrentFragment() {
+        val currentFragment = adapter.getFragment(binding.viewPager.currentItem)
+        currentFragment?.let { fragment ->
+            if (fragment is TaskActionsListener) {
+                fragment.checkAnswer { result ->
+                    viewModel.onCheckClicked(result.first, result.second)
+                }
+            }
+        }
+    }
+
+    private fun updateUIAfterCheckingAnswer() {
+        binding.checkButton.text = getString(R.string.next_button_text)
+        binding.skipButton.visibility = View.GONE
+        finishedItems.add(binding.viewPager.currentItem)
+    }
+
+    private fun navigateToNextQuestionOrSummary() {
+        val nextItem = binding.viewPager.currentItem + 1
+        if (nextItem < adapter.itemCount) {
+            binding.viewPager.currentItem = nextItem
+            updateProgress(nextItem)
+        } else {
+            navigateToQuizSummary()
         }
     }
 
@@ -117,30 +165,11 @@ class ExerciseActivity : AppCompatActivity() {
         val courseId = intent.getStringExtra("courseId") ?: return
         val lessonId = intent.getStringExtra("lessonId") ?: return
         val courseType = CourseType.valueOf(intent.getStringExtra("courseType").toString())
-
         viewModel.loadTasks(courseId, lessonId, courseType)
     }
 
-    private fun showFeedback(result: Pair<Boolean, String?>) {
-        val feedbackText = result.second ?: if (result.first) {
-            "Great job! You're cool!'"
-        } else {
-            "Keep going, you'll get there!)"
-        }
-
-        val snackbarColor = ContextCompat.getColor(this, if (result.first) com.maverkick.common.R.color.green else com.maverkick.common.R.color.red)
-
-        Snackbar.make(binding.coordinatorLayout, feedbackText, Snackbar.LENGTH_SHORT).apply {
-            view.setBackgroundColor(snackbarColor)
-            val snackbarText = view.findViewById<TextView>(R.id.snackbar_text)
-            snackbarText.textAlignment = View.TEXT_ALIGNMENT_CENTER
-            snackbarText.maxLines = 5
-            show()
-        }
-    }
-
     private fun updateProgress(position: Int) {
-        binding.taskProgress.progress = position + 1
+        binding.taskProgress.progress = position
         setDefaultState()
     }
 

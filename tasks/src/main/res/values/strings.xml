@@ -2,9 +2,18 @@
 <resources>
     <string name="type_your_answer">Type your answer here</string>
 
-    <!-- fragment_exercise.xml -->
-    <string name="exercises_greeting_text">Great, now take the tasks</string>
+    <!-- activity_exercise.xml -->
+    <string name="exercises_greeting_text">Quick Quiz</string>
     <string name="check_button_text">Check</string>
     <string name="explain_button_text">Explain</string>
-    <string name="next_button_text">NEXT</string>
+    <string name="skip_button_text">Skip</string>
+    <string name="next_button_text">Next</string>
+
+    <!-- activity_post_lesson_summary -->
+    <string name="summary_title">One brick closer to your goal!</string>
+    <string name="summary_feedback_pattern">You got %1$d%% of the tasks right!</string>
+    <string name="summary_next_lesson_button">Next Lesson</string>
+    <string name="percentage_format">%1$d%%</string>
+
+
 </resources>

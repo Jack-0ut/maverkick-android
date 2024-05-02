@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:state_checked="true" android:color="@color/maverkick_light_green"/>
-    <item android:color="@color/black"/>
+    <!-- When checked, use the accent color for emphasis -->
+    <item android:color="@color/maverkick_light_green" android:state_checked="true"/>
+    <!-- When unchecked, use the light gray for contrast -->
+    <item android:color="@color/maverkick_light_gray"/>
 </selector>

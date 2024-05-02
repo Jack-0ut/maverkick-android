@@ -1,5 +1,7 @@
 package com.maverkick.student.fragments.profile
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,11 +10,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.shared_ui.OnItemClickListener
-import com.maverkick.data.models.Course
-import com.maverkick.data.models.CourseType
-import com.maverkick.data.models.TextCourse
-import com.maverkick.data.models.VideoCourse
+import com.maverkick.data.models.*
 import com.maverkick.student.adapters.CourseAdapter
+import com.maverkick.student.adapters.CourseFinishedAdapter
 import com.maverkick.student.databinding.FragmentStudentProfileCoursesBinding
 import com.maverkick.student.viewmodels.StudentProfileCoursesViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -48,6 +48,7 @@ class StudentProfileCoursesFragment : Fragment() {
                 val courseType = when(item) {
                     is VideoCourse -> CourseType.VIDEO
                     is TextCourse -> CourseType.TEXT
+                    is PersonalizedTextCourse -> CourseType.TEXT_PERSONALIZED
                     else -> throw IllegalArgumentException("Unknown course type")
                 }
                 viewModel.withdrawFromCourse(item.courseId, courseType)
@@ -59,8 +60,34 @@ class StudentProfileCoursesFragment : Fragment() {
         binding.coursesList.adapter = courseAdapter
 
         // Observe the merged courses LiveData
-        viewModel.currentCourses.observe(viewLifecycleOwner) { courses ->
+        viewModel.allEnrolledCourses.observe(viewLifecycleOwner) { courses ->
             courseAdapter.submitList(courses)
+        }
+
+        val finishedCourseAdapter = CourseFinishedAdapter()
+
+        binding.finishedCoursesList.layoutManager = LinearLayoutManager(context)
+        binding.finishedCoursesList.adapter = finishedCourseAdapter
+
+        // For finished courses
+        viewModel.allFinishedCourses.observe(viewLifecycleOwner) { finishedCourses ->
+            finishedCourseAdapter.submitList(finishedCourses)
+
+            if (finishedCourses.isEmpty()) {
+                binding.finishedCoursesList.visibility = View.GONE
+                binding.finishedCoursesLabel.visibility = View.GONE
+            } else {
+                binding.finishedCoursesList.visibility = View.VISIBLE
+                binding.finishedCoursesLabel.visibility = View.VISIBLE
+            }
+        }
+        // navigate back to the home screen
+        viewModel.withdrawalComplete.observe(this) { withdrawalComplete ->
+            if (withdrawalComplete) {
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("maverkick://student/studentHomeFragment"))
+                startActivity(intent)
+                viewModel.resetWithdrawalCompleteFlag()
+            }
         }
     }
 

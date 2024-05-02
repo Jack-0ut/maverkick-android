@@ -2,7 +2,6 @@ package com.maverkick.data.api
 
 import retrofit2.Response
 import retrofit2.http.Body
-import retrofit2.http.Field
 import retrofit2.http.POST
 /**
  * LessonApi defines the REST API endpoints related to lesson creation and processing.
@@ -26,17 +25,6 @@ interface LessonApi {
         @Body request: TranscriptionRequest
     ): Response<String>
 
-    /**
-     * Generate a title for the video lesson based on the given transcription context.
-     *
-     * @param context The transcription context, typically the text transcription of the video.
-     * @return A Response object containing the server's response. If the request is successful,
-     *         the body of the response will contain the generated title for the video lesson.
-     */
-    @POST("/generate-title")
-    suspend fun generateLessonTitle(
-        @Field("context") context: String
-    ): Response<String>
 }
 
 /**

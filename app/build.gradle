@@ -13,8 +13,12 @@ android {
         applicationId "com.maverkick.app"
         minSdk 26
         targetSdk 33
-        versionCode 3
-        versionName "1.1"
+
+        // Using a systematic approach for versionCode
+        versionCode 23110701
+
+        // Using Semantic Versioning (SemVer) for versionName
+        versionName "1.2.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -48,7 +52,6 @@ dependencies {
     implementation "androidx.appcompat:appcompat:$rootProject.appcompat"
     implementation "com.google.android.material:material:$rootProject.material"
     implementation "androidx.constraintlayout:constraintlayout:$rootProject.constraintlayout"
-    testImplementation "junit:junit:$rootProject.junit"
     
     // Hilt DI
     implementation "com.google.dagger:hilt-android:$rootProject.hilt_version"

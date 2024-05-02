@@ -3,9 +3,10 @@ package com.maverkick.auth
 import android.content.Intent
 import android.os.Bundle
 import android.util.Patterns
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.snackbar.Snackbar
 import com.maverkick.auth.databinding.ActivityRegistrationBinding
+import com.maverkick.auth.onboarding.student.StudentOnboarding
 import com.maverkick.data.repositories.AuthRepository
 import com.maverkick.data.sharedpref.SharedPrefManager
 import dagger.hilt.android.AndroidEntryPoint
@@ -26,55 +27,45 @@ class RegistrationActivity : AppCompatActivity() {
         binding = ActivityRegistrationBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // The registration process
         binding.registerButton.setOnClickListener {
             val email = binding.emailInput.text.toString()
             val username = binding.usernameInput.text.toString()
             val password = binding.passwordInput.text.toString()
 
-            // Validate the input fields
-            if (isValidEmail(email) && isValidUsername(username) && isValidPassword(password)) {
-                authRepository.register(email, username, password,
-                    onSuccess = { user ->
-                        // Save the user object to shared preferences
-                        sharedPrefManager.saveUser(user)
-                        // Navigate to RoleSelectActivity
-                        val intent = Intent(this, RoleSelectionActivity::class.java)
-                        startActivity(intent)
-                    },
-                    onFailure = { e ->
-                        Toast.makeText(this, "Registration failed: ${e.message}", Toast.LENGTH_SHORT).show()
-                        // show an error message or do something else on failure
-                    }
-                )
-
-            } else {
-                Toast.makeText(this, "Please enter valid email, username, and password", Toast.LENGTH_SHORT).show()
+            when {
+                !isValidEmail(email) -> showSnackbar(getString(R.string.invalid_email_message))
+                !isValidUsername(username) -> showSnackbar(getString(R.string.invalid_username_message))
+                !isValidPassword(password) -> showSnackbar(getString(R.string.invalid_password_message))
+                else -> registerUser(email, username, password)
             }
         }
 
-        // navigate to the login screen
         binding.loginText.setOnClickListener {
-            // Navigate to login activity
-            val intent = Intent(this, LoginActivity::class.java)
-            startActivity(intent)
+            startActivity(Intent(this, LoginActivity::class.java))
         }
     }
 
-    // Validate email address
-    private fun isValidEmail(email: String): Boolean {
-        return Patterns.EMAIL_ADDRESS.matcher(email).matches()
+    private fun registerUser(email: String, username: String, password: String) {
+        authRepository.register(email, username, password,
+            onSuccess = { user ->
+                sharedPrefManager.saveUser(user)
+                sharedPrefManager.setIsOnboarded(false)
+                startActivity(Intent(this, StudentOnboarding::class.java))
+            },
+            onFailure = {
+                showSnackbar(getString(R.string.registration_failed_message))
+                sharedPrefManager.clearUser()
+                sharedPrefManager.clearPreferences()
+            })
     }
 
-    // Validate username
-    private fun isValidUsername(username: String): Boolean {
-        // Add any specific conditions for a valid username, e.g., minimum length
-        return username.length >= 5
-    }
+    private fun isValidEmail(email: String) = Patterns.EMAIL_ADDRESS.matcher(email).matches()
 
-    // Validate password
-    private fun isValidPassword(password: String): Boolean {
-        // Add any specific conditions for a valid password, e.g., minimum length, at least one number and one letter, etc.
-        return password.length >= 6
+    private fun isValidUsername(username: String) = username.length >= 5
+
+    private fun isValidPassword(password: String) = password.length >= 6
+
+    private fun showSnackbar(message: String) {
+        Snackbar.make(binding.root, message, Snackbar.LENGTH_SHORT).show()
     }
 }

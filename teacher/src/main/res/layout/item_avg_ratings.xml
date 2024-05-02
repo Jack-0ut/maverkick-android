@@ -1,0 +1,42 @@
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp"
+    android:background="@color/maverkick_light_gray">
+
+    <!-- Average Rating Label -->
+    <TextView
+        android:id="@+id/tv_ratingLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/average_rating_label"
+        android:textSize="14sp"
+        android:textColor="@color/maverkick_main"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Icon for Average Rating -->
+    <ImageView
+        android:id="@+id/ic_rating"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:src="@drawable/ic_rating"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_ratingLabel"
+        app:tint="@color/maverkick_light_green" />
+
+    <!-- Average Rating in Numeric -->
+    <TextView
+        android:id="@+id/tv_avgRating"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textSize="24sp"
+        android:textColor="@color/maverkick_black"
+        android:layout_marginStart="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/ic_rating"
+        app:layout_constraintTop_toTopOf="@id/ic_rating"
+        app:layout_constraintBottom_toBottomOf="@id/ic_rating" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

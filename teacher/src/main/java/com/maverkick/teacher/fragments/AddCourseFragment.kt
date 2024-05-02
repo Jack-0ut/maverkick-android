@@ -18,7 +18,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.maverkick.teacher.R
 import com.maverkick.teacher.databinding.FragmentAddCourseBinding
-import com.maverkick.teacher.edit_course.EditCourseActivity
+import com.maverkick.teacher.edit_course.video.EditVideoCourseActivity
 import com.maverkick.teacher.viewmodels.AddCourseViewModel
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -57,7 +57,7 @@ class AddCourseFragment : Fragment() {
             viewModel.submitCourse { success, message ->
                 if (success) {
                     // If course was added successfully, navigate to the EditCourseActivity
-                    val intent = Intent(activity, EditCourseActivity::class.java)
+                    val intent = Intent(activity, EditVideoCourseActivity::class.java)
                     intent.putExtra("courseId", message)
                     startActivity(intent)
                 } else {

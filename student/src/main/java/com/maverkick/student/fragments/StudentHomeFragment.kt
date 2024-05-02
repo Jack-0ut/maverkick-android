@@ -18,8 +18,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.shared_ui.OnItemClickListener
+import com.example.video_lesson.student.VideoLessonActivity
 import com.maverkick.data.event_bus.EventBus
 import com.maverkick.data.models.Lesson
 import com.maverkick.data.models.TextLesson
@@ -27,11 +27,12 @@ import com.maverkick.data.models.VideoLesson
 import com.maverkick.student.R
 import com.maverkick.student.adapters.LessonAdapter
 import com.maverkick.student.databinding.FragmentStudentHomeBinding
-import com.maverkick.student.videolesson.VideoLessonActivity
+import com.maverkick.student.ui.CurvedLayoutManager
+import com.maverkick.student.ui.HalfScreenNotificationFragment
+import com.maverkick.student.ui.PathItemDecoration
 import com.maverkick.student.viewmodels.HomeViewModel
 import com.maverkick.text_lesson.ui.TextLessonActivity
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 /**
@@ -44,8 +45,6 @@ class StudentHomeFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: HomeViewModel by viewModels()
-    // update the course gen tries in the UI after it's being generated
-    private var courseGenerationCompletedEventJob: Job? = null
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -58,9 +57,9 @@ class StudentHomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         subscribeToLessonCompletedEvent()
-        subscribeToCourseWithdrawnEvent()
 
-        // Set the status bar color
+        binding.startLearningButton.visibility = View.GONE
+
         requireActivity().window.statusBarColor = ContextCompat.getColor(requireContext(), com.maverkick.common.R.color.maverkick_topbar)
 
         // if student doesn't have courses yet,navigate to the Gallery to choose first course
@@ -99,7 +98,8 @@ class StudentHomeFragment : Fragment() {
         }, initialIndex)
 
         binding.lessonsRecyclerView.adapter = lessonsAdapter
-        binding.lessonsRecyclerView.layoutManager = LinearLayoutManager(context)
+        binding.lessonsRecyclerView.addItemDecoration(PathItemDecoration())
+        binding.lessonsRecyclerView.layoutManager = context?.let { CurvedLayoutManager(it) }
 
         viewModel.currentLessonIndex.observe(viewLifecycleOwner) { newCurrentLessonIndex ->
             lessonsAdapter.updateCurrentLessonIndex(newCurrentLessonIndex)
@@ -107,22 +107,23 @@ class StudentHomeFragment : Fragment() {
 
         viewModel.dailyLearningPlan.observe(viewLifecycleOwner) { dailyLearningPlan ->
             lessonsAdapter.submitList(dailyLearningPlan.lessons)
+            binding.startLearningButton.visibility = View.VISIBLE
         }
 
         viewModel.bricksCollected.observe(viewLifecycleOwner) { bricks ->
             binding.pointsNumber.text = bricks.toString()
         }
 
-        viewModel.courseGenerationTries.observe(viewLifecycleOwner){ tries ->
-            binding.courseGenNumber.text = tries.toString()
-        }
-
-        binding.courseGenNumber.setOnClickListener {
-            showPopup(it, "The number of courses you could create in this version.")
-        }
-
         binding.pointsNumber.setOnClickListener {
-            showPopup(it, "The number lessons you completed.")
+            showPopup(it, "Number of lessons you've completed.")
+        }
+
+        viewModel.showCourseFinished.observe(viewLifecycleOwner) { shouldShow ->
+            if (shouldShow) {
+                val notificationFragment = HalfScreenNotificationFragment.newInstance()
+                notificationFragment.show(childFragmentManager, "half_screen_notification")
+                //viewModel.resetShowCourseFinishedFlag()
+            }
         }
     }
 
@@ -164,26 +165,12 @@ class StudentHomeFragment : Fragment() {
                 EventBus.lessonCompletedEvent.collect { event ->
                     viewModel.handleLessonCompleted(event.lessonId, event.courseId)
                     EventBus.lessonCompletedEvent.resetReplayCache()
-
-                }
-            }
-        }
-    }
-
-    /** Receive the event from the 'withdrawCourse()' function and update DailyPlan UI**/
-    private fun subscribeToCourseWithdrawnEvent() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                EventBus.courseWithdrawnEvent.collect {
-                    viewModel.checkIfStudentEnrolledInAnyCourse()
-                    EventBus.lessonCompletedEvent.resetReplayCache()
                 }
             }
         }
     }
 
     private fun showPopup(anchorView: View, text: String) {
-        // Inflate the popup layout
         val inflater = requireActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val popupView = inflater.inflate(R.layout.popup_info, null, false)
 
@@ -198,7 +185,6 @@ class StudentHomeFragment : Fragment() {
         // Show the popup window
         popupWindow.showAsDropDown(anchorView, 0, -anchorView.height - popupView.height)
 
-        // Dismiss the popup window after 2 seconds (2000 milliseconds)
         Handler(Looper.getMainLooper()).postDelayed({ popupWindow.dismiss() }, 2000)
     }
 

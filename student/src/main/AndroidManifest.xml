@@ -6,7 +6,7 @@
 
     <application>
         <activity
-            android:name="com.maverkick.student.videolesson.VideoLessonActivity"
+            android:name="com.example.video_lesson.student.VideoLessonActivity"
             android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize"
             android:exported="false" />
 
@@ -38,9 +38,8 @@
                     android:pathPrefix="/studentHomeFragment" />
             </intent-filter>
         </activity>
-
         <activity
-            android:name="com.maverkick.student.course.CourseDetailsActivity"
+            android:name="com.maverkick.student.course.CourseOverviewActivity"
             android:exported="false" />
     </application>
 

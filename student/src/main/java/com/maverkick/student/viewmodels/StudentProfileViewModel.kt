@@ -1,12 +1,12 @@
 package com.maverkick.student.viewmodels
 
 import androidx.lifecycle.MutableLiveData
+import com.maverkick.data.auth.AuthenticationService
 import com.maverkick.data.repositories.TeacherRepository
 import com.maverkick.data.repositories.UserRepository
 import com.maverkick.data.sharedpref.SharedPrefManager
 import com.maverkick.profile.ProfileViewModel
 import com.maverkick.profile.ProfileViewModelInterface
-import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -15,15 +15,15 @@ import javax.inject.Inject
 class StudentProfileViewModel @Inject constructor(
     sharedPrefManager: SharedPrefManager,
     userRepository: UserRepository,
-    firebaseAuth: FirebaseAuth,
+    authService: AuthenticationService,
     private val teacherRepository: TeacherRepository
-) : ProfileViewModel(sharedPrefManager, userRepository, firebaseAuth), ProfileViewModelInterface {
+) : ProfileViewModel(sharedPrefManager, userRepository, authService), ProfileViewModelInterface {
 
     private val _errorLiveData = MutableLiveData<String>()
 
     /** Check if teacher account exists for the user**/
     suspend fun checkTeacherAccountExists(): Boolean {
-        val userId = firebaseAuth.currentUser?.uid ?: return false
+        val userId = authService.currentUser?.uid ?: return false
         return try {
             val teacherExists = userRepository.checkIfTeacherExists(userId)
             if (teacherExists) {

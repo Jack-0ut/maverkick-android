@@ -4,12 +4,12 @@ import android.net.Uri
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.storage.FirebaseStorage
 import com.maverkick.data.IDatabaseService
+import com.maverkick.data.api.ApiResult
 import com.maverkick.data.api.LessonApi
 import com.maverkick.data.api.TranscriptionRequest
 import com.maverkick.data.models.VideoLesson
 import com.maverkick.data.models.VideoLessonFirebase
 import kotlinx.coroutines.suspendCancellableCoroutine
-import retrofit2.Response
 import java.util.*
 import javax.inject.Inject
 import kotlin.coroutines.resume
@@ -104,10 +104,19 @@ class VideoLessonRepository @Inject constructor(
         lessonId: String,
         filePath: String,
         languageCode: String
-    ):
-            Response<String> {
+    ): ApiResult<String> {
         val request = TranscriptionRequest(courseId, lessonId, filePath, languageCode)
 
-        return lessonApi.transcribeVideo(request)
+        return try {
+            val response = lessonApi.transcribeVideo(request)
+            if (response.isSuccessful) {
+                ApiResult(response.body(), true, null)
+            } else {
+                ApiResult(null, false, response.message())
+            }
+        } catch (e: kotlin.Exception) {
+            ApiResult(null, false, e.message)
+        }
     }
+
 }

@@ -4,14 +4,14 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/maverkick_white"
-    android:orientation="vertical"
-    android:padding="8dp">
+    android:orientation="vertical">
 
     <TextView
         android:id="@+id/question"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
+        android:padding="8dp"
         android:textColor="@color/black"
         android:textSize="20sp"
         tools:text="Example Question: Which planet is closest to the Sun?" />
@@ -21,6 +21,5 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp">
-
     </RadioGroup>
 </LinearLayout>

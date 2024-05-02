@@ -36,11 +36,9 @@ dependencies {
     implementation "androidx.appcompat:appcompat:$rootProject.appcompat"
     implementation "com.google.android.material:material:$rootProject.material"
 
-    testImplementation "junit:junit:$rootProject.junit"
-
     // Firebase
     implementation "com.google.firebase:firebase-firestore-ktx:$rootProject.firebaseFirestore"
-    implementation "com.google.firebase:firebase-auth-ktx:$rootProject.firebaseAuth"
+    api "com.google.firebase:firebase-auth-ktx:$rootProject.firebaseAuth"
     implementation 'com.google.firebase:firebase-storage-ktx:20.2.1'
 
     // For Retrofit (send the request to the api service)

@@ -6,7 +6,7 @@
 
     <application>
     <activity
-        android:name="com.maverkick.videoplayer.AbstractVideoActivity"
+        android:name="com.maverkick.videoplayer.com.example.video_lesson.AbstractVideoActivity"
         android:exported="false" />
     </application>
 

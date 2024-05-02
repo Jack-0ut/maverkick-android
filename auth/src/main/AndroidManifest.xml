@@ -7,7 +7,8 @@
 
     <application>
         <activity android:name="com.maverkick.auth.LoginActivity"
-            android:exported="true">
+            android:exported="true"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -19,17 +20,20 @@
             </intent-filter>
         </activity>
 
-
         <activity
             android:name="com.maverkick.auth.RoleSelectionActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
         <activity
             android:name="com.maverkick.auth.RegistrationActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
 
         <activity
             android:name="com.maverkick.auth.onboarding.student.StudentOnboarding"
             android:exported="true"
+            android:screenOrientation="portrait"
             tools:replace="android:exported">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -46,6 +50,7 @@
         <activity
             android:name="com.maverkick.auth.onboarding.teacher.TeacherOnboarding"
             android:exported="true"
+            android:screenOrientation="portrait"
             tools:replace="android:exported">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />

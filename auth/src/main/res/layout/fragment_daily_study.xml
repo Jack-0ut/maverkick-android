@@ -1,50 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.6" />
 
     <ImageView
         android:id="@+id/onboardingImageView"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:scaleType="centerCrop"
-        android:src="@drawable/ic_short_videos"
+        android:src="@drawable/learn"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/guideline" />
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Overlay for ImageView to enhance text readability -->
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/gradient_overlay"
+        app:layout_constraintBottom_toBottomOf="@+id/onboardingImageView"
+        app:layout_constraintEnd_toEndOf="@+id/onboardingImageView"
+        app:layout_constraintStart_toStartOf="@+id/onboardingImageView"
+        app:layout_constraintTop_toTopOf="@+id/onboardingImageView" />
+
     <TextView
         android:id="@+id/study_minutes_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Daily Study Minutes"
+        android:text="@string/onboarding_daily_study_goal"
         android:textColor="@color/maverkick_white"
         android:textSize="24sp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintTop_toTopOf="@+id/guideline"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        android:shadowColor="#66000000"
+        android:shadowDx="0"
+        android:shadowDy="2"
+        android:shadowRadius="4"
+        app:layout_constraintBottom_toTopOf="@+id/daily_study_minutes_counter_view"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <com.maverkick.common.CounterView
         android:id="@+id/daily_study_minutes_counter_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
         app:min_value="10"
-        app:max_value="60"
-        app:current_value="30"
+        app:max_value="30"
+        app:current_value="20"
         app:icon_color="@color/maverkick_light_green"
-        app:layout_constraintTop_toBottomOf="@+id/study_minutes_label"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintBottom_toTopOf="@+id/minutes_text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/minutes_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/onboarding_minutes"
+        android:textSize="20sp"
+        android:textColor="@color/maverkick_white"
+        android:layout_marginBottom="64dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/daily_study_minutes_counter_view"
+        app:layout_constraintStart_toStartOf="@+id/daily_study_minutes_counter_view" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

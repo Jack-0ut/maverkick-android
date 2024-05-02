@@ -58,18 +58,19 @@ class CreatePersonalizedCourseActivity : AppCompatActivity() {
         }
 
         viewModel.courseGenerationResult.observe(this) { result ->
-            result.onSuccess { response ->
-                if (response.isSuccessful) {
-                    val courseId = response.body()?.courseId ?: ""
+            result.onSuccess { apiResult ->
+                if (apiResult.isSuccess) {
+                    val courseId = apiResult.body?.courseId ?: ""
                     enqueueWorkManagerTask(courseId)
                     finish()
                 } else {
-                    showErrorSnackbar("Error starting course generation.")
+                    showErrorSnackbar("Error starting course generation: ${apiResult.errorMessage}.")
                 }
             }.onFailure {
                 showErrorSnackbar("Error starting course generation")
             }
         }
+
     }
 
     private fun initiateCourseGeneration() {
@@ -118,11 +119,13 @@ class CreatePersonalizedCourseActivity : AppCompatActivity() {
     }
 
     private fun requestNotificationPermission() {
-        ActivityCompat.requestPermissions(
-            this,
-            arrayOf(Manifest.permission.POST_NOTIFICATIONS),
-            REQUEST_NOTIFICATION_PERMISSION_CODE
-        )
+        if (Build.VERSION.SDK_INT >= 33) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                REQUEST_NOTIFICATION_PERMISSION_CODE
+            )
+        }
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {

@@ -1,0 +1,44 @@
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp"
+    android:background="@drawable/course_background"
+    android:layout_marginBottom="8dp"
+    android:elevation="4dp">
+
+    <!-- Timeline vertical line -->
+    <View
+        android:id="@+id/vertical_line"
+        android:layout_width="4dp"
+        android:layout_height="0dp"
+        android:background="@color/maverkick_black"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+    <!-- Completion Badge Icon -->
+    <ImageView
+        android:id="@+id/completion_badge"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:src="@drawable/finished_course_badge"
+        android:layout_marginStart="8dp"
+        app:layout_constraintStart_toEndOf="@id/vertical_line"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Finished Course Title -->
+    <TextView
+        android:id="@+id/finished_course_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="@color/maverkick_black"
+        android:layout_marginStart="8dp"
+        app:layout_constraintStart_toEndOf="@id/completion_badge"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/completion_badge"
+        app:layout_constraintBottom_toBottomOf="@id/completion_badge" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

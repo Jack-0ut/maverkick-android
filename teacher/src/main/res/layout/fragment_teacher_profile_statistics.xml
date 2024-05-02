@@ -3,7 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
     android:padding="16dp">
 
     <TextView
@@ -17,16 +16,51 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 
+    <!-- Horizontal RecyclerView for Course Names -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/coursesRecyclerView"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:padding="16dp"
+        android:orientation="horizontal"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/coursesStatisticsHeadline"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/coursesStatisticsHeadline"
-        tools:listitem="@layout/item_course_stats"/>
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- Left arrow for RecyclerView scrolling -->
+    <ImageButton
+        android:id="@+id/leftArrow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_previous"
+        android:background="?android:attr/selectableItemBackground"
+        android:visibility="invisible"
+        app:tint="@color/maverkick_accent"
+        app:layout_constraintVertical_bias="0.5"
+        app:layout_constraintTop_toTopOf="@+id/coursesRecyclerView"
+        app:layout_constraintBottom_toBottomOf="@+id/coursesRecyclerView"
+        app:layout_constraintStart_toStartOf="@+id/coursesRecyclerView"/>
+
+    <!-- Right arrow for RecyclerView scrolling -->
+    <ImageButton
+        android:id="@+id/rightArrow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/selectableItemBackground"
+        android:src="@drawable/ic_next"
+        android:visibility="invisible"
+        app:tint="@color/maverkick_accent"
+        app:layout_constraintBottom_toBottomOf="@+id/coursesRecyclerView"
+        app:layout_constraintEnd_toEndOf="@+id/coursesRecyclerView"
+        app:layout_constraintTop_toTopOf="@+id/coursesRecyclerView"
+        app:layout_constraintVertical_bias="0.5" />
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/statisticsViewPager"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@+id/coursesRecyclerView"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

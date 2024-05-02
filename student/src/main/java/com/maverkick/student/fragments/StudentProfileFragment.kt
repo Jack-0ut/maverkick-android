@@ -11,7 +11,9 @@ import com.maverkick.student.fragments.profile.StudentProfileCoursesFragment
 import com.maverkick.student.fragments.profile.StudentProfileSettingsFragment
 import com.maverkick.student.viewmodels.StudentProfileViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  * Fragment for the Profile Menu Item (Student)
@@ -23,35 +25,29 @@ class StudentProfileFragment : BaseProfileFragment() {
 
     private val studentViewModel: StudentProfileViewModel by viewModels()
 
-    override fun getFragments(): List<Fragment> {
-        return listOf(StudentProfileCoursesFragment(), StudentProfileSettingsFragment())
-    }
+    override fun getFragments(): List<Fragment> =
+        listOf(StudentProfileCoursesFragment(), StudentProfileSettingsFragment())
 
-    override fun getTabTitle(position: Int): String {
-        return if (position == 0) "Courses" else "Settings"
-    }
+    override fun getTabTitle(position: Int): String =
+        if (position == 0) "Courses" else "Settings"
 
-    override fun getViewModel(): ProfileViewModelInterface {
-        return studentViewModel
-    }
+    override fun getViewModel(): ProfileViewModelInterface = studentViewModel
 
-    /** Student wants to switch to the teacher view **/
     override fun onChangeAccountClicked() {
-        lifecycleScope.launch{
-            val teacherExists = studentViewModel.checkTeacherAccountExists()
-
-            // Assuming the existence of a method to check if the teacher account exists
-            if (teacherExists) {
-                // Redirect to the TeacherMainActivity
-                val intentUri = Uri.parse("maverkick://teacher/main")
-                val intent = Intent(Intent.ACTION_VIEW, intentUri)
-                startActivity(intent)
-            } else {
-                // Redirect to the onboarding teacher activity
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("maverkick://auth/onboarding_teacher"))
-                startActivity(intent)
-            }
+        lifecycleScope.launch {
+            handleAccountSwitching()
         }
     }
 
+    private suspend fun handleAccountSwitching() {
+        val teacherExists = studentViewModel.checkTeacherAccountExists()
+        val intentUriString = if (teacherExists) "maverkick://teacher/main" else "maverkick://auth/onboarding_teacher"
+
+        withContext(Dispatchers.Main) {
+            val intentUri = Uri.parse(intentUriString)
+            val intent = Intent(Intent.ACTION_VIEW, intentUri)
+            startActivity(intent)
+            requireActivity().finish()
+        }
+    }
 }

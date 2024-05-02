@@ -134,7 +134,7 @@
         app:layout_constraintTop_toTopOf="@id/tagsIcon"
         app:layout_constraintBottom_toBottomOf="@id/tagsIcon" />
 
-    <com.maverkick.teacher.TagInputField
+    <com.maverkick.teacher.ui.TagInputField
         android:id="@+id/tag_input_field"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -157,6 +157,7 @@
         android:paddingStart="32dp"
         android:paddingEnd="32dp"
         android:elevation="2dp"
+        android:backgroundTint="@color/maverkick_light_green"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

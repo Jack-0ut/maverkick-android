@@ -14,7 +14,7 @@ import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.ForegroundInfo
 import androidx.work.WorkerParameters
-import com.maverkick.data.repositories.TextCourseRepository
+import com.maverkick.data.repositories.PersonalizedTextCourseRepository
 import com.maverkick.data.sharedpref.SharedPrefManager
 import com.maverkick.text_lesson.R
 import dagger.assisted.Assisted
@@ -25,7 +25,7 @@ import kotlinx.coroutines.delay
 class CheckCourseGenerationProgressWorker @AssistedInject constructor(
     @Assisted private val context: Context,
     @Assisted workerParameters: WorkerParameters,
-    private val textCourseRepository: TextCourseRepository,
+    private val personalizedTextCourseRepository: PersonalizedTextCourseRepository,
     private val sharedPrefManager: SharedPrefManager
 ) : CoroutineWorker(context, workerParameters) {
 
@@ -39,7 +39,7 @@ class CheckCourseGenerationProgressWorker @AssistedInject constructor(
         setForegroundAsync(createForegroundInfo(courseId))
 
         for (i in 1..MAX_RETRIES) {
-            val progress = textCourseRepository.checkCourseProgress(courseId)
+            val progress = personalizedTextCourseRepository.checkCourseProgress(courseId)
             Log.d(TAG, "Current progress: $progress")
 
             when (progress) {
@@ -93,10 +93,6 @@ class CheckCourseGenerationProgressWorker @AssistedInject constructor(
     }
 
     private suspend fun handleFinished(courseId: String): Result {
-        Log.d("CourseGeneratedEvent", "Handling finished for courseId: $courseId")
-
-        Log.d("CourseGeneratedEvent", "Start handling for courseId: $courseId")
-
         // notify the system, that we need to update the list of courses
         sharedPrefManager.setNeedsRefresh(true)
 
@@ -106,8 +102,6 @@ class CheckCourseGenerationProgressWorker @AssistedInject constructor(
         notificationManager.cancel(getNotificationId(courseId))
 
         if (canShowNotification()) {
-            Log.d("HandleFinished", "Can show notification.")
-
             notificationManager.createNotificationChannel(createSuccessNotificationChannel())
 
             val notification = NotificationCompat.Builder(context, "course_generation_success_channel")
@@ -120,9 +114,6 @@ class CheckCourseGenerationProgressWorker @AssistedInject constructor(
 
             // Adding an offset to the notification ID for the success notification
             notificationManager.notify(getNotificationId(courseId) + 1, notification)
-            Log.d("HandleFinished", "Notification sent for courseId: $courseId")
-        } else {
-            Log.d("HandleFinished", "Cannot show notification.")
         }
 
         return Result.success()

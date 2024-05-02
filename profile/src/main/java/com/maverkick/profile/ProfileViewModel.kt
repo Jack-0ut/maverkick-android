@@ -5,10 +5,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.maverkick.data.auth.AuthenticationService
 import com.maverkick.data.models.User
 import com.maverkick.data.repositories.UserRepository
 import com.maverkick.data.sharedpref.SharedPrefManager
-import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 
 /**
@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
 abstract class ProfileViewModel(
     protected val sharedPrefManager: SharedPrefManager,
     protected val userRepository: UserRepository,
-    protected val firebaseAuth: FirebaseAuth
+    protected val authService: AuthenticationService
 ) : ViewModel(), ProfileViewModelInterface {
 
     private val _username = MutableLiveData<String>()
@@ -32,9 +32,9 @@ abstract class ProfileViewModel(
         set(value) {
             field = value
             value?.let {
-                _username.value = it.username
-                if(it.profilePicture != null) {
-                    _profilePicture.value = Uri.parse(it.profilePicture)
+                _username.postValue(it.username)
+                it.profilePicture?.let { imageUrl ->
+                    _profilePicture.postValue(Uri.parse(imageUrl))
                 }
                 sharedPrefManager.saveUser(it)
             }
@@ -49,42 +49,39 @@ abstract class ProfileViewModel(
     }
 
     override fun logout() {
-        firebaseAuth.signOut()
+        authService.logout()  // Use authService's logout method
     }
 
     /** Load user data either from Shared Preferences or from Firestore */
     private fun loadUserData() {
         user = sharedPrefManager.getUser()
-        user ?: fetchUserDataFromFirestore()
+        if (user == null) {
+            fetchUserDataFromFirestore()
+        }
     }
 
     /** Fetch user data from Firestore */
     private fun fetchUserDataFromFirestore() {
-        firebaseAuth.currentUser?.uid?.let { userId ->
-            viewModelScope.launch {
-                try {
-                    val fetchedUser = userRepository.getUserById(userId)
-                    if (fetchedUser != null) {
-                        user = fetchedUser
-                    }
-                } catch (e: Exception) {
+        val userId = authService.currentUser?.uid ?: return
+        viewModelScope.launch {
+            try {
+                userRepository.getUserById(userId)?.let { fetchedUser ->
+                    user = fetchedUser
                 }
+            } catch (e: Exception) {
+                // handle the error, consider logging or forwarding this error to an error handling mechanism
             }
         }
     }
 
     /** Update the profile picture and save to the database **/
     override fun updateProfilePicture(uri: Uri) {
-        user?.let {
-            viewModelScope.launch {
-                try {
-                    userRepository.updateProfilePicture(it.userId, uri)
-                    // Create a new User object with the updated image URL
-                    user = it.copy(profilePicture = uri.toString())
-                } catch (e: Exception) {
-                    // handle the error
-                }
-            }
+        val currentUser = user ?: return
+        viewModelScope.launch {
+            try {
+                userRepository.updateProfilePicture(currentUser.userId, uri)
+                user = currentUser.copy(profilePicture = uri.toString())
+            } catch (e: Exception) { }
         }
     }
 }

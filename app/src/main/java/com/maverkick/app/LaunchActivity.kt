@@ -3,12 +3,14 @@ package com.maverkick.app
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.google.firebase.auth.FirebaseAuth
 import com.maverkick.auth.RegistrationActivity
+import com.maverkick.auth.onboarding.student.StudentOnboarding
 import com.maverkick.data.sharedpref.SharedPrefManager
 import com.maverkick.student.StudentMainActivity
 import com.maverkick.teacher.TeacherMainActivity
-import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
+import javax.crypto.AEADBadTagException
 import javax.inject.Inject
 
 /**The starter class for our application
@@ -27,19 +29,34 @@ class LaunchActivity : AppCompatActivity() {
 
         val currentUser = auth.currentUser
         if(currentUser != null) {
-            checkUserRoleAndNavigate()
+            // check for the shared preferences encryption key exception
+            try {
+                checkUserRoleAndNavigate()
+            } catch (e: AEADBadTagException) {
+                handleDecryptionError()
+            }
         } else {
-            val intent = Intent(this, RegistrationActivity::class.java)
-            startActivity(intent)
-            finish()
+            redirectToRegistration()
         }
+    }
+
+    private fun handleDecryptionError() {
+        sharedPrefManager.clearPreferences()
+        // Stop further execution and redirect to registration immediately.
+        redirectToRegistration()
+    }
+
+    private fun redirectToRegistration() {
+        val intent = Intent(this, RegistrationActivity::class.java)
+        startActivity(intent)
+        finish()
     }
 
     /** Check the role of user (Student or Teacher) from shared preferences
      * and navigate to the main page of the role
      */
     private fun checkUserRoleAndNavigate() {
-        val role = sharedPrefManager.getActiveRole()
+        val role = sharedPrefManager.getActiveRole() // This might throw AEADBadTagException
         navigateToMainActivity(role)
     }
 
@@ -48,7 +65,7 @@ class LaunchActivity : AppCompatActivity() {
         val intent = when(role) {
             "student" -> Intent(this, StudentMainActivity::class.java)
             "teacher" -> Intent(this, TeacherMainActivity::class.java)
-            else -> throw IllegalArgumentException("Unknown role: $role")
+            else -> Intent(this, StudentOnboarding::class.java)
         }
         startActivity(intent)
         finish()

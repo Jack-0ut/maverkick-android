@@ -32,7 +32,6 @@ class DailyStudyFragment : Fragment() {
     fun onNextClicked() {
         val dailyLearningTime = binding.dailyStudyMinutesCounterView.value
         onboardingViewModel.dailyLearningTime.value = dailyLearningTime
-        // Navigate to the next fragment
     }
 
     override fun onDestroyView() {

@@ -44,12 +44,8 @@ dependencies {
     implementation "androidx.appcompat:appcompat:$rootProject.appcompat"
     implementation "com.google.android.material:material:$rootProject.material"
     implementation 'com.google.android.gms:play-services-tasks:18.0.2'
-    testImplementation "junit:junit:$rootProject.junit"
 
     implementation "androidx.navigation:navigation-fragment-ktx:$rootProject.navigation"
-
-    // Retrofit for api requests
-    implementation "com.squareup.retrofit2:retrofit:$rootProject.retrofit"
 
     // Worker dependencies
     implementation "com.google.dagger:hilt-android:$rootProject.hilt_version"
@@ -62,4 +58,5 @@ dependencies {
 
     // Fix the error with workers
     implementation "com.google.guava:guava:31.0.1-android"
+
 }

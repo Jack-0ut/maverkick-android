@@ -13,7 +13,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:menu="@menu/bottom_navigation_menu"
-        app:itemIconTint="@color/bottom_navigation_colors"
         app:labelVisibilityMode="unlabeled"/>
 
     <androidx.fragment.app.FragmentContainerView
@@ -27,5 +26,4 @@
         app:layout_constraintBottom_toTopOf="@id/student_bottomNavigationView"
         app:defaultNavHost="true"
         app:navGraph="@navigation/student_nav_graph" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>

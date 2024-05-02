@@ -12,10 +12,14 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.shared_ui.OnItemClickListener
+import com.google.android.material.snackbar.Snackbar
+import com.maverkick.data.models.Course
+import com.maverkick.data.models.TextCourse
 import com.maverkick.data.models.VideoCourse
 import com.maverkick.teacher.adapters.CourseAdapter
 import com.maverkick.teacher.databinding.FragmentTeacherHomeBinding
-import com.maverkick.teacher.edit_course.EditCourseActivity
+import com.maverkick.teacher.edit_course.text.EditTextCourseActivity
+import com.maverkick.teacher.edit_course.video.EditVideoCourseActivity
 import com.maverkick.teacher.viewmodels.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -44,11 +48,22 @@ class TeacherHomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Initialize your CourseAdapter
-        val courseAdapter = CourseAdapter(object : OnItemClickListener<VideoCourse> {
-            override fun onItemClick(item: VideoCourse) {
-                // Redirect to EditCourseFragment for the clicked course
-                val intent = Intent(activity, EditCourseActivity::class.java)
+        val courseAdapter = CourseAdapter(object : OnItemClickListener<Course> {
+            override fun onItemClick(item: Course) {
+
+                val intent: Intent = when (item) {
+                    is VideoCourse -> {
+                        Intent(activity, EditVideoCourseActivity::class.java)
+                    }
+                    is TextCourse -> {
+                        Intent(activity, EditTextCourseActivity::class.java)
+                    }
+                    else -> {
+                        // Handle unknown Course type here, maybe throw an error or log it
+                        return
+                    }
+                }
+
                 intent.putExtra("courseId", item.courseId)
                 startActivity(intent)
             }
@@ -67,6 +82,15 @@ class TeacherHomeFragment : Fragment() {
                     courseAdapter.submitList(courses)
                 }
             }
+        }
+        viewModel.error.observe(viewLifecycleOwner) { errorMessage ->
+            showSnackbar(errorMessage)
+        }
+    }
+
+    private fun showSnackbar(message: String) {
+        view?.let {
+            Snackbar.make(it, message, Snackbar.LENGTH_LONG).show()
         }
     }
 

@@ -4,14 +4,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.maverkick.data.models.Course
 import com.maverkick.data.models.CourseType
 import com.maverkick.data.models.Student
-import com.maverkick.data.models.TextCourse
 import com.maverkick.data.models.TextLesson
-import com.maverkick.data.repositories.StudentCourseRepository
-import com.maverkick.data.repositories.StudentRepository
-import com.maverkick.data.repositories.TextCourseRepository
-import com.maverkick.data.repositories.TextLessonRepository
+import com.maverkick.data.repositories.*
 import com.maverkick.data.sharedpref.SharedPrefManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -19,16 +16,17 @@ import javax.inject.Inject
 
 @HiltViewModel
 class TextCourseOverviewViewModel @Inject constructor(
-    private val textCourseRepository: TextCourseRepository,
+    private val personalizedTextCourseRepository: PersonalizedTextCourseRepository,
     private val textLessonRepository: TextLessonRepository,
     private val studentRepository: StudentRepository,
     private val studentCourseRepository: StudentCourseRepository,
+    private val courseRepository: CourseRepository,
     private val sharedPrefManager: SharedPrefManager
 ) : ViewModel() {
 
     // LiveData to observe the course information
-    private val _course = MutableLiveData<TextCourse>()
-    val course: LiveData<TextCourse> get() = _course
+    private val _course = MutableLiveData<Course>()
+    val course: LiveData<Course> get() = _course
 
     // LiveData to observe the list of lessons
     private val _lessons = MutableLiveData<List<TextLesson>>()
@@ -41,9 +39,15 @@ class TextCourseOverviewViewModel @Inject constructor(
     private val _enrollmentComplete = MutableLiveData<Boolean>()
     val enrollmentComplete: LiveData<Boolean> get() = _enrollmentComplete
 
-    fun fetchCourseInformation(courseId: String) {
-        // Fetch course information from the repository and update the LiveData
-        textCourseRepository.getTextCourseById(courseId,
+    fun fetchCourseInformation(courseId: String, courseType: CourseType) {
+        when(courseType) {
+            CourseType.TEXT_PERSONALIZED -> fetchPersonalizedCourseInformation(courseId)
+            else -> fetchGeneralCourseInformation(courseId)
+        }
+    }
+
+    private fun fetchPersonalizedCourseInformation(courseId: String) {
+        personalizedTextCourseRepository.getGeneratedTextCourseById(courseId,
             onSuccess = { course ->
                 _course.postValue(course)
             },
@@ -52,9 +56,23 @@ class TextCourseOverviewViewModel @Inject constructor(
             })
     }
 
-    fun fetchLessons(courseId: String) {
-        // Fetch lessons from the repository and update the LiveData
-        textLessonRepository.getTextCourseLessons(courseId,
+    private fun fetchGeneralCourseInformation(courseId: String) {
+        // Assuming you have a method to fetch general courses by ID in your repository
+        courseRepository.getCourseById(courseId,
+            onSuccess = { obtainedCourse ->
+                if(obtainedCourse != null) {
+                    _course.postValue(obtainedCourse)
+                } else {
+                    _error.postValue(Exception("Course not found"))
+                }
+            },
+            onFailure = { exception ->
+                _error.postValue(exception)
+            })
+    }
+
+    fun fetchLessons(courseId: String, courseType: CourseType) {
+        textLessonRepository.getTextLessons(courseId, courseType,
             onSuccess = { lessonsList ->
                 _lessons.postValue(lessonsList)
             },
@@ -63,11 +81,12 @@ class TextCourseOverviewViewModel @Inject constructor(
             })
     }
 
+
     /** Enroll student in a personalized text course **/
     fun enrollStudentInTextCourse(courseId: String) {
         val student = sharedPrefManager.getStudent() ?: return // Early exit if no student
 
-        if (student.enrolledTextCourses.contains(courseId)) return // Early exit if already enrolled
+        if (student.enrolledCourses.contains(courseId)) return // Early exit if already enrolled
 
         viewModelScope.launch {
             try {
@@ -92,14 +111,12 @@ class TextCourseOverviewViewModel @Inject constructor(
     }
 
     private fun updateSharedPreferencesForTextCourse(student: Student, courseId: String) {
-        val updatedTextCourses = student.enrolledTextCourses.toMutableSet().apply { add(courseId) }
-        student.enrolledTextCourses = updatedTextCourses.toList()
+        val updatedTextCourses = student.enrolledCourses.toMutableSet().apply { add(courseId) }
+        student.enrolledCourses = updatedTextCourses.toList()
         sharedPrefManager.saveStudent(student)
     }
-
 
     fun resetEnrollmentCompleteFlag() {
         _enrollmentComplete.value = false
     }
-
 }

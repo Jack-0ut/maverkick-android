@@ -42,7 +42,6 @@ class TrueOrFalseFragment : Fragment(), TaskActionsListener {
         setOnClickListener {
             resetAnswerColors()
             userAnswer = answer
-            Log.d("TrueOrFalseFragment", "User Answer: $userAnswer")
             checkAnswer {
                 val color = ContextCompat.getColor(context, com.maverkick.common.R.color.maverkick_light_green)
                 setBackgroundColor(color)
@@ -65,6 +64,10 @@ class TrueOrFalseFragment : Fragment(), TaskActionsListener {
             "Oops! No, it's not."
         }
         onResult(Pair(isCorrect, message))
+    }
+
+    override fun onOptionSelected(isSelected: Boolean) {
+        TODO("Not yet implemented")
     }
 
 

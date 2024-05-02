@@ -1,15 +1,13 @@
 package com.maverkick.student.viewmodels
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.maverkick.data.models.Course
-import com.maverkick.data.models.VideoCourse
+import com.maverkick.data.repositories.CourseRepository
+import com.maverkick.data.repositories.PersonalizedTextCourseRepository
 import com.maverkick.data.repositories.StudentRepository
-import com.maverkick.data.repositories.TextCourseRepository
-import com.maverkick.data.repositories.VideoCourseRepository
 import com.maverkick.data.sharedpref.SharedPrefManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -22,23 +20,21 @@ import javax.inject.Inject
  **/
 @HiltViewModel
 class GalleryViewModel @Inject constructor(
-    private val videoCourseRepository: VideoCourseRepository,
+    private val courseRepository: CourseRepository,
     private val sharedPrefManager: SharedPrefManager,
     private val studentRepository: StudentRepository,
-    private val textCourseRepository: TextCourseRepository
+    private val personalizedTextCourseRepository: PersonalizedTextCourseRepository
 ) : ViewModel() {
 
-    private val _courses = MutableLiveData<List<VideoCourse>>()
-    val courses: LiveData<List<VideoCourse>> get() = _courses
+    private val _courses = MutableLiveData<List<Course>>()
+    val courses: LiveData<List<Course>> get() = _courses
 
-    private val _generatedCourses = MutableLiveData<List<Course>>()
-    val generatedCourses: LiveData<List<Course>> = _generatedCourses
 
     private val _isNewDataAvailable = MutableLiveData<Boolean>()
     val isNewDataAvailable: LiveData<Boolean> get() = _isNewDataAvailable
 
     init {
-        fetchGeneratedTextCourses()
+        //fetchGeneratedTextCourses()
         fetchCourses()
     }
 
@@ -47,7 +43,7 @@ class GalleryViewModel @Inject constructor(
         viewModelScope.launch {
             runCatching {
                 // Fetch the list of courses from the repository
-                videoCourseRepository.getPublishedCourses()
+                courseRepository.getPublishedCourses()
             }.onSuccess { fetchedCourses ->
                 // Update the _courses LiveData with the fetched courses
                 _courses.value = fetchedCourses
@@ -55,8 +51,7 @@ class GalleryViewModel @Inject constructor(
         }
     }
 
-    fun fetchGeneratedTextCourses() {
-        Log.d("CourseGeneratedEvent", "fetchGeneratedTextCourses called")
+    /*fun fetchGeneratedTextCourses() {
         viewModelScope.launch {
             val studentId = sharedPrefManager.getStudent()!!.studentId
             // Fetch the unenrolled generated course IDs
@@ -65,7 +60,7 @@ class GalleryViewModel @Inject constructor(
 
             // Fetch the courses by IDs using your existing method
             if (unenrolledGeneratedCourseIds != null) {
-                textCourseRepository.getTextCoursesByIds(unenrolledGeneratedCourseIds,
+                personalizedTextCourseRepository.getGeneratedTextCoursesByIds(unenrolledGeneratedCourseIds,
                     onSuccess = { unenrolledCreatedTextCourses ->
                         // Sort the courses by creationDate in descending order (newest first)
                         val sortedCourses = unenrolledCreatedTextCourses.sortedByDescending { it.creationDate }
@@ -78,7 +73,7 @@ class GalleryViewModel @Inject constructor(
                 )
             }
         }
-    }
+    }*/
 
     // A method to check if the flag in shared preferences is set
     fun checkForNewData() {

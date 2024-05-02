@@ -80,4 +80,10 @@ data class FirebaseCourseStatistics @JvmOverloads constructor(
     }
 }
 
+enum class StatisticType {
+    ENROLLMENTS,
+    COMPLETION_RATE,
+    DROPOUTS,
+    AVERAGE_RATING
+}
 

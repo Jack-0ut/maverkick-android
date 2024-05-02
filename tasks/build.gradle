@@ -51,14 +51,13 @@ dependencies {
     // Firestore
     implementation "com.google.firebase:firebase-firestore-ktx:${rootProject.ext.firebaseFirestore}"
 
-    // For Retrofit (send the request to the api service)
-    implementation "com.squareup.retrofit2:retrofit:$rootProject.retrofit"
-
     // For beautiful fill in gaps layout
     implementation 'com.google.android.flexbox:flexbox:3.0.0'
+
+    // Circular progress bar for post lesson activity
+    implementation 'com.mikhaellopez:circularprogressbar:3.1.0'
 
     implementation "androidx.core:core-ktx:${rootProject.ext.coreKtx}"
     implementation "androidx.appcompat:appcompat:${rootProject.ext.appcompat}"
     implementation "com.google.android.material:material:${rootProject.ext.material}"
-    testImplementation "junit:junit:${rootProject.ext.junit}"
 }

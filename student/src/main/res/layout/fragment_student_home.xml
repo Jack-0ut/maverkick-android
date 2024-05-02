@@ -14,35 +14,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <LinearLayout
-            android:id="@+id/course_generation_tries"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:background="@color/maverkick_topbar"
-            android:orientation="horizontal"
-            android:padding="10dp"
-            android:gravity="center_vertical"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/learn_today_text"
-            app:layout_constraintBottom_toBottomOf="@id/learn_today_text">
-
-            <ImageView
-                android:id="@+id/course_gen_icon"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_course_gen_tries"/>
-
-            <TextView
-                android:id="@+id/course_gen_number"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:text="@string/initial_course_gen"
-                android:textSize="20sp"
-                android:textColor="@color/main_color" />
-        </LinearLayout>
-
         <TextView
             android:id="@+id/learn_today_text"
             android:layout_width="wrap_content"

@@ -2,7 +2,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/main_color"
     android:padding="16dp">
 
     <TextView
@@ -10,7 +9,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="36dp"
-        android:text="Register"
+        android:text="@string/register_title"
         android:textColor="@color/main_accent_color"
         android:textSize="24sp"
         android:textStyle="bold"
@@ -23,7 +22,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="36dp"
-        android:text="Email Address"
+        android:text="@string/label_email_address"
         android:textSize="20sp"
         android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
@@ -50,7 +49,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="36dp"
-        android:text="Username"
+        android:text="@string/label_username"
         android:textSize="20sp"
         android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
@@ -77,7 +76,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="36dp"
-        android:text="Password"
+        android:text="@string/label_password"
         android:textSize="20sp"
         android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
@@ -109,8 +108,6 @@
             android:importantForAutofill="yes" />
     </com.google.android.material.textfield.TextInputLayout>
 
-
-
     <Button
         android:id="@+id/register_button"
         android:layout_width="0dp"
@@ -118,21 +115,21 @@
         android:layout_marginTop="128dp"
         android:layout_marginStart="64dp"
         android:layout_marginEnd="64dp"
-        android:text="Sign It"
+        android:text="@string/btn_sign_up"
         android:textColor="@color/main_color"
         android:textSize="20sp"
         app:backgroundTint="@color/main_accent_color"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/password_layout"
-        app:cornerRadius="15dp" />
+        app:cornerRadius="16dp" />
 
     <TextView
         android:id="@+id/already_used_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="Already used the app?"
+        android:text="@string/prompt_already_have_account"
         android:textColor="@color/white"
         android:textSize="14sp"
         app:layout_constraintEnd_toStartOf="@+id/login_text"
@@ -144,7 +141,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:text="Login"
+        android:text="@string/action_login"
         android:textColor="@color/main_accent_color"
         android:textSize="16sp"
         android:textStyle="bold"

@@ -1,9 +1,9 @@
 package com.maverkick.data.repositories
 
+import com.google.firebase.firestore.FieldValue
 import com.maverkick.data.IDatabaseService
 import com.maverkick.data.models.CourseStatistics
 import com.maverkick.data.models.FirebaseCourseStatistics
-import com.google.firebase.firestore.FieldValue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
@@ -28,12 +28,24 @@ class CourseStatisticsRepository @Inject constructor(
             }
     }
 
-
     /** Increment enrollments for the given course id **/
     fun incrementEnrollments(courseId: String, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
         databaseService.db.collection("courseStatistics")
             .document(courseId)
             .update("numberOfEnrollments", FieldValue.increment(1))
+            .addOnSuccessListener {
+                onSuccess()
+            }
+            .addOnFailureListener { e ->
+                onFailure(e)
+            }
+    }
+
+    /** Increment enrollments for the given course id **/
+    fun incrementCompletions(courseId: String, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
+        databaseService.db.collection("courseStatistics")
+            .document(courseId)
+            .update("numberOfCompletions", FieldValue.increment(1))
             .addOnSuccessListener {
                 onSuccess()
             }

@@ -1,9 +1,9 @@
 package com.maverkick.data.models
 
-import java.util.*
+import java.util.Date
 
 enum class CourseType {
-    TEXT, VIDEO
+    TEXT_PERSONALIZED, VIDEO, TEXT
 }
 
 /**
@@ -15,6 +15,7 @@ enum class CourseType {
  * @property numberLessons  Total number of lessons in the course.
  * @property creationDate   Date of course creation.
  * @property type           Type of the course (text or video).
+ * @property authorId       Unique identifier for the author of the course.
  */
 abstract class Course(
     open val courseId: String,
@@ -22,7 +23,8 @@ abstract class Course(
     open val language: String,
     open val numberLessons: Int,
     open val creationDate: Date,
-    open val type: CourseType
+    open val type: CourseType,
+    open val authorId: String 
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -36,6 +38,7 @@ abstract class Course(
         if (numberLessons != other.numberLessons) return false
         if (creationDate != other.creationDate) return false
         if (type != other.type) return false
+        if (authorId != other.authorId) return false
 
         return true
     }
@@ -47,6 +50,7 @@ abstract class Course(
         result = 31 * result + numberLessons
         result = 31 * result + creationDate.hashCode()
         result = 31 * result + type.hashCode()
+        result = 31 * result + authorId.hashCode()
         return result
     }
 }

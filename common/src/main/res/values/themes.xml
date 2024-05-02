@@ -31,8 +31,7 @@
         <item name="colorOnSecondary">@color/maverkick_white</item>
 
         <item name="colorOnBackground">@color/maverkick_accent</item>
-        <!-- Status bar color. -->
-        <item name="android:statusBarColor" >@color/maverkick_main</item>
+
         <!-- Background color. -->
         <item name="android:windowBackground">@color/maverkick_main</item>
         <item name="android:navigationBarColor">@color/maverkick_black</item>
@@ -41,10 +40,11 @@
         <!-- Default font family -->
         <item name="android:fontFamily">@font/font_family</item>
         <item name="fontFamily">@font/font_family</item>
+        <item name="android:windowTranslucentStatus">false</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
 
         <!-- Style for the Tag Box, which display interests for the Teacher and Student -->
         <item name="chipStyle">@style/CustomChipStyle</item>
-
     </style>
 
     <!-- Button style -->
@@ -56,4 +56,5 @@
         <item name="cornerRadius">10dp</item>
         <item name="android:textSize">20sp</item>
     </style>
+
 </resources>

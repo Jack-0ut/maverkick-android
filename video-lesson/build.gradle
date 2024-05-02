@@ -1,0 +1,56 @@
+plugins {
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
+    id 'kotlin-kapt' // for hilt
+    id 'dagger.hilt.android.plugin' // for hilt
+    id 'androidx.navigation.safeargs.kotlin' // for argument passing between the fragments
+}
+
+android {
+    compileSdk 32
+
+    defaultConfig {
+        minSdk 26
+        targetSdk 32
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    buildFeatures {
+        viewBinding true
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+}
+
+dependencies {
+    implementation project(':common')
+    implementation project(':data')
+    implementation project(':chat-helper')
+    implementation project(':tasks')
+
+    implementation "com.google.android.exoplayer:exoplayer:$rootProject.exoplayer"
+    implementation "androidx.core:core-ktx:$rootProject.coreKtx"
+    implementation "androidx.appcompat:appcompat:$rootProject.appcompat"
+    implementation "com.google.android.material:material:$rootProject.material"
+
+    implementation "androidx.navigation:navigation-fragment-ktx:$rootProject.navigation"
+
+    implementation "androidx.hilt:hilt-work:$rootProject.hilt_work_version"
+    kapt "androidx.hilt:hilt-compiler:$rootProject.hilt_work_version"
+
+    implementation "com.google.dagger:hilt-android:$rootProject.hilt_version"
+    kapt "com.google.dagger:hilt-compiler:$rootProject.hilt_version"
+}

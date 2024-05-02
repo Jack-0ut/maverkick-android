@@ -7,8 +7,8 @@ import java.util.*
 /**
  * Class storage for the VideoCourse objects
  * @param courseId - unique id for the course
- * @param courseName- name that defines the course, shouldn't be uniques
- * @param teacherId - id of the creator of that course
+ * @param courseName- name that defines the course, shouldn't be unique
+ * @param authorId - id of the creator of that course
  * @param language - the language of the course
  * @param poster - image/poster for the course to make it appealing and clear
  * @param numberLessons - number of lessons for the course
@@ -16,23 +16,22 @@ import java.util.*
  * @param creationDate - date of the course creation
  * @param published - is this course available for the students
  **/
-
 data class VideoCourse(
     override val courseId: String,
     override val courseName: String,
-    val teacherId: String,
+    override val authorId: String,
     override val language: String,
     var poster: String?,
     override val numberLessons: Int,
     val tags: List<String>,
     override val creationDate: Date,
     val published: Boolean
-) : Course(courseId, courseName, language, numberLessons, creationDate, CourseType.VIDEO){
+) : Course(courseId, courseName, language, numberLessons, creationDate, CourseType.VIDEO,authorId){
 
     fun toFirebaseCourse(): FirebaseVideoCourse {
         return FirebaseVideoCourse(
             courseName = this.courseName,
-            teacherId = this.teacherId,
+            authorId = this.authorId,
             language = this.language,
             poster = this.poster ?: "",
             lessonCount = this.numberLessons,
@@ -48,7 +47,7 @@ data class VideoCourse(
  */
 data class FirebaseVideoCourse @JvmOverloads constructor(
     val courseName: String = "",
-    val teacherId: String = "",
+    val authorId: String = "",
     val language: String = "",
     val poster: String? = null,
     val lessonCount: Int = 0,
@@ -60,7 +59,7 @@ data class FirebaseVideoCourse @JvmOverloads constructor(
         return VideoCourse(
             courseId,
             courseName,
-            teacherId,
+            authorId,
             language,
             poster,
             lessonCount,
@@ -71,7 +70,7 @@ data class FirebaseVideoCourse @JvmOverloads constructor(
     }
 }
 
-/** Course class representation in the algolia index, used for the courses search*/
+/** Course class representation in the Algolia index, used for the courses search*/
 @Serializable
 data class SearchCourseHit(
     @SerialName("objectID")
@@ -80,4 +79,4 @@ data class SearchCourseHit(
     val language: String,
     val poster: String?,
     val tags: List<String>
-    )
+)

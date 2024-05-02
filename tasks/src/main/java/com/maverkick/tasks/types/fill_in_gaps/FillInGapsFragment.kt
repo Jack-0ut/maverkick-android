@@ -62,7 +62,7 @@ class FillInGapsFragment : Fragment(),TaskActionsListener {
                 val gapLayout = LayoutInflater.from(context).inflate(R.layout.gap_dropdown_item, binding.blanksContainer, false)
                 val autoCompleteTextView = gapLayout.findViewById<AutoCompleteTextView>(R.id.gap_autocomplete)
 
-                autoCompleteTextView.setAdapter(ArrayAdapter(context!!, R.layout.custom_spinner_item, task.gaps[i].options))
+                autoCompleteTextView.setAdapter(ArrayAdapter(requireContext(), R.layout.custom_spinner_item, task.gaps[i].options))
                 autoCompleteTextView.inputType = InputType.TYPE_NULL
 
                 binding.blanksContainer.addView(gapLayout)
@@ -78,6 +78,10 @@ class FillInGapsFragment : Fragment(),TaskActionsListener {
 
         // Return the result through the provided callback
         onResult(Pair(isCorrect, if (isCorrect) "Yeah, you've done that!" else "Keep trying! Just more efforts!"))
+    }
+
+    override fun onOptionSelected(isSelected: Boolean) {
+        TODO("Not yet implemented")
     }
 
     private fun splitTextByPatterns(text: String, patterns: List<String>): List<String> {

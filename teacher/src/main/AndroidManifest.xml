@@ -13,14 +13,17 @@
             android:authorities="${applicationId}.androidx-startup"
             tools:node="remove" />
         <activity
-            android:name="com.maverkick.teacher.videoplayer.VideoPlayerActivity"
+            android:name="com.maverkick.teacher.com.example.video_lesson.teacher.VideoPlayerActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:exported="false" />
         <activity
             android:name="com.maverkick.teacher.addlesson.AddLessonActivity"
             android:exported="false" />
         <activity
-            android:name="com.maverkick.teacher.edit_course.EditCourseActivity"
+            android:name="com.maverkick.teacher.edit_course.video.EditVideoCourseActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.maverkick.teacher.edit_course.text.EditTextCourseActivity"
             android:exported="false" />
         <activity
             android:name="com.maverkick.teacher.addlesson.SelectVideoActivity"

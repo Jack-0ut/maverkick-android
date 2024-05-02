@@ -3,11 +3,13 @@ package com.maverkick.text_lesson.ui
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
+import com.maverkick.data.models.CourseType
 import com.maverkick.text_lesson.adapters.LessonDescriptionAdapter
 import com.maverkick.text_lesson.databinding.ActivityTextCourseOverviewBinding
 import com.maverkick.text_lesson.viewmodels.TextCourseOverviewViewModel
@@ -35,10 +37,28 @@ class TextCourseOverviewActivity : AppCompatActivity() {
         // Suppose you have the course ID from an Intent or some other source
         val courseId = intent.getStringExtra("courseId")
 
-        if (courseId != null) {
-            viewModel.fetchCourseInformation(courseId)
-            viewModel.fetchLessons(courseId)
+        val courseTypeString = intent.getStringExtra("courseType")
+
+        if (courseId != null && courseTypeString != null) {
+            Log.d("CourseDetailsActivityX", "CourseId is not null: $courseId")
+
+            try {
+                val courseType = CourseType.valueOf(courseTypeString)
+                Log.d("CourseDetailsActivityX", "Calling fetchCourseInformation with courseId: $courseId and courseType: $courseType")
+                viewModel.fetchCourseInformation(courseId, courseType)
+                Log.d("CourseDetailsActivityX", "Called fetchCourseInformation")
+
+                Log.d("CourseDetailsActivityX", "Calling fetchLessons with courseId: $courseId and courseType: $courseType")
+                viewModel.fetchLessons(courseId, courseType)
+                Log.d("CourseDetailsActivityX", "Called fetchLessons")
+            } catch (e: IllegalArgumentException) {
+                Log.w("CourseDetailsActivityX", "Invalid CourseType string: $courseTypeString")
+            }
+
+        } else {
+            Log.w("CourseDetailsActivityX", "CourseId or CourseTypeString is null")
         }
+
 
         // navigate back to the home screen
         viewModel.enrollmentComplete.observe(this) { enrollmentComplete ->

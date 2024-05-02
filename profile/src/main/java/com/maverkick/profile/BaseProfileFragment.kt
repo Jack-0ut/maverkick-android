@@ -6,12 +6,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
-import com.maverkick.profile.databinding.FragmentProfileBinding
 import com.google.android.material.tabs.TabLayoutMediator
+import com.maverkick.profile.databinding.FragmentProfileBinding
 import dagger.hilt.android.AndroidEntryPoint
 
 /**
@@ -65,7 +64,6 @@ abstract class BaseProfileFragment : Fragment() {
 
         // Observe the profile picture
         viewModel.profilePicture.observe(viewLifecycleOwner) { profilePictureUrl ->
-            // Load the image from the URL into your ImageView
             Glide.with(this).load(profilePictureUrl).into(binding.profilePicture)
         }
     }
@@ -96,7 +94,6 @@ abstract class BaseProfileFragment : Fragment() {
     private fun handleLogout() {
         getViewModel().logout()
         getViewModel().clearPreferences()
-        Toast.makeText(context, "You have been signed out.", Toast.LENGTH_SHORT).show()
         val intent = Intent(Intent.ACTION_VIEW, Uri.parse("maverkick://auth/login"))
         startActivity(intent)
     }

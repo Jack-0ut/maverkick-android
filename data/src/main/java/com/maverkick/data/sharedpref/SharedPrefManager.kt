@@ -32,6 +32,10 @@ class SharedPrefManager @Inject constructor(private val sharedPreferences: Share
         return userJson?.let { gson.fromJson(it, User::class.java) }
     }
 
+    fun clearUser() {
+        sharedPreferences.edit().remove("user").apply()
+    }
+
     fun saveStudent(student: Student) {
         val studentJson = gson.toJson(student)
         sharedPreferences.edit().putString("student", studentJson).apply()
@@ -74,6 +78,24 @@ class SharedPrefManager @Inject constructor(private val sharedPreferences: Share
         }
     }
 
+    /** Add new course to the list of finished **/
+    fun updateFinishedCourse(courseId: String) {
+        getStudent()?.let { student ->
+            val updatedCourses = student.finishedCourses + courseId
+            val updatedStudent = student.copy(finishedCourses = updatedCourses)
+            saveStudent(updatedStudent)
+        }
+    }
+
+    /** When registered, set that user is onboarded as Student | Teacher**/
+    fun setIsOnboarded(value: Boolean) {
+        sharedPreferences.edit().putBoolean("isOnboarded", value).apply()
+    }
+
+    /** When registered, check if user is onboarded as Student | Teacher**/
+    fun getIsOnboarded(): Boolean {
+        return sharedPreferences.getBoolean("isOnboarded", false)
+    }
 
     companion object {
         private const val NEEDS_REFRESH_KEY = "NEEDS_REFRESH"

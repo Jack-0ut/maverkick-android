@@ -1,15 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
     <color name="grey">#BDBDBD</color>
-    <color name="top_bar_color">#60869E</color>
     <color name="main_color">#2C3E50</color>
     <color name="main_color_semi_transparent">#CC2C3E50</color>
     <color name="main_accent_color">#FFA31A</color>
@@ -20,7 +14,6 @@
     <color name="green">#A4DA65</color>
     <color name="red">#F8675D</color>
 
-
     <color name="maverkick_main">#2C3E50</color>
     <color name="maverkick_white">#FDFCFC</color>
     <color name="maverkick_black">#000000</color>
@@ -28,5 +21,12 @@
     <color name="maverkick_accent_light">#EFE1EF</color>
     <color name="maverkick_light_green">#A9D0A9</color>
     <color name="maverkick_topbar">#D16F34</color>
+    <color name="maverkick_light_blue">#65809C</color>
+    <color name="maverkick_bottom_nav_bg">#34495E</color>
+
+    <color name="maverkick_soft_beige">#FAF3E0</color>
+    <color name="maverkick_light_gray">#F5F5F5</color>
+    <color name="maverkick_medium_gray">#A9A9A9</color>
+    <color name="semi_transparent_black">#80000000</color>
 
 </resources>
